@@ -21,8 +21,13 @@ PROJROOT=${USR}/ENCODE_T47D_HiC_ENCSR549MGQ
 # Unzip the reference
 REFBASE=${USR}/refs/genocode-release-33/GRCh37/dna
 GZREF=${REFBASE}/GRCh37.primary_assembly.genome.fa.gz
-FAREF=${REF%.gz}
-gunzip -c ${GZREF} > ${FAREF}
+FAREF=${GZREF%.gz}
+if [[ -f ${FAREF} ]]; then
+  echo "Found ${FAREF}\n"
+else
+  echo "Unzipping ${GZREF}"
+  gunzip -c ${GZREF} > ${FAREF}
+fi
 
 # build the bowtie2 index
 mkdir -p ${REFBASE}/bt2
