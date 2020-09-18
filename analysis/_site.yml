@@ -1,0 +1,17 @@
+name: "ENCODE_T47D_HiC_ENCSR549MGQ"
+output_dir: ../docs
+navbar:
+  title: "ENCODE_T47D_HiC_ENCSR549MGQ"
+  left:
+  - text: Home
+    href: index.html
+  - text: About
+    href: about.html
+  - text: License
+    href: license.html
+output:
+  workflowr::wflow_html:
+    toc: yes
+    toc_float: yes
+    theme: cosmo
+    highlight: textmate
