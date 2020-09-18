@@ -1,0 +1,4 @@
+d002baa535ca646da0dc80d9e4f4cfef  data/raw/ENCLB183QHG_R1.fastq.gz
+86a74858624aee0446ae28595d580385  data/raw/ENCLB183QHG_R2.fastq.gz
+c56480763a3bd510b5b59d1a4fdcab85  data/raw/ENCLB758KFU_R1.fastq.gz
+c4d4b952ec9c39b725aedeefc38ca2bf  data/raw/ENCLB758KFU_R2.fastq.gz
