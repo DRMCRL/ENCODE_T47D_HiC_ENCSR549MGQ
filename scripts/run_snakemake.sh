@@ -34,6 +34,12 @@ PROJ=${HPC}/users/a1018048/ENCODE_T47D_HiC_ENCSR549MGQ
 ## The environment containing snakemake
 micromamba activate snakemake
 cd ${PROJ}
+
+## Create dot and pdf files for visualisation
 snakemake --dag > output/dag.dot
+dot -Tpdf output/dag.dot > output/dag.pdf
 snakemake --rulegraph > output/rulegraph.dot
+dot -Tpdf output/rulegraph.dot > output/rulegraph.pdf
+
+## Run snakemake
 snakemake --cores ${CORES} --use-conda
