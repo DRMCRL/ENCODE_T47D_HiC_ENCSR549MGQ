@@ -8,7 +8,7 @@
 #SBATCH -e /home/a1018048/slurm/ENCODE_T47D_HiC_ENCSR549MGQ/%x_%j.err
 #SBATCH --mail-type=END
 #SBATCH --mail-type=FAIL
-#SBATCH --mail-user=a1018048@adelaide.edu.au
+#SBATCH --mail-user=stephen.pederson@adelaide.edu.au
 
 # to prepare all the reference files for HiC-Pro
 module load SAMtools/1.3.1-foss-2016b

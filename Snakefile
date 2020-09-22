@@ -15,7 +15,7 @@ FQC_OUTS = expand(["data/{step}/FastQC/{sample}_fastqc.{suffix}"],
                  suffix = ["zip", "html"],
                  step = ["raw", "trimmed"])
 TRIM_OUTS = expand(["data/trimmed/fastq/{sample}_{reads}.fastq.gz"],
-                  sample = samples['sample']
+                  sample = samples['sample'],
                   reads = ["R1", "R2"])
 ALL_OUTPUTS = []
 ALL_OUTPUTS.extend(FQC_OUTS)
