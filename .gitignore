@@ -1,3 +1,5 @@
-*fastq.gz
 .Rproj.user
 .Rhistory
+.snakemake/
+*fastq.gz
+*bam
