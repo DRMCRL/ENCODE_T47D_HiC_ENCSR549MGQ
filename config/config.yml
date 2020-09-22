@@ -1,0 +1,20 @@
+samples: config/samples.tsv
+
+# The root argument tells you where the genome will be located
+# on the local system. All other arguments are required for
+# downloading
+ref:
+  root: /fast/users/a1018048/refs/genocode-release-33/GRCh37/dna/
+  index: bt2
+
+# Given we only have 50nt reads, don't group during fastqc
+fastqc:
+  params: "--nogroup --noextract"
+
+trimming:
+  adapter1: AGATCGGAAGAGCACACGTCTGAACTCCAGTCACNNNNNNATCTCGTATGCCGTCTTCTGCTTG
+  adapter2: AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT
+  maxns: 1
+  minlength: 35
+  minqual: 30
+
