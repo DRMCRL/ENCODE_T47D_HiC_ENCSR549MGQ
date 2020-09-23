@@ -1,14 +1,14 @@
 rule raw_fastqc:
     input:
-        "data/raw/fastq/{sample}/{file}.fastq.gz"
+        "data/raw/fastq/{sample}/{sample}_{reads}.fastq.gz"
     output:
-        html = "data/raw/FastQC/{sample}/{file}_fastqc.html",
-        zip = "data/raw/FastQC/{sample}/{file}_fastqc.zip"
+        html = "data/raw/FastQC/{sample}_{reads}_fastqc.html",
+        zip = "data/raw/FastQC/{sample}_{reads}_fastqc.zip"
     conda:
         "../envs/fastqc.yml"
     params: config['fastqc']['params']
     log:
-        "logs/FastQC/raw/{file}.log"
+        "logs/FastQC/raw/{sample}_{reads}.log"
     threads: 1
     shell:
         """
@@ -30,15 +30,15 @@ rule raw_fastqc:
 
 rule trim_fastqc:
     input:
-        "data/trimmed/fastq/{sample}/{file}.fastq.gz"
+        "data/trimmed/fastq/{sample}/{sample}_{reads}.fastq.gz"
     output:
-        html = "data/trimmed/FastQC/{sample}/{file}_fastqc.html",
-        zip = "data/trimmed/FastQC/{sample}/{file}_fastqc.zip"
+        html = "data/trimmed/FastQC/{sample}_{reads}_fastqc.html",
+        zip = "data/trimmed/FastQC/{sample}_{reads}_fastqc.zip"
     conda:
         "../envs/fastqc.yml"
     params: config['fastqc']['params']
     log:
-        "logs/FastQC/trimmed/{sample}.log"
+        "logs/FastQC/raw/{sample}_{reads}.log"
     threads: 1
     shell:
         """
