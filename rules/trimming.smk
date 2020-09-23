@@ -14,15 +14,15 @@ rule adapter_removal:
         minlength = config['trimming']['minlength'],
         minqual = config['trimming']['minqual'],
         maxns = config['trimming']['maxns']
+        discard_path = "data/trimmed/discarded"
     threads: 1
     log:
         "logs/adapterremoval/{sample}.log"
     shell:
         """
         SAMPLE=$(basename $(dirname {input.r1}))
-        DISCARDDIR="data/trimmed/discarded"
-        DISCARD="$DISCARDDIR/$SAMPLE.discarded.fastq.gz"
-        SINGLE="$DISCARDDIR/$SAMPLE.singleton.truncated.fastq.gz"
+        DISCARD={params.discard_path}/$SAMPLE.discarded.fastq.gz
+        SINGLE={params.discard_path}/$SAMPLE.singleton.truncated.fastq.gz
         AdapterRemoval \
             --adapter1 {params.adapter1} \
             --adapter2 {params.adapter2} \
