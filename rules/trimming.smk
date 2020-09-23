@@ -19,8 +19,10 @@ rule adapter_removal:
         "logs/adapterremoval/{sample}.log"
     shell:
         """
-        DISCARD="data/trimmed/discarded/{sample}.discarded.fastq.gz"
-        SINGLE="data/trimmed/discarded/{sample}.singleton.truncated.fastq.gz"
+        SAMPLE=${$(basename {input.r1})%_R1.fastq.gz}
+        DISCARDDIR="data/trimmed/discarded""
+        DISCARD="${DISCARDDIR}/${SAMPLE}.discarded.fastq.gz"
+        SINGLE="${DISCARDDIR}/${SAMPLE}.singleton.truncated.fastq.gz"
         AdapterRemoval \
             --adapter1 {params.adapter1} \
             --adapter2 {params.adapter2} \
