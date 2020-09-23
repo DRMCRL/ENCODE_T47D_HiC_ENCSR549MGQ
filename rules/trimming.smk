@@ -5,7 +5,6 @@ rule adapter_removal:
     output:
         t1 = "data/trimmed/fastq/{sample}_R1.fastq.gz",
         t2 = "data/trimmed/fastq/{sample}_R2.fastq.gz",
-        discarded = "data/trimmed/discarded/{sample}.fastq.gz",
         log = "data/trimmed/logs/{sample}.settings"
     conda:
         "../envs/adapterremoval.yml"
@@ -20,6 +19,8 @@ rule adapter_removal:
         "logs/adapterremoval/{sample}.log"
     shell:
         """
+        DISCARD="data/trimmed/discarded/{sample}.discarded.fastq.gz"
+        SINGLE="data/trimmed/discarded/{sample}.singleton.truncated.fastq.gz"
         AdapterRemoval \
             --adapter1 {params.adapter1} \
             --adapter2 {params.adapter2} \
@@ -33,6 +34,7 @@ rule adapter_removal:
             --minlength {params.minlength} \
             --output1 {output.t1} \
             --output2 {output.t2} \
-            --discarded {output.discarded} \
+            --discarded ${DISCARD} \
+            --singleton ${SINGLE} \
             --settings {output.log} &> {log}
         """

@@ -10,8 +10,23 @@ rule raw_fastqc:
     log:
         "logs/FastQC/raw/{sample}.log"
     threads: 1
-    wrapper:
-        "0.66.0/bio/fastqc"
+    shell:
+        """
+        # Write to a separate temp directory for each run to avoid I/O clashes
+        TEMPDIR=$(mktemp -d -t fqcXXXXXXXXXX)
+        fastqc \
+          {params} \
+          -t {threads} \
+          --outdir $TEMPDIR \
+          {input} &> {log}
+
+        # Move the files
+        mv $TEMPDIR/*html $(dirname {output.html})
+        mv $TEMPDIR/*zip $(dirname {output.zip})
+
+        # Clean up the temp directory
+        rm -rf $TEMPDIR
+        """
 
 rule trim_fastqc:
     input:
@@ -25,5 +40,20 @@ rule trim_fastqc:
     log:
         "logs/FastQC/trimmed/{sample}.log"
     threads: 1
-    wrapper:
-        "0.66.0/bio/fastqc"
+    shell:
+        """
+        # Write to a separate temp directory for each run to avoid I/O clashes
+        TEMPDIR=$(mktemp -d -t fqcXXXXXXXXXX)
+        fastqc \
+          {params} \
+          -t {threads} \
+          --outdir $TEMPDIR \
+          {input} &> {log}
+
+        # Move the files
+        mv $TEMPDIR/*html $(dirname {output.html})
+        mv $TEMPDIR/*zip $(dirname {output.zip})
+
+        # Clean up the temp directory
+        rm -rf $TEMPDIR
+        """
