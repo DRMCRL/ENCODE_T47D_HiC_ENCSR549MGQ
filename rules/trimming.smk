@@ -1,10 +1,10 @@
 rule adapter_removal:
     input:
-        r1 = "data/raw/fastq/{sample}_R1.fastq.gz",
-        r2 = "data/raw/fastq/{sample}_R2.fastq.gz"
+        r1 = "data/raw/fastq/{sample}/{sample}_R1.fastq.gz",
+        r2 = "data/raw/fastq/{sample}/{sample}_R2.fastq.gz"
     output:
-        t1 = "data/trimmed/fastq/{sample}_R1.fastq.gz",
-        t2 = "data/trimmed/fastq/{sample}_R2.fastq.gz",
+        t1 = "data/trimmed/fastq/{sample}/{sample}_R1.fastq.gz",
+        t2 = "data/trimmed/fastq/{sample}/{sample}_R2.fastq.gz",
         log = "data/trimmed/logs/{sample}.settings"
     conda:
         "../envs/adapterremoval.yml"
@@ -19,9 +19,10 @@ rule adapter_removal:
         "logs/adapterremoval/{sample}.log"
     shell:
         """
-        SAMPLE=$(basename {input.r1})
-        DISCARD="data/trimmed/discarded/${{SAMPLE%_R1.fastq.gz}}.discarded.fastq.gz"
-        SINGLE="data/trimmed/discarded/${{SAMPLE%_R1.fastq.gz}}.singleton.truncated.fastq.gz"
+        SAMPLE=$(basename $(dirname {input.r1}))
+        DISCARDDIR="data/trimmed/discarded"
+        DISCARD="${{DISCARDDIR}}/${{SAMPLE}}.discarded.fastq.gz"
+        SINGLE="${{DISCARDDIR}}/${{SAMPLE}}.singleton.truncated.fastq.gz"
         AdapterRemoval \
             --adapter1 {params.adapter1} \
             --adapter2 {params.adapter2} \

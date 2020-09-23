@@ -77,6 +77,8 @@ egrep 'assembled-molecule' ${REFBASE}/${REPORT} | \
   awk '{print $11"\t"$10}' > \
   ${REFBASE}/${BUILD}.chr_sizes.tsv
 
+rm ${REFBASE}/${REPORT}
+
 ###############################
 ## Get restriction fragments ##
 ###############################

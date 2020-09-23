@@ -10,13 +10,14 @@ ref_root = config['ref']['root']
 ref_index = ref_root + "/" + config['ref']['index']
 
 # Define all the required outputs as a single object
-FQC_OUTS = expand(["data/{step}/FastQC/{sample}_fastqc.{suffix}"],
-                 sample = samples['file'],
+FQC_OUTS = expand(["data/{step}/FastQC/{sample}/{file}_fastqc.{suffix}"],
                  suffix = ["zip", "html"],
+                 file = samples['file'],
+                 sample = samples['sample'],
                  step = ["raw", "trimmed"])
-TRIM_OUTS = expand(["data/trimmed/fastq/{sample}_{reads}.fastq.gz"],
+TRIM_OUTS = expand(["data/trimmed/fastq/{sample}/{file}.fastq.gz"],
                   sample = samples['sample'],
-                  reads = ["R1", "R2"])
+                  file = samples['file'])
 ALL_OUTPUTS = []
 ALL_OUTPUTS.extend(FQC_OUTS)
 ALL_OUTPUTS.extend(TRIM_OUTS)
