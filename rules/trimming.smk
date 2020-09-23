@@ -13,7 +13,7 @@ rule adapter_removal:
         adapter2 = config['trimming']['adapter2'],
         minlength = config['trimming']['minlength'],
         minqual = config['trimming']['minqual'],
-        maxns = config['trimming']['maxns']
+        maxns = config['trimming']['maxns'],
         discard_path = "data/trimmed/discarded"
     threads: 1
     log:
