@@ -44,7 +44,7 @@ BOWTIE2_LOCAL_OPTIONS =  --very-sensitive -L 20 --score-min L,-0.6,-0.2 --end-to
 ## Annotation files
 #######################################################################
 
-REFERENCE_GENOME = GRCH37
+REFERENCE_GENOME = GRCh37.primary_assembly.genome
 GENOME_SIZE = /hpcfs/users/a1018048/refs/gencode-release-33/GRCh37/dna/GRCh37.chr_sizes.tsv
 CAPTURE_TARGET =
 

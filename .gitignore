@@ -2,5 +2,8 @@
 .Rhistory
 .snakemake/
 logs/
+bowtie_results/
 *fastq.gz
+*fastq
 *bam
+matrix/**/*matrix
