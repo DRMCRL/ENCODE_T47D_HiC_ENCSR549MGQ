@@ -6,4 +6,6 @@ bowtie_results/
 *fastq.gz
 *fastq
 *bam
-matrix/**/*matrix
+data/hic/hic_results/matrix/**/*matrix
+data/hic/hic_results/matrix/**/*ord.bed
+data/hic/hic_results/matrix/**/iced/
