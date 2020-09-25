@@ -21,6 +21,7 @@ rule unzip_reference:
     shell:
         """
         gunzip -c {input} > {output}
+        rm {input}
         """
 
 rule bowtie2_index:
@@ -92,5 +93,9 @@ rule remove_temp_fa:
         temp_fa = rules.unzip_reference.output,
         frags = rules.get_rs_fragments.output,
         bt2 = rules.bowtie2_index.output
-    output: temp(rules.unzip_reference.output)
-    shell: 'cp {input.temp_fa} {output}'
+    output: ref_root + "/" + ref_fagz
+    shell:
+        """
+        gzip -c {input.temp_fa} > {output}
+        rm {input.temp_fa}
+        """
