@@ -4,8 +4,12 @@ samples: config/samples.tsv
 # on the local system. All other arguments are required for
 # downloading
 ref:
-  root: /fast/users/a1018048/refs/genocode-release-33/GRCh37/dna/
+  build: GRCh37
+  genbank: GCA_000001405.1
+  gencode: 33
+  root: /fast/users/a1018048/refs
   index: bt2
+  enzyme: HindIII
 
 # Given we only have 50nt reads, don't group during fastqc
 fastqc:
