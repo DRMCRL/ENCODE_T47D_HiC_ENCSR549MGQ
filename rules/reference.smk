@@ -66,9 +66,10 @@ rule get_rs_fragments:
     output: rs_frags
     params: enzyme = config['ref']['enzyme']
     threads: 1
+    conda: "../envs/python2.7.yml"
     shell:
         """
-        module load Python/2.7.13-foss-2016b
+        #module load Python/2.7.13-foss-2016b
 
         # Unzip the genome
         FA=$(dirname {input})/temp.fa
