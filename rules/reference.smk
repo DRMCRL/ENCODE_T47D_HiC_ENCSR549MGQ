@@ -14,8 +14,17 @@ rule get_reference:
           $URL
         """
 
-rule bowtie2_index:
+rule unzip_reference:
     input: rules.get_reference.output
+    output: ref_root + "/temp.fa"
+    threads: 1
+    shell:
+        """
+        gunzip -c {input} > {output}
+        """
+
+rule bowtie2_index:
+    input: rules.unzip_reference.output
     output:
         expand(["{path}/{build}.primary_assembly.genome.{suffix}.bt2"],
                  path = ref_root + "/bt2",
@@ -28,13 +37,10 @@ rule bowtie2_index:
         prefix = config['ref']['build'] + ".primary_assembly.genome"
     shell:
         """
-        FA=$(dirname {params.idx_root})/temp.fa
-        gunzip -c {input} > $FA
         bowtie2-build \
           --threads {threads} \
-          -f $FA \
+          -f {input} \
           {params.idx_root}/{params.prefix}
-        rm $FA
         """
 
 rule get_chrom_sizes:
@@ -62,19 +68,13 @@ rule get_chrom_sizes:
         """
 
 rule get_rs_fragments:
-    input: rules.get_reference.output
+    input: rules.unzip_reference.output
     output: rs_frags
     params: enzyme = config['ref']['enzyme']
     threads: 1
     conda: "../envs/python2.7.yml"
     shell:
         """
-        #module load Python/2.7.13-foss-2016b
-
-        # Unzip the genome
-        FA=$(dirname {input})/temp.fa
-        gunzip -c {input} > $FA
-
         # Get the latest version from the HiC-Pro repo
         wget \
           -O "scripts/digest_genome.py" \
@@ -84,7 +84,13 @@ rule get_rs_fragments:
         python scripts/digest_genome.py \
           -r {params.enzyme} \
           -o {output} \
-          $FA
-
-        rm $FA
+          {input}
         """
+
+rule remove_temp_fa:
+    input:
+        temp_fa = rules.unzip_reference.output,
+        frags = rules.get_rs_fragments.output,
+        bt2 = rules.bowtie2_index.output
+    output: temp(rules.unzip_reference.output)
+    shell: 'cp {input.temp_fa} {output}'
