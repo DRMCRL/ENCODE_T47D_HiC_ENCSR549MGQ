@@ -7,11 +7,15 @@ samples = pd.read_table(config["samples"])
 
 ## Variables for the reference
 ref_root = config['ref']['root'] + "/gencode-release-" + str(config['ref']['gencode']) + "/" + config['ref']['build'] + "/dna"
+# Key output files
 ref_fagz = config['ref']['build'] + ".primary_assembly.genome.fa.gz"
 chr_sizes = ref_root + "/" + config['ref']['build'] + ".chr_sizes.tsv"
 rs_frags = ref_root + "/" + config['ref']['build'] + "_" + config['ref']['enzyme'] + "_fragment.bed"
 
 # Define all the required outputs as a single object
+REFS = expand(["{ref_root}/{build}{suffix}"],
+              ref_root = ref_root, build = config['ref']['build'],
+              suffix = ['.chr_sizes.tsv', "_" + config['ref']['enzyme'] + "_fragment.bed"])
 BOWTIEIDX = expand(["{path}/{build}.primary_assembly.genome.{suffix}.bt2"],
                    path = ref_root + "/bt2",
                    build = config['ref']['build'],
@@ -25,9 +29,8 @@ TRIM_OUTS = expand(["data/trimmed/fastq/{sample}/{sample}_{reads}.fastq.gz"],
                   sample = samples['sample'],
                   reads = ['R1', 'R2'])
 ALL_OUTPUTS = []
+ALL_OUTPUTS.extend(REFS)
 ALL_OUTPUTS.extend(BOWTIEIDX)
-#ALL_OUTPUTS.extend(chr_sizes)
-#ALL_OUTPUTS.extend(rs_frags)
 ALL_OUTPUTS.extend(FQC_OUTS)
 ALL_OUTPUTS.extend(TRIM_OUTS)
 

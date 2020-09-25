@@ -7,8 +7,7 @@ ref:
   build: GRCh37
   genbank: GCA_000001405.1
   gencode: 33
-  root: /fast/users/a1018048/refs
-  index: bt2
+  root: /hpcfs/users/a1018048/refs
   enzyme: HindIII
 
 # Given we only have 50nt reads, don't group during fastqc

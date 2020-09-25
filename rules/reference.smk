@@ -1,6 +1,5 @@
 rule get_reference:
-    output:
-        fagz = ref_root + "/" + ref_fagz
+    output: ref_root + "/" + ref_fagz
     params:
         genbank = config['ref']['genbank'],
         gencode = config['ref']['gencode'],
@@ -9,9 +8,9 @@ rule get_reference:
     shell:
         """
         # Define the URL and download
-        URL="ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_{params.gencode}/{params.build}_mapping/$(basename {output.fagz})"
+        URL="ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_{params.gencode}/{params.build}_mapping/$(basename {output})"
         wget \
-          -O {output.fagz} \
+          -O {output} \
           $URL
         """
 
@@ -35,8 +34,7 @@ rule bowtie2_index:
         """
 
 rule get_chrom_sizes:
-    output:
-        chr_sizes
+    output: chr_sizes
     params:
         ftp = "ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/vertebrate_mammalian/Homo_sapiens/all_assembly_versions",
         genbank = config['ref']['genbank'],
@@ -53,15 +51,14 @@ rule get_chrom_sizes:
     
         # Extract the chrom_sizes
         egrep 'assembled-molecule' "$TEMPDIR/$REPORT" | \
-          awk '{print $11"\t"$10}' > {output}
+          awk '{{print $11"\t"$10}}' > {output}
     
         """
 
 rule get_rs_fragments:
     input: rules.get_reference.output
     output: rs_frags
-    params:
-        enzyme = config['ref']['enzyme']
+    params: enzyme = config['ref']['enzyme']
     threads: 1
     shell:
         """
