@@ -1,5 +1,5 @@
 rule get_reference:
-    output: ref_root + "/" + ref_fagz
+    output: ref_root + "/" + ref_fa
     params:
         genbank = config['ref']['genbank'],
         gencode = config['ref']['gencode'],
@@ -10,18 +10,9 @@ rule get_reference:
         # Define the URL and download
         URL="ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_{params.gencode}/{params.build}_mapping/$(basename {output})"
         wget \
-          -O {output} \
+          -O "{output}.gz" \
           $URL
-        """
-
-rule unzip_reference:
-    input: rules.get_reference.output
-    output: ref_root + "/temp.fa"
-    threads: 1
-    shell:
-        """
-        gunzip -c {input} > {output}
-        rm {input}
+        gunzip -c "{output}.gz" > {output}
         """
 
 rule bowtie2_index:
@@ -88,7 +79,7 @@ rule get_rs_fragments:
           {input}
         """
 
-rule remove_temp_fa:
+rule rezip_fa:
     input:
         temp_fa = rules.unzip_reference.output,
         frags = rules.get_rs_fragments.output,
