@@ -31,7 +31,10 @@ rule bowtie2_index:
         TEMPDIR=$(mktemp -d -t bt2XXXXXXXXXX)
         FA=$TEMPDIR/temp.fa
         gunzip -c {input} > $FA
-        bowtie2-build -f $FA --threads {threads} {params.idx_root}/{params.prefix}
+        bowtie2-build \
+          --threads {threads} \
+          -f $FA \
+          {params.idx_root}/{params.prefix}
         """
 
 rule get_chrom_sizes:
