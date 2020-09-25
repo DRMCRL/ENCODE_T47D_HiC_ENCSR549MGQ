@@ -21,6 +21,7 @@ rule bowtie2_index:
                  path = ref_root + "/bt2",
                  build = config['ref']['build'],
                  suffix = ['1', '2', '3', '4', 'rev.1', 'rev.2'])
+    conda: "../envs/bowtie2.yml"
     threads: 8
     params:
         idx_root = ref_root + "/bt2",
@@ -42,17 +43,17 @@ rule get_chrom_sizes:
     threads: 1
     shell:
         """
-    
+
         # Download the assembly report
         TEMPDIR=$(mktemp -d -t chrXXXXXXXXXX)
         REPORT="{params.genbank}_{params.build}_assembly_report.txt"
         URL="{params.ftp}/{params.genbank}_{params.build}/{params.genbank}_{params.build}_assembly_report.txt"
         wget -O "$TEMPDIR/$REPORT" $URL
-    
+
         # Extract the chrom_sizes
         egrep 'assembled-molecule' "$TEMPDIR/$REPORT" | \
           awk '{{print $11"\t"$10}}' > {output}
-    
+
         """
 
 rule get_rs_fragments:
