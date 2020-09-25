@@ -8,7 +8,7 @@ rule get_reference:
     shell:
         """
         # Define the URL and download
-        URL="ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_{params.gencode}/{params.build}_mapping/$(basename {output})"
+        URL="ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_{params.gencode}/{params.build}_mapping/$(basename {output}).gz"
         wget \
           -O "{output}.gz" \
           $URL
@@ -16,7 +16,7 @@ rule get_reference:
         """
 
 rule bowtie2_index:
-    input: rules.unzip_reference.output
+    input: rules.get_reference.output
     output:
         expand(["{path}/{build}.primary_assembly.genome.{suffix}.bt2"],
                  path = ref_root + "/bt2",
@@ -60,7 +60,7 @@ rule get_chrom_sizes:
         """
 
 rule get_rs_fragments:
-    input: rules.unzip_reference.output
+    input: rules.get_reference.output
     output: rs_frags
     params: enzyme = config['ref']['enzyme']
     threads: 1
@@ -81,7 +81,7 @@ rule get_rs_fragments:
 
 rule rezip_fa:
     input:
-        temp_fa = rules.unzip_reference.output,
+        temp_fa = rules.get_reference.output,
         frags = rules.get_rs_fragments.output,
         bt2 = rules.bowtie2_index.output
     output: ref_root + "/" + ref_fagz

@@ -33,6 +33,7 @@ TRIM_OUTS = expand(["data/trimmed/fastq/{sample}/{sample}_{reads}.fastq.gz"],
 ALL_OUTPUTS = []
 ALL_OUTPUTS.extend(REFS)
 ALL_OUTPUTS.extend(BOWTIEIDX)
+ALL_OUTPUTS.extend(FAGZ)
 ALL_OUTPUTS.extend(FQC_OUTS)
 ALL_OUTPUTS.extend(TRIM_OUTS)
 
