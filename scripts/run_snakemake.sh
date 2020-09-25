@@ -2,8 +2,8 @@
 #SBATCH -p batch
 #SBATCH -N 1
 #SBATCH -n 8
-#SBATCH --time=4:00:00
-#SBATCH --mem=32GB
+#SBATCH --time=1:00:00
+#SBATCH --mem=64GB
 #SBATCH -o /home/a1018048/slurm/ENCODE_T47D_HiC_ENCSR549MGQ/%x_%j.out
 #SBATCH -e /home/a1018048/slurm/ENCODE_T47D_HiC_ENCSR549MGQ/%x_%j.err
 #SBATCH --mail-type=END

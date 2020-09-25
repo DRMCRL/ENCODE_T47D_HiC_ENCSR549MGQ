@@ -28,13 +28,13 @@ rule bowtie2_index:
         prefix = config['ref']['build'] + ".primary_assembly.genome"
     shell:
         """
-        TEMPDIR=$(mktemp -d -t bt2XXXXXXXXXX)
-        FA=$TEMPDIR/temp.fa
+        FA=$(dirname {params.idx_root})/temp.fa
         gunzip -c {input} > $FA
         bowtie2-build \
           --threads {threads} \
           -f $FA \
           {params.idx_root}/{params.prefix}
+        rm $FA
         """
 
 rule get_chrom_sizes:
@@ -57,6 +57,8 @@ rule get_chrom_sizes:
         egrep 'assembled-molecule' "$TEMPDIR/$REPORT" | \
           awk '{{print $11"\t"$10}}' > {output}
 
+        rm -rf $TEMPDIR
+
         """
 
 rule get_rs_fragments:
@@ -66,9 +68,10 @@ rule get_rs_fragments:
     threads: 1
     shell:
         """
+        module load Python/2.7.13-foss-2016b
+
         # Unzip the genome
-        TEMPDIR=$(mktemp -d -t digXXXXXXXXXX)
-        FA=$TEMPDIR/temp.fa
+        FA=$(dirname {input})/temp.fa
         gunzip -c {input} > $FA
 
         # Get the latest version from the HiC-Pro repo
@@ -79,6 +82,8 @@ rule get_rs_fragments:
         # Run the python script
         python scripts/digest_genome.py \
           -r {params.enzyme} \
-          -o ${output} \
+          -o {output} \
           $FA
+
+        rm $FA
         """
