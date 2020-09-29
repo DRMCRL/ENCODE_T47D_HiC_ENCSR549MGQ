@@ -38,7 +38,7 @@ rule trim_fastqc:
         "../envs/fastqc.yml"
     params: config['fastqc']['params']
     log:
-        "logs/FastQC/raw/{sample}_{reads}.log"
+        "logs/FastQC/trimmed/{sample}_{reads}.log"
     threads: 1
     shell:
         """
