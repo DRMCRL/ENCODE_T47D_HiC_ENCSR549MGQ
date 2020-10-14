@@ -44,6 +44,7 @@ rule get_rs_fragments:
 
 rule make_hicpro_config:
     input:
+        idx = rules.bowtie2_index.output.dir,
         rs = rules.get_rs_fragments.output,
         chr_sizes = rules.get_chrom_sizes.output
     output:
@@ -54,7 +55,6 @@ rule make_hicpro_config:
         pair2_ext = config['hicpro']['pair2_ext'],
         min_mapq = config['hicpro']['min_mapq'],
         phred = config['hicpro']['phred'],
-        idx = os.path.join(ref_root, "bt2"),
         genome = config['ref']['build'] + "." + assembly,
         ligation_site = config['hicpro']['ligation_site'],
         bin_size = config['hicpro']['bin_size']
@@ -76,7 +76,7 @@ rule make_hicpro_config:
         echo -e "\n## Alignment Options" >> {output}
         echo -e "FORMAT = phred{params.phred}" >> {output}
         echo -e "MIN_MAPQ = {params.min_mapq}" >> {output}
-        echo -e "BOWTIE2_IDX_PATH = {params.idx}" >> {output}
+        echo -e "BOWTIE2_IDX_PATH = {input.idx}" >> {output}
         echo -e "BOWTIE2_GLOBAL_OPTIONS = --very-sensitive -L 30 --score-min L,-0.6,-0.2 --end-to-end --reorder" >> {output}
         echo -e "BOWTIE2_LOCAL_OPTIONS =  --very-sensitive -L 20 --score-min L,-0.6,-0.2 --end-to-end --reorder" >> {output}
 

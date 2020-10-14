@@ -18,7 +18,8 @@ rule get_reference:
 rule bowtie2_index:
     input: rules.get_reference.output
     output:
-        expand(["{pre}.{suffix}.bt2"],
+        dir = directory(os.path.join(ref_root, "bt2")),
+        bt2 = expand(["{pre}.{suffix}.bt2"],
                  pre = os.path.join(ref_root, "bt2", config['ref']['build'] + "." + assembly),
                  suffix = ['1', '2', '3', '4', 'rev.1', 'rev.2'])
     conda: "../envs/bowtie2.yml"
