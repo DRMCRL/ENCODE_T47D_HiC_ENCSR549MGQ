@@ -1,4 +1,51 @@
+rule get_chrom_sizes:
+    output: chr_sizes
+    params:
+        ftp = "ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/vertebrate_mammalian/Homo_sapiens/all_assembly_versions",
+        genbank = config['ref']['genbank'],
+        build = config['ref']['build']
+    threads: 1
+    shell:
+        """
+
+        # Download the assembly report
+        TEMPDIR=$(mktemp -d -t chrXXXXXXXXXX)
+        REPORT="{params.genbank}_{params.build}_assembly_report.txt"
+        URL="{params.ftp}/{params.genbank}_{params.build}/{params.genbank}_{params.build}_assembly_report.txt"
+        wget -O "$TEMPDIR/$REPORT" $URL
+
+        # Extract the chrom_sizes
+        egrep 'assembled-molecule' "$TEMPDIR/$REPORT" | \
+          awk '{{print $11"\t"$10}}' > {output}
+
+        rm -rf $TEMPDIR
+
+        """
+
+rule get_rs_fragments:
+    input: rules.get_reference.output
+    output: rs_frags
+    params: enzyme = config['hicpro']['enzyme']
+    threads: 1
+    conda: "../envs/python2.7.yml"
+    shell:
+        """
+        # Get the latest version from the HiC-Pro repo
+        wget \
+          -O "scripts/digest_genome.py" \
+          "https://raw.githubusercontent.com/nservant/HiC-Pro/master/bin/utils/digest_genome.py"
+
+        # Run the python script
+        python scripts/digest_genome.py \
+          -r {params.enzyme} \
+          -o {output} \
+          {input}
+        """
+
 rule make_hicpro_config:
+    input:
+        rs = rules.get_rs_fragments.output,
+        chr_sizes = rules.get_chrom_sizes.output
     output:
         "config/hicpro-config.txt"
     params:
@@ -9,8 +56,6 @@ rule make_hicpro_config:
         phred = config['hicpro']['phred'],
         idx = os.path.join(ref_root, "bt2"),
         genome = config['ref']['build'] + "." + assembly,
-        chr_sizes = chr_sizes,
-        fragment_bed = rs_frags,
         ligation_site = config['hicpro']['ligation_site'],
         bin_size = config['hicpro']['bin_size']
     threads: 1
@@ -37,14 +82,14 @@ rule make_hicpro_config:
 
         echo -e "\n## Annotation files" >> {output}
         echo -e "REFERENCE_GENOME = {params.genome}" >> {output}
-        echo -e "GENOME_SIZE = {params.chr_sizes}" >> {output}
+        echo -e "GENOME_SIZE = {input.chr_sizes}" >> {output}
         echo -e "CAPTURE_TARGET =" >> {output}
 
         echo -e "\n## Allele specific analysis" >> {output}
         echo -e "ALLELE_SPECIFIC_SNP =" >> {output}
 
         echo -e "\n## Digestion Hi-C" >> {output}
-        echo -e "GENOME_FRAGMENT = {params.fragment_bed}" >> {output}
+        echo -e "GENOME_FRAGMENT = {input.rs}" >> {output}
         echo -e "LIGATION_SITE = {params.ligation_site}" >> {output}
         echo -e "MIN_FRAG_SIZE =\nMAX_FRAG_SIZE =\nMIN_INSERT_SIZE =\nMAX_INSERT_SIZE =" >> {output}
 
