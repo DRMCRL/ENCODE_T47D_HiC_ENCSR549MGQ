@@ -119,9 +119,7 @@ rule run_hicpro:
         files = rules.adapter_removal.output.t1
     output:
         dir = directory(hic_dir),
-        valid_pairs = expand(["{path}/data/{sample}/{sample}_allValidPairs"],
-                             sample = samples['sample'],
-                             path = hic_dir)
+        valid_pairs = os.path.join(hic_dir, "data/{sample}/{sample}_allValidPairs")
     params:
         dir = "data/trimmed/fastq"
     threads: config['hicpro']['ncpu']
