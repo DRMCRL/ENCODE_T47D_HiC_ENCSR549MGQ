@@ -19,6 +19,7 @@ rs_frags = os.path.join(ref_root, config['ref']['build'] + "_" + config['hicpro'
 
 ## HiC-Pro outputs
 hic_dir = "data/hic"
+HIC_CONFIG = ['config/hicpro-config.txt']
 HIC_PAIRS = expand(["{path}/hic_results/data/{sample}/{sample}_allValidPairs"],
                    sample = samples['sample'],
                    path = hic_dir)
@@ -40,7 +41,6 @@ FQC_OUTS = expand(["data/{step}/FastQC/{sample}_{reads}_fastqc.{suffix}"],
 TRIM_OUTS = expand(["data/trimmed/fastq/{sample}/{sample}_{reads}.fastq.gz"],
                   sample = samples['sample'],
                   reads = ['R1', 'R2'])
-HIC_CONFIG = ['config/hicpro-config.txt']
 ALL_OUTPUTS = []
 ALL_OUTPUTS.extend(REFS)
 ALL_OUTPUTS.extend(BOWTIEIDX)
@@ -49,6 +49,7 @@ ALL_OUTPUTS.extend(FQC_OUTS)
 ALL_OUTPUTS.extend(TRIM_OUTS)
 ALL_OUTPUTS.extend(HIC_CONFIG)
 ALL_OUTPUTS.extend(HIC_PAIRS)
+ALL_OUTPUTS.extend([hic_dir])
 
 rule all:
     input:
