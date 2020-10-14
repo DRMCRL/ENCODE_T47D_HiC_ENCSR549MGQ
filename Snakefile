@@ -19,7 +19,7 @@ rs_frags = os.path.join(ref_root, config['ref']['build'] + "_" + config['hicpro'
 
 ## HiC-Pro outputs
 hic_dir = "data/hic"
-HIC_PAIRS = expand([{path}/hic_results/data/{sample}/{sample}_allValidPairs],
+HIC_PAIRS = expand(["{path}/hic_results/data/{sample}/{sample}_allValidPairs"],
                    sample = samples['sample'],
                    path = hic_dir)
 
