@@ -36,8 +36,8 @@ rule bowtie2_index:
 
 rule rezip_fa:
     input:
+        frags = rs_frags,
         temp_fa = rules.get_reference.output,
-        frags = rules.get_rs_fragments.output,
         bt2 = rules.bowtie2_index.output
     output: os.path.join(ref_root, ref_fagz)
     shell:
