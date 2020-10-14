@@ -1,5 +1,5 @@
 rule get_reference:
-    output: ref_root + "/" + ref_fa
+    output: os.path.join(ref_root, ref_fa)
     params:
         genbank = config['ref']['genbank'],
         gencode = config['ref']['gencode'],
@@ -18,15 +18,16 @@ rule get_reference:
 rule bowtie2_index:
     input: rules.get_reference.output
     output:
-        expand(["{path}/{build}.primary_assembly.genome.{suffix}.bt2"],
+        expand(["{path}/{build}.{assembly}.{suffix}.bt2"],
                  path = ref_root + "/bt2",
                  build = config['ref']['build'],
+                 assembly = assembly,
                  suffix = ['1', '2', '3', '4', 'rev.1', 'rev.2'])
     conda: "../envs/bowtie2.yml"
     threads: 8
     params:
-        idx_root = ref_root + "/bt2",
-        prefix = config['ref']['build'] + ".primary_assembly.genome"
+        idx_root = os.path.join(ref_root, "bt2"),
+        prefix = config['ref']['build'] + "." + assembly
     shell:
         """
         bowtie2-build \
@@ -84,7 +85,7 @@ rule rezip_fa:
         temp_fa = rules.get_reference.output,
         frags = rules.get_rs_fragments.output,
         bt2 = rules.bowtie2_index.output
-    output: ref_root + "/" + ref_fagz
+    output: os.path.join(ref_root, ref_fagz)
     shell:
         """
         gzip -c {input.temp_fa} > {output}

@@ -8,7 +8,7 @@ rule make_hicpro_config:
         min_mapq = config['hicpro']['min_mapq'],
         phred = config['hicpro']['phred'],
         idx = os.path.join(ref_root, "bt2"),
-        genome = config['ref']['build'] + ".primary_assembly.genome",
+        genome = config['ref']['build'] + "." + assembly,
         chr_sizes = chr_sizes,
         fragment_bed = rs_frags,
         ligation_site = config['hicpro']['ligation_site'],

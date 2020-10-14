@@ -11,7 +11,8 @@ samples = pd.read_table(config["samples"])
 ref_root = os.path.join(config['ref']['root'], "gencode-release-" + str(config['ref']['gencode']),
                         config['ref']['build'], "dna")
 # Key output files
-ref_fa = config['ref']['build'] + ".primary_assembly.genome.fa"
+assembly = config['ref']['assembly'] + ".genome"
+ref_fa = config['ref']['build'] + "." + assembly + ".fa"
 ref_fagz = ref_fa + ".gz"
 chr_sizes = os.path.join(ref_root, config['ref']['build'] + ".chr_sizes.tsv")
 rs_frags = os.path.join(ref_root, config['ref']['build'] + "_" + config['hicpro']['enzyme'] + "_fragment.bed")
@@ -22,9 +23,10 @@ REFS = expand(["{ref_root}/{build}{suffix}"],
               build = config['ref']['build'],
               suffix = ['.chr_sizes.tsv', "_" + config['hicpro']['enzyme'] + "_fragment.bed"])
 FAGZ = expand(["{path}/{file}"], path = ref_root, file = ref_fagz)
-BOWTIEIDX = expand(["{path}/{build}.primary_assembly.genome.{suffix}.bt2"],
+BOWTIEIDX = expand(["{path}/{build}.{assembly}.{suffix}.bt2"],
                    path = os.path.join(ref_root, "bt2"),
                    build = config['ref']['build'],
+                   assembly = assembly,
                    suffix = ['1', '2', '3', '4', 'rev.1', 'rev.2'])
 FQC_OUTS = expand(["data/{step}/FastQC/{sample}_{reads}_fastqc.{suffix}"],
                  suffix = ['zip', 'html'],

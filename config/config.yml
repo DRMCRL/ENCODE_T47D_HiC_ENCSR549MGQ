@@ -7,6 +7,7 @@ ref:
   build: GRCh37
   genbank: GCA_000001405.1
   gencode: 33
+  assembly: primary_assembly
   root: /hpcfs/users/a1018048/refs
 
 # Given we only have 50nt reads, don't group during fastqc
