@@ -62,7 +62,7 @@ rule get_chrom_sizes:
 rule get_rs_fragments:
     input: rules.get_reference.output
     output: rs_frags
-    params: enzyme = config['ref']['enzyme']
+    params: enzyme = config['hicpro']['enzyme']
     threads: 1
     conda: "../envs/python2.7.yml"
     shell:

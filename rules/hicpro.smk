@@ -2,17 +2,17 @@ rule make_hicpro_config:
     output:
         "config/hicpro-config.txt"
     params:
-        ncpu: str(config['hicpro']['ncpu']),
-        pair1_ext: config['hicpro']['pair1_ext'],
-        pair2_ext: config['hicpro']['pair2_ext'],
-        min_mapq: str(config['hicpro']['min_mapq']),
-        phred: str(config['hicpro']['phred']),
-        idx: os.path.join(ref_root, "bt2"),
-        genome: config['ref']['build'] + ".primary_assembly.genome",
-        chr_sizes: chr_sizes,
-        fragment_bed: rs_frags,
+        ncpu = config['hicpro']['ncpu'],
+        pair1_ext = config['hicpro']['pair1_ext'],
+        pair2_ext = config['hicpro']['pair2_ext'],
+        min_mapq = config['hicpro']['min_mapq'],
+        phred = config['hicpro']['phred'],
+        idx = os.path.join(ref_root, "bt2"),
+        genome = config['ref']['build'] + ".primary_assembly.genome",
+        chr_sizes = chr_sizes,
+        fragment_bed = rs_frags,
         ligation_site = config['hicpro']['ligation_site'],
-        bin_size: config['hicpro']['bin_size']
+        bin_size = config['hicpro']['bin_size']
     threads: 1
     shell:
         """
