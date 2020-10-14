@@ -113,13 +113,13 @@ rule make_hicpro_config:
 
         """
 
-rules run_hicpro:
+rule run_hicpro:
     input:
         config = rules.make_hicpro_config.output,
         files = rules.adapter_removal.output.t1
     output:
         dir = directory(hic_dir),
-        valid_pairs = expand([{path}/data/{sample}/{sample}_allValidPairs],
+        valid_pairs = expand(["{path}/data/{sample}/{sample}_allValidPairs"],
                              sample = samples['sample'],
                              path = hic_dir)
     params:
