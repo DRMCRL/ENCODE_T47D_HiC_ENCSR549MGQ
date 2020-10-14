@@ -112,3 +112,29 @@ rule make_hicpro_config:
         echo -e "EPS = 0.1" >> {output}
 
         """
+
+rules run_hicpro:
+    input:
+        config = rules.make_hicpro_config.output,
+        dir = rules.adapter_removal.output.dir
+    output:
+        dir = directory(hic_dir),
+        valid_pairs = expand([{path}/data/{sample}/{sample}_allValidPairs],
+                             sample = samples['sample'],
+                             path = hic_dir)
+    threads: config['hicpro']['ncpu']
+    shell:
+        """
+        ## Load modules
+        module load HiC-Pro/2.9.0-foss-2016b
+
+        ##Run HiC-pro
+        HiC-Pro \
+          -c {input.config} \
+          -i {input.dir} \
+          -o ${output.dir}
+        """
+
+
+
+

@@ -5,7 +5,8 @@ rule adapter_removal:
     output:
         t1 = "data/trimmed/fastq/{sample}/{sample}_R1.fastq.gz",
         t2 = "data/trimmed/fastq/{sample}/{sample}_R2.fastq.gz",
-        log = "data/trimmed/logs/{sample}.settings"
+        log = "data/trimmed/logs/{sample}.settings",
+        dir = directory("data/trimmed/fastq")
     conda:
         "../envs/adapterremoval.yml"
     params:

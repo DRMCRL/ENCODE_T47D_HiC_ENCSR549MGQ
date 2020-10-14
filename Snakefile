@@ -17,12 +17,17 @@ ref_fagz = ref_fa + ".gz"
 chr_sizes = os.path.join(ref_root, config['ref']['build'] + ".chr_sizes.tsv")
 rs_frags = os.path.join(ref_root, config['ref']['build'] + "_" + config['hicpro']['enzyme'] + "_fragment.bed")
 
+## HiC-Pro outputs
+hic_dir = "data/hic"
+HIC_PAIRS = expand([{path}/hic_results/data/{sample}/{sample}_allValidPairs],
+                   sample = samples['sample'],
+                   path = hic_dir)
+
 ## Define all the required outputs as a single object
 REFS = expand(["{ref_root}/{build}{suffix}"],
               ref_root = ref_root,
               build = config['ref']['build'],
               suffix = ['.chr_sizes.tsv', "_" + config['hicpro']['enzyme'] + "_fragment.bed"])
-#FAGZ = expand(["{path}/{file}"], path = ref_root, file = ref_fagz)
 FAGZ = [os.path.join(ref_root, ref_fagz)]
 BOWTIEIDX = expand(["{pre}.{suffix}.bt2"],
                  pre = os.path.join(ref_root, "bt2", config['ref']['build'] + "." + assembly),
@@ -43,6 +48,7 @@ ALL_OUTPUTS.extend(FAGZ)
 ALL_OUTPUTS.extend(FQC_OUTS)
 ALL_OUTPUTS.extend(TRIM_OUTS)
 ALL_OUTPUTS.extend(HIC_CONFIG)
+ALL_OUTPUTS.extend(HIC_PAIRS)
 
 rule all:
     input:
