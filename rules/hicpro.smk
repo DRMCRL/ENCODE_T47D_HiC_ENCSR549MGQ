@@ -118,10 +118,10 @@ rule run_hicpro:
         config = rules.make_hicpro_config.output,
         files = rules.adapter_removal.output.t1
     output:
-        dir = directory(hic_dir),
         valid_pairs = os.path.join(hic_dir, "data/{sample}/{sample}_allValidPairs")
     params:
-        dir = "data/trimmed/fastq"
+        input_dir = "data/trimmed/fastq",
+        output_dir = hic_dir
     threads: config['hicpro']['ncpu']
     shell:
         """
@@ -131,10 +131,9 @@ rule run_hicpro:
         ##Run HiC-pro
         HiC-Pro \
           -c {input.config} \
-          -i {params.dir} \
-          -o ${output.dir}
+          -i {params.input_dir} \
+          -o ${params.output_dir}
         """
-
 
 
 
