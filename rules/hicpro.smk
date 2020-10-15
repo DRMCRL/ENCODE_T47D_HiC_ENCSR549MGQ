@@ -125,20 +125,20 @@ rule run_hicpro:
                      sample = samples, bin = bins),
         bed = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_abs.bed"],
                      sample = samples, bin = bins)
-    params:
-        input_dir = "data/trimmed/fastq",
-        output_dir = hic_dir
     threads: config['hicpro']['ncpu']
     shell:
         """
+        ######################################
+        ## Specific to phoenix for now only ##
+        ######################################
         ## Load modules
         module load HiC-Pro/2.9.0-foss-2016b
 
         ##Run HiC-pro
         HiC-Pro \
           -c {input.config} \
-          -i {params.input_dir} \
-          -o ${params.output_dir}
+          -i "data/trimmed/fastq" \
+          -o "data/hic"
         """
 
 

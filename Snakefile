@@ -20,13 +20,12 @@ rs_frags = os.path.join(ref_root, config['ref']['build'] + "_" + config['hicpro'
 
 ## HiC-Pro outputs
 bins = re.split(r" ", config['hicpro']['bin_size'])
-hic_dir = "data/hic"
 HIC_CONFIG = ['config/hicpro-config.txt']
-HIC_PAIRS = expand(["{path}/hic_results/data/{sample}/{sample}_allValidPairs"],
-                   sample = samples, path = hic_dir)
-HIC_MAT = expand([os.path.join(hic_dir, "hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix")],
+HIC_PAIRS = expand(["data/hic/hic_results/data/{sample}/{sample}_allValidPairs"],
+                   sample = samples)
+HIC_MAT = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix"],
                  bin = bins, sample = samples)
-HIC_BED = expand([os.path.join(hic_dir, "hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_abs.bed")],
+HIC_BED = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_abs.bed"],
                  bin = bins, sample = samples)
 
 ## Define all the required outputs as a single object
@@ -56,7 +55,6 @@ ALL_OUTPUTS.extend(HIC_CONFIG)
 ALL_OUTPUTS.extend(HIC_PAIRS)
 ALL_OUTPUTS.extend(HIC_MAT)
 ALL_OUTPUTS.extend(HIC_BED)
-ALL_OUTPUTS.extend([hic_dir])
 
 rule all:
     input:
