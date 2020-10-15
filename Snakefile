@@ -5,7 +5,8 @@ import re
 configfile: "config/config.yml"
 
 # Samples
-samples = pd.read_table(config["samples"])
+df = pd.read_table(config["samples"])
+samples = list(set(df['sample']))
 
 ## Variables for the reference
 ref_root = os.path.join(config['ref']['root'], "gencode-release-" + str(config['ref']['gencode']),
@@ -21,8 +22,7 @@ rs_frags = os.path.join(ref_root, config['ref']['build'] + "_" + config['hicpro'
 hic_dir = "data/hic"
 HIC_CONFIG = ['config/hicpro-config.txt']
 HIC_PAIRS = expand(["{path}/hic_results/data/{sample}/{sample}_allValidPairs"],
-                   sample = samples.sample.unique(),
-                   path = hic_dir)
+                   sample = samples, path = hic_dir)
 
 ## Define all the required outputs as a single object
 REFS = expand(["{ref_root}/{build}{suffix}"],
@@ -36,10 +36,10 @@ BOWTIEIDX = expand(["{pre}.{suffix}.bt2"],
 FQC_OUTS = expand(["data/{step}/FastQC/{sample}_{reads}_fastqc.{suffix}"],
                  suffix = ['zip', 'html'],
                  reads = ['R1', 'R2'],
-                 sample = samples.sample.unique(),
+                 sample = samples,
                  step = ['raw', 'trimmed'])
 TRIM_OUTS = expand(["data/trimmed/fastq/{sample}/{sample}_{reads}.fastq.gz"],
-                  sample = samples.sample.unique(),
+                  sample = samples,
                   reads = ['R1', 'R2'])
 ALL_OUTPUTS = []
 ALL_OUTPUTS.extend(REFS)
