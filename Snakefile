@@ -32,7 +32,7 @@ HIC_MAT = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}
                  bin = bins, sample = samples)
 HIC_BED = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_abs.bed"],
                  bin = bins, sample = samples)
-MAX_HIC = 'output/maxhic.txt'
+MAX_HIC = ['output/cis_interactions.txt', 'output/trans_interactions.txt']
 
 ## Define all the required outputs as a single object
 REFS = [chr_sizes, rs_frags]
@@ -56,7 +56,7 @@ ALL_OUTPUTS.extend([hicpro_config])
 ALL_OUTPUTS.extend(HIC_PAIRS)
 ALL_OUTPUTS.extend(HIC_MAT)
 ALL_OUTPUTS.extend(HIC_BED)
-ALL_OUTPUTS.extend([MAX_HIC])
+ALL_OUTPUTS.extend(MAX_HIC)
 
 rule all:
     input:
