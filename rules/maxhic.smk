@@ -13,7 +13,8 @@ rule get_maxhic:
 rule run_maxhic:
     input:
         maxhic_dir = rules.get_maxhic.output.dir,
-        matrix_dir = "data/hic/hic_results/matrix/ENCLB183QHG/raw/40000/"
+        matrix_dir = expand(["data/hic/hic_results/matrix/{sample}/raw/40000/"],
+                            sample = samples)
     output:
         test = "output/maxhic.txt"
     conda: "../envs/maxhic.yml"
