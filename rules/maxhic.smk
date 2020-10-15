@@ -18,10 +18,15 @@ rule run_maxhic:
         bed_file = "data/hic/hic_results/matrix/ENCLB183QHG/raw/40000/ENCLB183QHG_40000_abs.bed",
         interaction_file = "data/hic/hic_results/matrix/ENCLB183QHG/raw/40000/ENCLB183QHG_40000.matrix"
     output:
-        test = "output/maxhic.txt"
+        cis = "output/cis_interactions.txt",
+        trans = "output/trans_interactions.txt"
     conda: "../envs/maxhic.yml"
+    threads: 16
     shell:
         """
-        python scripts/MaxHiC/Main.py -h > {output}
+        python scripts/MaxHiC/Main.py \
+          -t {threads} \
+          {input.matrix_dir} \
+          output
         """
 
