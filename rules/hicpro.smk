@@ -116,10 +116,15 @@ rule make_hicpro_config:
 rule run_hicpro:
     input:
         config = rules.make_hicpro_config.output,
-        files = rules.adapter_removal.output.t1
+        files = expand(["data/trimmed/fastq/{sample}/{sample}_{reads}.fastq.gz"],
+                       sample = samples, reads = ['R1', 'R2'])
     output:
-        valid_pairs = os.path.join(hic_dir, "hic_results/data/{sample}/{sample}_allValidPairs"),
-        mat = os.path.join(hic_dir, "hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}{suffix}")
+        valid_pairs = expand(["data/hic/hic_results/data/{sample}/{sample}_allValidPairs"],
+                             sample = samples),
+        mat = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix"],
+                     sample = samples, bin = bins),
+        bed = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_abs.bed"],
+                     sample = samples, bin = bins)
     params:
         input_dir = "data/trimmed/fastq",
         output_dir = hic_dir

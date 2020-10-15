@@ -2,35 +2,35 @@ digraph snakemake_dag {
     graph[bgcolor=white, margin=0];
     node[shape=box, style=rounded, fontname=sans,                 fontsize=10, penwidth=2];
     edge[penwidth=2, color=grey];
-	0[label = "all", color = "0.24 0.6 0.85", style="rounded"];
-	1[label = "trim_fastqc", color = "0.48 0.6 0.85", style="rounded"];
-	2[label = "bowtie2_index", color = "0.42 0.6 0.85", style="rounded"];
-	3[label = "raw_fastqc", color = "0.18 0.6 0.85", style="rounded"];
-	4[label = "get_rs_fragments", color = "0.06 0.6 0.85", style="rounded"];
-	5[label = "run_hicpro", color = "0.30 0.6 0.85", style="rounded"];
-	6[label = "adapter_removal", color = "0.61 0.6 0.85", style="rounded"];
-	7[label = "get_chrom_sizes", color = "0.55 0.6 0.85", style="rounded"];
-	8[label = "make_hicpro_config", color = "0.36 0.6 0.85", style="rounded"];
-	9[label = "rezip_fa", color = "0.00 0.6 0.85", style="rounded"];
+	0[label = "all", color = "0.48 0.6 0.85", style="rounded"];
+	1[label = "run_hicpro", color = "0.18 0.6 0.85", style="rounded"];
+	2[label = "trim_fastqc", color = "0.06 0.6 0.85", style="rounded"];
+	3[label = "get_chrom_sizes", color = "0.24 0.6 0.85", style="rounded"];
+	4[label = "raw_fastqc", color = "0.61 0.6 0.85", style="rounded"];
+	5[label = "bowtie2_index", color = "0.36 0.6 0.85", style="rounded"];
+	6[label = "adapter_removal", color = "0.00 0.6 0.85", style="rounded"];
+	7[label = "get_rs_fragments", color = "0.55 0.6 0.85", style="rounded"];
+	8[label = "rezip_fa", color = "0.42 0.6 0.85", style="rounded"];
+	9[label = "make_hicpro_config", color = "0.30 0.6 0.85", style="rounded"];
 	10[label = "get_reference", color = "0.12 0.6 0.85", style="rounded"];
-	9 -> 0
-	4 -> 0
-	3 -> 0
-	5 -> 0
-	8 -> 0
+	6 -> 0
 	2 -> 0
 	1 -> 0
+	3 -> 0
+	9 -> 0
+	5 -> 0
+	8 -> 0
 	7 -> 0
-	6 -> 0
+	4 -> 0
+	9 -> 1
 	6 -> 1
-	10 -> 2
-	10 -> 4
-	6 -> 5
-	8 -> 5
-	2 -> 8
+	6 -> 2
+	10 -> 5
+	10 -> 7
 	7 -> 8
-	4 -> 8
-	2 -> 9
-	4 -> 9
-	10 -> 9
+	10 -> 8
+	5 -> 8
+	3 -> 9
+	7 -> 9
+	5 -> 9
 }            
