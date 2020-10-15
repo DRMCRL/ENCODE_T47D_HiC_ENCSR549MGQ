@@ -8,6 +8,7 @@ rule get_maxhic:
         unzip master.zip -d MaxHiC
         mv MaxHiC/MaxHiC-master scripts/MaxHiC
         rm master.zip
+        rmdir MaxHiC
         """
 
 rule run_maxhic:

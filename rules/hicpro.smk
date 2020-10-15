@@ -44,7 +44,7 @@ rule get_rs_fragments:
 
 rule make_hicpro_config:
     input:
-        idx = rules.bowtie2_index.output.dir,
+        idx = os.path.join(ref_root, "bt2"),
         rs = rules.get_rs_fragments.output,
         chr_sizes = rules.get_chrom_sizes.output
     output:

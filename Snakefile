@@ -7,8 +7,11 @@ configfile: "config/config.yml"
 # Samples
 df = pd.read_table(config["samples"])
 samples = list(set(df['sample']))
+suffix = config['suffix']
 
-## Variables for the reference
+#################################
+## Variables for the reference ##
+#################################
 ref_root = os.path.join(config['ref']['root'], "gencode-release-" + str(config['ref']['gencode']),
                         config['ref']['build'], "dna")
 # Key output files
@@ -17,6 +20,10 @@ ref_fa = config['ref']['build'] + "." + assembly + ".fa"
 ref_fagz = ref_fa + ".gz"
 chr_sizes = os.path.join(ref_root, config['ref']['build'] + ".chr_sizes.tsv")
 rs_frags = os.path.join(ref_root, config['ref']['build'] + "_" + config['hicpro']['enzyme'] + "_fragment.bed")
+
+##############
+## Raw Data ##
+##############
 
 ## HiC-Pro outputs
 bins = re.split(r" ", config['hicpro']['bin_size'])
@@ -43,8 +50,8 @@ FQC_OUTS = expand(["data/{step}/FastQC/{sample}_{reads}_fastqc.{suffix}"],
                  reads = ['R1', 'R2'],
                  sample = samples,
                  step = ['raw', 'trimmed'])
-TRIM_OUTS = expand(["data/trimmed/fastq/{sample}/{sample}_{reads}.fastq.gz"],
-                  sample = samples,
+TRIM_OUTS = expand(["data/trimmed/fastq/{sample}/{sample}_{reads}{suffix}"],
+                  sample = samples, suffix = suffix,
                   reads = ['R1', 'R2'])
 ALL_OUTPUTS = []
 ALL_OUTPUTS.extend(REFS)
@@ -62,6 +69,7 @@ rule all:
     input:
         ALL_OUTPUTS
 
+include: "rules/download.smk"
 include: "rules/reference.smk"
 include: "rules/qc.smk"
 include: "rules/trimming.smk"

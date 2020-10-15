@@ -1,5 +1,7 @@
 samples: config/samples.tsv
 
+suffix: .fastq.gz
+
 # The root argument tells you where the genome will be located
 # on the local system. All other arguments are required for
 # downloading
