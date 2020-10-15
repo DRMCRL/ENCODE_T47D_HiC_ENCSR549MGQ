@@ -66,5 +66,5 @@ include: "rules/reference.smk"
 include: "rules/qc.smk"
 include: "rules/trimming.smk"
 include: "rules/hicpro.smk"
-
+include: "rules/maxhic.smk"
 
