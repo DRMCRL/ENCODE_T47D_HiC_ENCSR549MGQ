@@ -22,14 +22,13 @@ rule bowtie2_index:
     conda: "../envs/bowtie2.yml"
     threads: 8
     params:
-        idx_root = os.path.join(ref_root, "bt2"),
         prefix = config['ref']['build'] + "." + assembly
     shell:
         """
         bowtie2-build \
           --threads {threads} \
           -f {input} \
-          {params.idx_root}/{params.prefix}
+          {output}/{params.prefix}
         """
 
 rule rezip_fa:

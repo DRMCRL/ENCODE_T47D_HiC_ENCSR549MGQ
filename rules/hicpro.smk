@@ -117,8 +117,9 @@ rule make_hicpro_config:
 rule run_hicpro:
     input:
         config = hicpro_config,
-        files = expand(["data/trimmed/fastq/{sample}/{sample}_{reads}.fastq.gz"],
-                       sample = samples, reads = ['R1', 'R2'])
+        files = expand(["data/trimmed/fastq/{sample}/{sample}{reads}{suffix}"],
+                       sample = samples, suffix = suffix,
+                       reads = [config['hicpro']['pair1_ext'], config['hicpro']['pair1_ext']])
     output:
         valid_pairs = expand(["data/hic/hic_results/data/{sample}/{sample}_allValidPairs"],
                              sample = samples),
