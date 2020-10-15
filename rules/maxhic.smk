@@ -19,7 +19,8 @@ rule run_maxhic:
         cis = "output/MaxHiC/{sample}/{bin}/cis_interactions.txt",
         trans = "output/MaxHiC/{sample}/{bin}/trans_interactions.txt"
     conda: "../envs/maxhic.yml"
-    threads: 16
+    log: "logs/MaxHiC/{sample}_{bin}_MaxHiC.log"
+    threads: config['hicpro']['ncpu']
     shell:
         """
         HICDIR=$(dirname {input.mat})
@@ -27,6 +28,6 @@ rule run_maxhic:
         python scripts/MaxHiC/Main.py \
           -t {threads} \
           $HICDIR \
-          $OUTDIR
+          $OUTDIR &> {log}
         """
 
