@@ -16,11 +16,9 @@ rule get_reference:
         """
 
 rule bowtie2_index:
-    input: rules.get_reference.output
+    input: os.path.join(ref_root, ref_fa)
     output:
-        bt2 = expand(["{pre}.{suffix}.bt2"],
-                 pre = os.path.join(ref_root, "bt2", config['ref']['build'] + "." + assembly),
-                 suffix = ['1', '2', '3', '4', 'rev.1', 'rev.2'])
+        dir = os.path.join(ref_root, "bt2")
     conda: "../envs/bowtie2.yml"
     threads: 8
     params:
@@ -38,7 +36,9 @@ rule rezip_fa:
     input:
         frags = rs_frags,
         temp_fa = rules.get_reference.output,
-        bt2 = rules.bowtie2_index.output.bt2
+        bt2 = expand(["{pre}.{suffix}.bt2"],
+                     pre = os.path.join(ref_root, "bt2", config['ref']['build'] + "." + assembly),
+                     suffix = ['1', '2', '3', '4', 'rev.1', 'rev.2'])
     output: os.path.join(ref_root, ref_fagz)
     shell:
         """

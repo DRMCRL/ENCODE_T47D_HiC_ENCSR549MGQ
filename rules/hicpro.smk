@@ -22,8 +22,8 @@ rule get_chrom_sizes:
 
         """
 
-rule get_rs_fragments:
-    input: rules.get_reference.output
+rule find_rs_fragments:
+    input: os.path.join(ref_root, ref_fa)
     output: rs_frags
     params:
         enzyme = config['hicpro']['enzyme']

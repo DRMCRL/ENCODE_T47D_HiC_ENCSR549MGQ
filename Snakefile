@@ -37,9 +37,7 @@ MAX_HIC = 'output/maxhic.txt'
 ## Define all the required outputs as a single object
 REFS = [chr_sizes, rs_frags]
 FAGZ = [os.path.join(ref_root, ref_fagz)]
-BOWTIEIDX = expand(["{pre}.{suffix}.bt2"],
-                 pre = os.path.join(ref_root, "bt2", config['ref']['build'] + "." + assembly),
-                 suffix = ['1', '2', '3', '4', 'rev.1', 'rev.2'])
+BOWTIEIDX = os.path.join(ref_root, "bt2")
 FQC_OUTS = expand(["data/{step}/FastQC/{sample}_{reads}_fastqc.{suffix}"],
                  suffix = ['zip', 'html'],
                  reads = ['R1', 'R2'],
