@@ -19,10 +19,15 @@ chr_sizes = os.path.join(ref_root, config['ref']['build'] + ".chr_sizes.tsv")
 rs_frags = os.path.join(ref_root, config['ref']['build'] + "_" + config['hicpro']['enzyme'] + "_fragment.bed")
 
 ## HiC-Pro outputs
+bins = re.split(r" ", config['hicpro']['bin_size'])
 hic_dir = "data/hic"
 HIC_CONFIG = ['config/hicpro-config.txt']
 HIC_PAIRS = expand(["{path}/hic_results/data/{sample}/{sample}_allValidPairs"],
                    sample = samples, path = hic_dir)
+HIC_MAT = expand([os.path.join(hic_dir, "hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}{suffix}")],
+                      suffix = ['_abs.bed', '.matrix'],
+                      bin = bins,
+                      sample = samples)
 
 ## Define all the required outputs as a single object
 REFS = expand(["{ref_root}/{build}{suffix}"],
@@ -49,6 +54,7 @@ ALL_OUTPUTS.extend(FQC_OUTS)
 ALL_OUTPUTS.extend(TRIM_OUTS)
 ALL_OUTPUTS.extend(HIC_CONFIG)
 ALL_OUTPUTS.extend(HIC_PAIRS)
+ALL_OUTPUTS.extend(HIC_MAT)
 ALL_OUTPUTS.extend([hic_dir])
 
 rule all:

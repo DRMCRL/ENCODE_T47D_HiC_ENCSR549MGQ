@@ -118,7 +118,8 @@ rule run_hicpro:
         config = rules.make_hicpro_config.output,
         files = rules.adapter_removal.output.t1
     output:
-        valid_pairs = os.path.join(hic_dir, "hic_results/data/{sample}/{sample}_allValidPairs")
+        valid_pairs = os.path.join(hic_dir, "hic_results/data/{sample}/{sample}_allValidPairs"),
+        mat = os.path.join(hic_dir, "hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}{suffix}")
     params:
         input_dir = "data/trimmed/fastq",
         output_dir = hic_dir
