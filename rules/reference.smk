@@ -18,7 +18,7 @@ rule get_reference:
 rule bowtie2_index:
     input: os.path.join(ref_root, ref_fa)
     output:
-        dir = os.path.join(ref_root, "bt2")
+        dir = directory(os.path.join(ref_root, "bt2"))
     conda: "../envs/bowtie2.yml"
     threads: 8
     params:
