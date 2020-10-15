@@ -127,6 +127,7 @@ rule run_hicpro:
                      sample = samples, bin = bins),
         bed = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_abs.bed"],
                      sample = samples, bin = bins)
+    log: "logs/hicpro/run_hicpro.log"
     threads: config['hicpro']['ncpu']
     shell:
         """
@@ -140,7 +141,7 @@ rule run_hicpro:
         HiC-Pro \
           -c {input.config} \
           -i "data/trimmed/fastq" \
-          -o "data/hic"
+          -o "data/hic" &> {log}
         """
 
 
