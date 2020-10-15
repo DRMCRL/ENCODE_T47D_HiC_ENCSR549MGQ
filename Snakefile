@@ -32,7 +32,9 @@ HIC_MAT = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}
                  bin = bins, sample = samples)
 HIC_BED = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_abs.bed"],
                  bin = bins, sample = samples)
-MAX_HIC = ['output/cis_interactions.txt', 'output/trans_interactions.txt']
+MAX_HIC = expand(["output/MaxHiC/{sample}/{bin}/{type}_interactions.txt"],
+                 sample = samples, bin = ['40000'], # Currently only one bin for testing
+                 type = ['cis', 'trans'])
 
 ## Define all the required outputs as a single object
 REFS = [chr_sizes, rs_frags]

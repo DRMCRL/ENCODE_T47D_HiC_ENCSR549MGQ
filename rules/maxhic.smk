@@ -14,19 +14,19 @@ rule get_maxhic:
 rule run_maxhic:
     input:
         maxhic_dir = rules.get_maxhic.output.dir,
-        matrix_dir = "data/hic/hic_results/matrix/ENCLB183QHG/raw/40000/",
-        bed_file = "data/hic/hic_results/matrix/ENCLB183QHG/raw/40000/ENCLB183QHG_40000_abs.bed",
-        interaction_file = "data/hic/hic_results/matrix/ENCLB183QHG/raw/40000/ENCLB183QHG_40000.matrix"
+        mat = "data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix"
     output:
-        cis = "output/cis_interactions.txt",
-        trans = "output/trans_interactions.txt"
+        cis = "output/MaxHiC/{sample}/{bin}/cis_interactions.txt",
+        trans = "output/MaxHiC/{sample}/{bin}/trans_interactions.txt"
     conda: "../envs/maxhic.yml"
     threads: 16
     shell:
         """
+        HICDIR=$(dirname {input.mat})
+        OUTDIR=$(dirname {output.cis})
         python scripts/MaxHiC/Main.py \
           -t {threads} \
-          {input.matrix_dir} \
-          output
+          $HICDIR \
+          $OUTDIR
         """
 
