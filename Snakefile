@@ -27,6 +27,7 @@ HIC_MAT = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}
                  bin = bins, sample = samples)
 HIC_BED = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_abs.bed"],
                  bin = bins, sample = samples)
+MAX_HIC = 'output/maxhic.txt'
 
 ## Define all the required outputs as a single object
 REFS = expand(["{ref_root}/{build}{suffix}"],
@@ -55,6 +56,7 @@ ALL_OUTPUTS.extend(HIC_CONFIG)
 ALL_OUTPUTS.extend(HIC_PAIRS)
 ALL_OUTPUTS.extend(HIC_MAT)
 ALL_OUTPUTS.extend(HIC_BED)
+ALL_OUTPUTS.extend([MAX_HIC])
 
 rule all:
     input:
