@@ -2,7 +2,7 @@
 #SBATCH -p batch
 #SBATCH -N 1
 #SBATCH -n 8
-#SBATCH --time=1:00:00
+#SBATCH --time=48:00:00
 #SBATCH --mem=64GB
 #SBATCH -o /home/a1018048/slurm/ENCODE_T47D_HiC_ENCSR549MGQ/%x_%j.out
 #SBATCH -e /home/a1018048/slurm/ENCODE_T47D_HiC_ENCSR549MGQ/%x_%j.err
@@ -11,7 +11,7 @@
 #SBATCH --mail-user=stephen.pederson@adelaide.edu.au
 
 ## Cores
-CORES=8
+CORES=16
 if [ -d "/hpcfs" ]; then
 	module load arch/arch/haswell
 	module load arch/haswell
@@ -33,8 +33,6 @@ micromamba activate snakemake
 cd ${PROJ}
 
 ## Create dot and pdf files for visualisation
-snakemake --dag > output/dag.dot
-dot -Tpdf output/dag.dot > output/dag.pdf
 snakemake --rulegraph > output/rulegraph.dot
 dot -Tpdf output/rulegraph.dot > output/rulegraph.pdf
 
