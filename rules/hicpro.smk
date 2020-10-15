@@ -25,7 +25,8 @@ rule get_chrom_sizes:
 rule get_rs_fragments:
     input: rules.get_reference.output
     output: rs_frags
-    params: enzyme = config['hicpro']['enzyme']
+    params:
+        enzyme = config['hicpro']['enzyme']
     threads: 1
     conda: "../envs/python2.7.yml"
     shell:
@@ -45,10 +46,10 @@ rule get_rs_fragments:
 rule make_hicpro_config:
     input:
         idx = os.path.join(ref_root, "bt2"),
-        rs = rules.get_rs_fragments.output,
-        chr_sizes = rules.get_chrom_sizes.output
+        rs = rs_frags,
+        chr_sizes = chr_sizes
     output:
-        "config/hicpro-config.txt"
+        hicpro_config
     params:
         ncpu = config['hicpro']['ncpu'],
         pair1_ext = config['hicpro']['pair1_ext'],
@@ -115,7 +116,7 @@ rule make_hicpro_config:
 
 rule run_hicpro:
     input:
-        config = rules.make_hicpro_config.output,
+        config = hicpro_config,
         files = expand(["data/trimmed/fastq/{sample}/{sample}_{reads}.fastq.gz"],
                        sample = samples, reads = ['R1', 'R2'])
     output:

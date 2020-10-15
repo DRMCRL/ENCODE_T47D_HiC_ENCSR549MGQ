@@ -18,16 +18,14 @@ ref_root = os.path.join(config['ref']['root'], "gencode-release-" + str(config['
 assembly = config['ref']['assembly'] + ".genome"
 ref_fa = config['ref']['build'] + "." + assembly + ".fa"
 ref_fagz = ref_fa + ".gz"
-chr_sizes = os.path.join(ref_root, config['ref']['build'] + ".chr_sizes.tsv")
-rs_frags = os.path.join(ref_root, config['ref']['build'] + "_" + config['hicpro']['enzyme'] + "_fragment.bed")
+chr_sizes = os.path.join("output", config['ref']['build'] + ".chr_sizes.tsv")
+rs_frags = os.path.join("output", config['ref']['build'] + "_" + config['hicpro']['enzyme'] + "_fragment.bed")
 
-##############
-## Raw Data ##
-##############
-
-## HiC-Pro outputs
+#####################
+## HiC-Pro outputs ##
+#####################
 bins = re.split(r" ", config['hicpro']['bin_size'])
-HIC_CONFIG = ['config/hicpro-config.txt']
+hicpro_config = "output/hicpro-config.txt"
 HIC_PAIRS = expand(["data/hic/hic_results/data/{sample}/{sample}_allValidPairs"],
                    sample = samples)
 HIC_MAT = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix"],
@@ -37,10 +35,7 @@ HIC_BED = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}
 MAX_HIC = 'output/maxhic.txt'
 
 ## Define all the required outputs as a single object
-REFS = expand(["{ref_root}/{build}{suffix}"],
-              ref_root = ref_root,
-              build = config['ref']['build'],
-              suffix = ['.chr_sizes.tsv', "_" + config['hicpro']['enzyme'] + "_fragment.bed"])
+REFS = [chr_sizes, rs_frags]
 FAGZ = [os.path.join(ref_root, ref_fagz)]
 BOWTIEIDX = expand(["{pre}.{suffix}.bt2"],
                  pre = os.path.join(ref_root, "bt2", config['ref']['build'] + "." + assembly),
@@ -59,7 +54,7 @@ ALL_OUTPUTS.extend(BOWTIEIDX)
 ALL_OUTPUTS.extend(FAGZ)
 ALL_OUTPUTS.extend(FQC_OUTS)
 ALL_OUTPUTS.extend(TRIM_OUTS)
-ALL_OUTPUTS.extend(HIC_CONFIG)
+ALL_OUTPUTS.extend([hicpro_config])
 ALL_OUTPUTS.extend(HIC_PAIRS)
 ALL_OUTPUTS.extend(HIC_MAT)
 ALL_OUTPUTS.extend(HIC_BED)
