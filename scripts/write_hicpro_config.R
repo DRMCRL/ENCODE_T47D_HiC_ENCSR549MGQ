@@ -1,5 +1,6 @@
 library(yaml)
-library(tidyverse)
+library(stringr)
+library(magrittr)
 
 ## These cannot be named so need to be carefully specified in order
 ## 1 - The Bowtie2 Index path

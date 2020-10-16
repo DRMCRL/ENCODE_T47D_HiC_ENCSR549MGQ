@@ -52,7 +52,7 @@ rule make_hicpro_config:
         chr_sizes = chr_sizes
     output:
         hicpro_config
-    conda: "../envs/tidyverse.yml"
+    conda: "../envs/stringr.yml"
     threads: 1
     shell:
         """

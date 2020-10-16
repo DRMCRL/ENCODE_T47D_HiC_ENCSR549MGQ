@@ -4,4 +4,7 @@ channels:
   - bioconda
 dependencies:
   - r-base=4.0.2
-  - r-tidyverse
+  - r-stringr
+  - r-magrittr
+  - r-yaml
+  - r-here
