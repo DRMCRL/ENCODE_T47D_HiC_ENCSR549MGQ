@@ -40,7 +40,9 @@ MAX_HIC = expand(["output/MaxHiC/{sample}/{bin}/{type}_interactions.txt"],
 ## Define all the required outputs as a single object
 REFS = [chr_sizes, rs_frags]
 FAGZ = [os.path.join(ref_root, ref_fagz)]
-BOWTIEIDX = os.path.join(ref_root, "bt2")
+BOWTIEIDX = expand([ref_root + "/bt2/{prefix}.{sub}.bt2"],
+               prefix = config['ref']['build'] + "." + assembly,
+               sub = ['1', '2', '3', '4', 'rev1', 'rev2'] )
 FQC_OUTS = expand(["data/{step}/FastQC/{sample}_{reads}_fastqc.{suffix}"],
                  suffix = ['zip', 'html'],
                  reads = ['R1', 'R2'],

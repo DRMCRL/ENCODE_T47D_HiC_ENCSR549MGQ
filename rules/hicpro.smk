@@ -23,7 +23,7 @@ rule get_chrom_sizes:
         """
 
 rule find_rs_fragments:
-    input: os.path.join(ref_root, ref_fa)
+    input: rules.get_reference.output.fa
     output:
         script = "scripts/digest_genome.py",
         rs = rs_frags
@@ -47,7 +47,7 @@ rule find_rs_fragments:
 
 rule make_hicpro_config:
     input:
-        idx = os.path.join(ref_root, "bt2"),
+        idx = rules.bowtie2_index.output[0],
         rs = rs_frags,
         chr_sizes = chr_sizes
     output:
@@ -56,9 +56,10 @@ rule make_hicpro_config:
     threads: 1
     shell:
         """
+        IDX=$(dirname {input.idx})
         Rscript --vanilla \
           scripts/write_hicpro_config.R \
-          {input.idx} \
+          $IDX \
           {input.chr_sizes} \
           {input.rs} \
           {output}

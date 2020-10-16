@@ -1,5 +1,7 @@
 rule get_reference:
-    output: os.path.join(ref_root, ref_fa)
+    output:
+        fa = temp(os.path.join(ref_root, ref_fa)),
+        fagz = os.path.join(ref_root, ref_fagz)
     params:
         genbank = config['ref']['genbank'],
         gencode = config['ref']['gencode'],
@@ -8,38 +10,28 @@ rule get_reference:
     shell:
         """
         # Define the URL and download
-        URL="ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_{params.gencode}/{params.build}_mapping/$(basename {output}).gz"
+        URL="ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_{params.gencode}/{params.build}_mapping/$(basename {output.fagz})"
         wget \
-          -O "{output}.gz" \
+          -O "{output.fagz}z" \
           $URL
-        gunzip -c "{output}.gz" > {output}
+        gunzip -c "{output.fagz}" > {output.fa}
         """
 
 rule bowtie2_index:
-    input: os.path.join(ref_root, ref_fa)
+    input: rules.get_reference.output.fa
     output:
-        dir = directory(os.path.join(ref_root, "bt2"))
+        expand([ref_root + "/bt2/{prefix}.{sub}.bt2"],
+               prefix = config['ref']['build'] + "." + assembly,
+               sub = ['1', '2', '3', '4', 'rev1', 'rev2'] )
     conda: "../envs/bowtie2.yml"
     threads: 4
     log: "logs/bowtie2/bowtie2_index.log"
     params:
-        prefix = config['ref']['build'] + "." + assembly
+        prefix = os.path.join(ref_root, "bt2", config['ref']['build'] + "." + assembly)
     shell:
         """
         bowtie2-build \
           --threads {threads} \
           -f {input} \
-          {output}/{params.prefix} &> {log}
-        """
-
-rule rezip_fa:
-    input:
-        frags = rs_frags,
-        temp_fa = rules.get_reference.output,
-        dir = os.path.join(ref_root, "bt2")
-    output: os.path.join(ref_root, ref_fagz)
-    shell:
-        """
-        gzip -c {input.temp_fa} > {output}
-        rm {input.temp_fa}
+          {params.prefix} &> {log}
         """
