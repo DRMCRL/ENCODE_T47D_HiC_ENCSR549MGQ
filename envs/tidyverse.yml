@@ -1,0 +1,7 @@
+channels:
+  - defaults
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base=4.0.2
+  - r-tidyverse

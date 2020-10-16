@@ -18,14 +18,14 @@ ref_root = os.path.join(config['ref']['root'], "gencode-release-" + str(config['
 assembly = config['ref']['assembly'] + ".genome"
 ref_fa = config['ref']['build'] + "." + assembly + ".fa"
 ref_fagz = ref_fa + ".gz"
-chr_sizes = os.path.join("output", config['ref']['build'] + ".chr_sizes.tsv")
-rs_frags = os.path.join("output", config['ref']['build'] + "_" + config['hicpro']['enzyme'] + "_fragment.bed")
+chr_sizes = os.path.join("config", config['ref']['build'] + ".chr_sizes.tsv")
+rs_frags = os.path.join("config", config['ref']['build'] + "_" + config['hicpro']['enzyme'] + "_fragment.bed")
 
 #####################
 ## HiC-Pro outputs ##
 #####################
 bins = re.split(r" ", config['hicpro']['bin_size'])
-hicpro_config = "output/hicpro-config.txt"
+hicpro_config = "config/hicpro-config.txt"
 HIC_PAIRS = expand(["data/hic/hic_results/data/{sample}/{sample}_allValidPairs"],
                    sample = samples)
 HIC_MAT = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix"],
