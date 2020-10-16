@@ -24,7 +24,7 @@ rule bowtie2_index:
                prefix = config['ref']['build'] + "." + assembly,
                sub = ['1', '2', '3', '4', 'rev.1', 'rev.2'] )
     conda: "../envs/bowtie2.yml"
-    threads: 4
+    threads: 8
     log: "logs/bowtie2/bowtie2_index.log"
     params:
         prefix = os.path.join(ref_root, "bt2", config['ref']['build'] + "." + assembly)
