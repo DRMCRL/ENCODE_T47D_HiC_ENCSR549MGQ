@@ -20,8 +20,8 @@ rule bowtie2_index:
     output:
         dir = directory(os.path.join(ref_root, "bt2"))
     conda: "../envs/bowtie2.yml"
-    threads: 8
-    log: "logs/bowtie2/bowtie2_index"
+    threads: 4
+    log: "logs/bowtie2/bowtie2_index.log"
     params:
         prefix = config['ref']['build'] + "." + assembly
     shell:

@@ -36,7 +36,7 @@ rule find_rs_fragments:
         # Get v2.9.0 from the HiC-Pro repo
         wget \
           -O {output.script} \
-          "https://github.com/nservant/HiC-Pro/blob/2d15209fbb75ce3278d68801bd98be4b2416e5b5/bin/utils/digest_genome.py"
+          "https://raw.githubusercontent.com/nservant/HiC-Pro/2d15209fbb75ce3278d68801bd98be4b2416e5b5/bin/utils/digest_genome.py"
 
         # Run the python script
         python scripts/digest_genome.py \

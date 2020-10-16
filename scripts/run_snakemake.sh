@@ -37,4 +37,8 @@ cd ${PROJ}
 #dot -Tpdf output/rulegraph.dot > output/rulegraph.pdf
 
 ## Run snakemake
-snakemake --cores ${CORES} --use-conda --until make_hicpro_config
+snakemake \
+  --cores ${CORES} \
+  --use-conda \
+  --latency-wait 300 \
+  --until make_hicpro_config
