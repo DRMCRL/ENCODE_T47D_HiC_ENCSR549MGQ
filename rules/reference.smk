@@ -21,6 +21,7 @@ rule bowtie2_index:
         dir = directory(os.path.join(ref_root, "bt2"))
     conda: "../envs/bowtie2.yml"
     threads: 8
+    log: "logs/bowtie2/bowtie2_index"
     params:
         prefix = config['ref']['build'] + "." + assembly
     shell:
@@ -28,7 +29,7 @@ rule bowtie2_index:
         bowtie2-build \
           --threads {threads} \
           -f {input} \
-          {output}/{params.prefix}
+          {output}/{params.prefix} &> {log}
         """
 
 rule rezip_fa:
