@@ -24,22 +24,24 @@ rule get_chrom_sizes:
 
 rule find_rs_fragments:
     input: os.path.join(ref_root, ref_fa)
-    output: rs_frags
+    output:
+        script = "scripts/digest_genome.py",
+        rs = rs_frags
     params:
         enzyme = config['hicpro']['enzyme']
     threads: 1
     conda: "../envs/python2.7.yml"
     shell:
         """
-        # Get the latest version from the HiC-Pro repo
+        # Get v2.9.0 from the HiC-Pro repo
         wget \
-          -O "scripts/digest_genome.py" \
-          "https://raw.githubusercontent.com/nservant/HiC-Pro/master/bin/utils/digest_genome.py"
+          -O {output.script} \
+          "https://github.com/nservant/HiC-Pro/blob/2d15209fbb75ce3278d68801bd98be4b2416e5b5/bin/utils/digest_genome.py"
 
         # Run the python script
         python scripts/digest_genome.py \
           -r {params.enzyme} \
-          -o {output} \
+          -o {output.rs} \
           {input}
         """
 
