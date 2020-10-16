@@ -26,6 +26,7 @@ rs_frags = os.path.join("config", config['ref']['build'] + "_" + config['hicpro'
 #####################
 bins = re.split(r" ", config['hicpro']['bin_size'])
 hicpro_config = "config/hicpro-config.txt"
+digest_script = "scripts/digest_genome.py"
 HIC_PAIRS = expand(["data/hic/hic_results/data/{sample}/{sample}_allValidPairs"],
                    sample = samples)
 HIC_MAT = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix"],
@@ -54,7 +55,7 @@ ALL_OUTPUTS.extend([BOWTIEIDX])
 ALL_OUTPUTS.extend(FAGZ)
 ALL_OUTPUTS.extend(FQC_OUTS)
 ALL_OUTPUTS.extend(TRIM_OUTS)
-ALL_OUTPUTS.extend([hicpro_config])
+ALL_OUTPUTS.extend([hicpro_config, digest_script])
 ALL_OUTPUTS.extend(HIC_PAIRS)
 ALL_OUTPUTS.extend(HIC_MAT)
 ALL_OUTPUTS.extend(HIC_BED)
