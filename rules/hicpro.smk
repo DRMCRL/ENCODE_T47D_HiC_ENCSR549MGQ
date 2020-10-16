@@ -137,8 +137,8 @@ rule run_hicpro:
         ## Load modules
         module load HiC-Pro/2.9.0-foss-2016b
 
-        ##Run HiC-pro
-        HiC-Pro \
+        ##Run HiC-pro responding to yes to any interactive requests
+        yes | HiC-Pro \
           -c {input.config} \
           -i "data/trimmed/fastq" \
           -o "data/hic" &> {log}
