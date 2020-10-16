@@ -22,7 +22,7 @@ rule bowtie2_index:
     output:
         expand([ref_root + "/bt2/{prefix}.{sub}.bt2"],
                prefix = config['ref']['build'] + "." + assembly,
-               sub = ['1', '2', '3', '4', 'rev1', 'rev2'] )
+               sub = ['1', '2', '3', '4', 'rev.1', 'rev.2'] )
     conda: "../envs/bowtie2.yml"
     threads: 4
     log: "logs/bowtie2/bowtie2_index.log"

@@ -41,4 +41,5 @@ snakemake \
   --cores ${CORES} \
   --use-conda \
   --latency-wait 300 \
+  -- delete-temp-output \
   --until make_hicpro_config
