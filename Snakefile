@@ -18,8 +18,8 @@ ref_root = os.path.join(config['ref']['root'], "gencode-release-" + str(config['
 assembly = config['ref']['assembly'] + ".genome"
 ref_fa = config['ref']['build'] + "." + assembly + ".fa"
 ref_fagz = ref_fa + ".gz"
-chr_sizes = os.path.join("config", config['ref']['build'] + ".chr_sizes.tsv")
-rs_frags = os.path.join("config", config['ref']['build'] + "_" + config['hicpro']['enzyme'] + "_fragment.bed")
+chr_sizes = os.path.join(os.getcwd(), "config", config['ref']['build'] + ".chr_sizes.tsv")
+rs_frags = os.path.join(os.getcwd(), "config", config['ref']['build'] + "_" + config['hicpro']['enzyme'] + "_fragment.bed")
 
 #####################
 ## HiC-Pro outputs ##
