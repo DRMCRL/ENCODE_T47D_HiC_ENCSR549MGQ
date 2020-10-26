@@ -35,6 +35,7 @@ PROC_BAM = expand(["data/hic/bowtie_results/bwt2/{sample}/{sample}_" + build + "
                   sample = samples)
 PROC_PAIRS = expand(["data/hic/hic_results/data/{sample}/{sample}_" + build + "." + assembly + ".bwt2pairs.validPairs"],
                     sample = samples)
+HIC_QC = ['data/hic/hic_results/pic']
 
 ## Define all the required outputs as a single object
 REFS = [chr_sizes, rs_frags]
@@ -60,6 +61,7 @@ ALL_OUTPUTS.extend([hicpro_config, digest_script])
 ALL_OUTPUTS.extend(MAPPING)
 ALL_OUTPUTS.extend(PROC_BAM)
 ALL_OUTPUTS.extend(PROC_PAIRS)
+ALL_OUTPUTS.extend(HIC_QC)
 
 rule all:
     input:
