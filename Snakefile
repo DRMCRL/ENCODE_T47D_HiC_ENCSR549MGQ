@@ -8,6 +8,7 @@ configfile: "config/config.yml"
 df = pd.read_table(config["samples"])
 samples = list(set(df['sample']))
 suffix = config['suffix']
+read_ext = [config['hicpro']['pair1_ext'], config['hicpro']['pair2_ext']]
 
 #################################
 ## Variables for the reference ##
@@ -27,15 +28,8 @@ rs_frags = os.path.join(os.getcwd(), "config", config['ref']['build'] + "_" + co
 bins = re.split(r" ", config['hicpro']['bin_size'])
 hicpro_config = "config/hicpro-config.txt"
 digest_script = "scripts/digest_genome.py"
-HIC_PAIRS = expand(["data/hic/hic_results/data/{sample}/{sample}_allValidPairs"],
-                   sample = samples)
-HIC_MAT = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix"],
-                 bin = bins, sample = samples)
-HIC_BED = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_abs.bed"],
-                 bin = bins, sample = samples)
-MAX_HIC = expand(["output/MaxHiC/{sample}/{bin}/{type}_interactions.txt"],
-                 sample = samples, bin = ['40000'], # Currently only one bin for testing
-                 type = ['cis', 'trans'])
+MAPPING =  expand(["data/hic/bowtie_results/bwt2/{sample}/{sample}{reads}_" + build + "." + assembly + ".bwt2merged.bam"],
+                  reads = read_ext, sample = samples)
 
 ## Define all the required outputs as a single object
 REFS = [chr_sizes, rs_frags]
@@ -58,10 +52,7 @@ ALL_OUTPUTS.extend(FAGZ)
 ALL_OUTPUTS.extend(FQC_OUTS)
 ALL_OUTPUTS.extend(TRIM_OUTS)
 ALL_OUTPUTS.extend([hicpro_config, digest_script])
-ALL_OUTPUTS.extend(HIC_PAIRS)
-ALL_OUTPUTS.extend(HIC_MAT)
-ALL_OUTPUTS.extend(HIC_BED)
-ALL_OUTPUTS.extend(MAX_HIC)
+ALL_OUTPUTS.extend(MAPPING)
 
 rule all:
     input:
