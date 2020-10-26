@@ -47,7 +47,7 @@ rule find_rs_fragments:
 
 rule make_hicpro_config:
     input:
-        idx = rules.bowtie2_index.output[0],
+        idx = os.path.dirname(rules.bowtie2_index.output[0]),
         rs = rs_frags,
         chr_sizes = chr_sizes
     output:
@@ -56,29 +56,26 @@ rule make_hicpro_config:
     threads: 1
     shell:
         """
-        IDX=$(dirname {input.idx})
         Rscript --vanilla \
           scripts/write_hicpro_config.R \
-          $IDX \
+          {input.idx} \
           {input.chr_sizes} \
           {input.rs} \
           {output}
         """
 
-rule run_hicpro:
+rule hicpro_mapping:
     input:
         config = hicpro_config,
         files = expand(["data/trimmed/fastq/{sample}/{sample}{reads}{suffix}"],
-                       sample = samples, suffix = suffix,
-                       reads = [config['hicpro']['pair1_ext'], config['hicpro']['pair2_ext']])
+                       sample = samples, suffix = suffix, reads = read_ext)
     output:
-        valid_pairs = expand(["data/hic/hic_results/data/{sample}/{sample}_allValidPairs"],
-                             sample = samples),
-        mat = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix"],
-                     sample = samples, bin = bins),
-        bed = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_abs.bed"],
-                     sample = samples, bin = bins)
-    log: "logs/hicpro/run_hicpro.log"
+        bam = expand(["data/hic/bowtie_results/bwt2/{sample}/{sample}{reads}_" + build + "." + assembly + ".bwt2merged.bam"],
+                     reads = read_ext, sample = samples)
+    params:
+        indir = "data/test_data",
+        outdir = "data/hic"
+    log: "logs/hicpro/hicpro_mapping.log"
     threads: config['hicpro']['ncpu']
     shell:
         """
@@ -88,12 +85,17 @@ rule run_hicpro:
         ## Load modules
         module load HiC-Pro/2.9.0-foss-2016b
 
-        ##Run HiC-pro responding to yes to any interactive requests
-        yes | HiC-Pro \
+        ## Remove any existing data as leaving this here causes HicPro to
+        ## make an interactive request. Piping `yes` into HicPro may be the
+        ## source of some current problems
+        if [[ -d {params.outdir} ]]; then
+          rm -rf {params.outdir}
+        fi
+
+        ## Run HiC-pro
+        HiC-Pro \
+          -s mapping \
           -c {input.config} \
-          -i "data/trimmed/fastq" \
-          -o "data/hic" &> {log}
+          -i {params.indir} \
+          -o {params.outdir} &> {log}
         """
-
-
-
