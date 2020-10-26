@@ -99,3 +99,33 @@ rule hicpro_mapping:
           -i {params.indir} \
           -o {params.outdir} &> {log}
         """
+
+rule hicpro_proc:
+    input:
+        config = hicpro_config,
+        files = rules.hicpro_mapping.output.bam
+    output:
+        bam = expand(["data/hic/bowtie_results/bwt2/{sample}/{sample}_" + build + "." + assembly + ".bwt2pairs.bam"],
+                     sample = samples),
+        pairs = expand(["data/hic/hic_results/data/{samples}/{sample}_" + build + "." + assembly + ".bwt2pairs.validPairs"],
+                     sample = samples)
+    params:
+        indir = "data/hic/bowtie_results/bwt2",
+        outdir = "data/hic"
+    log: "logs/hicpro/hicpro_proc.log"
+    threads: config['hicpro']['ncpu']
+    shell:
+        """
+        ######################################
+        ## Specific to phoenix for now only ##
+        ######################################
+        ## Load modules
+        module load HiC-Pro/2.9.0-foss-2016b
+
+        ##Run HiC-pro responding to yes to any interactive requests
+        HiC-Pro \
+          -s proc_hic \
+          -c {input.config} \
+          -i {params.indir} \
+          -o {params.outdir} &> {log}
+        """
