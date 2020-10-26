@@ -156,3 +156,30 @@ rule hicpro_qc:
           -o {params.outdir} &> {log}
         """
 
+rule hicpro_merge:
+    input:
+        config = hicpro_config,
+        files = rules.hicpro_proc.output.pairs
+    output:
+        pairs = expand(["data/hic/hic_results/data/{sample}/{sample}_allValidPairs"],
+                       sample = samples)
+    params:
+        indir = "data/hic/hic_results/data",
+        outdir = "data/hic"
+    log: "logs/hicpro/hicpro_merge.log"
+    threads: config['hicpro']['ncpu']
+    shell:
+        """
+        ######################################
+        ## Specific to phoenix for now only ##
+        ######################################
+        ## Load modules
+        module load HiC-Pro/2.9.0-foss-2016b
+
+        ##Run HiC-pro responding to yes to any interactive requests
+        HiC-Pro \
+          -s merge_persample \
+          -c {input.config} \
+          -i {params.indir} \
+          -o {params.outdir} &> {log}
+        """
