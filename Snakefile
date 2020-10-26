@@ -38,6 +38,10 @@ PROC_PAIRS = expand(["data/hic/hic_results/data/{sample}/{sample}_" + build + ".
 HIC_QC = ['data/hic/hic_results/pic']
 VALID_PAIRS = expand(["data/hic/hic_results/data/{sample}/{sample}_allValidPairs"],
                        sample = samples)
+HIC_MAT = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix"],
+                  sample = samples, bin = bins)
+HIC_BED = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_{type}.bed"],
+                  sample = samples, bin = bins, type = ['abs', 'ord'])
 
 ## Define all the required outputs as a single object
 REFS = [chr_sizes, rs_frags]
@@ -65,6 +69,8 @@ ALL_OUTPUTS.extend(PROC_BAM)
 ALL_OUTPUTS.extend(PROC_PAIRS)
 ALL_OUTPUTS.extend(HIC_QC)
 ALL_OUTPUTS.extend(VALID_PAIRS)
+ALL_OUTPUTS.extend(HIC_MAT)
+ALL_OUTPUTS.extend(HIC_BED)
 
 rule all:
     input:
