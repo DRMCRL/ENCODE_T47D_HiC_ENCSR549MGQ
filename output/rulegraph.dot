@@ -2,39 +2,49 @@ digraph snakemake_dag {
     graph[bgcolor=white, margin=0];
     node[shape=box, style=rounded, fontname=sans,                 fontsize=10, penwidth=2];
     edge[penwidth=2, color=grey];
-	0[label = "all", color = "0.10 0.6 0.85", style="rounded"];
-	1[label = "run_hicpro", color = "0.21 0.6 0.85", style="rounded"];
-	2[label = "bowtie2_index", color = "0.31 0.6 0.85", style="rounded"];
-	3[label = "trim_fastqc", color = "0.05 0.6 0.85", style="rounded"];
-	4[label = "adapter_removal", color = "0.62 0.6 0.85", style="rounded"];
-	5[label = "find_rs_fragments", color = "0.36 0.6 0.85", style="rounded"];
-	6[label = "raw_fastqc", color = "0.51 0.6 0.85", style="rounded"];
-	7[label = "make_hicpro_config", color = "0.26 0.6 0.85", style="rounded"];
-	8[label = "run_maxhic", color = "0.00 0.6 0.85", style="rounded"];
-	9[label = "get_reference", color = "0.15 0.6 0.85", style="rounded"];
-	10[label = "get_chrom_sizes", color = "0.56 0.6 0.85", style="rounded"];
-	11[label = "get_raw_data", color = "0.41 0.6 0.85", style="rounded"];
-	12[label = "get_maxhic", color = "0.46 0.6 0.85", style="rounded"];
-	8 -> 0
-	3 -> 0
-	9 -> 0
-	1 -> 0
-	7 -> 0
+	0[label = "all", color = "0.35 0.6 0.85", style="rounded"];
+	1[label = "raw_fastqc", color = "0.47 0.6 0.85", style="rounded"];
+	2[label = "hicpro_proc", color = "0.00 0.6 0.85", style="rounded"];
+	3[label = "trim_fastqc", color = "0.27 0.6 0.85", style="rounded"];
+	4[label = "bowtie2_index", color = "0.63 0.6 0.85", style="rounded"];
+	5[label = "hicpro_mapping", color = "0.24 0.6 0.85", style="rounded"];
+	6[label = "build_contact_maps", color = "0.16 0.6 0.85", style="rounded"];
+	7[label = "hicpro_qc", color = "0.04 0.6 0.85", style="rounded"];
+	8[label = "adapter_removal", color = "0.59 0.6 0.85", style="rounded"];
+	9[label = "get_chrom_sizes", color = "0.39 0.6 0.85", style="rounded"];
+	10[label = "make_hicpro_config", color = "0.08 0.6 0.85", style="rounded"];
+	11[label = "find_rs_fragments", color = "0.51 0.6 0.85", style="rounded"];
+	12[label = "hicpro_merge", color = "0.43 0.6 0.85", style="rounded"];
+	13[label = "get_reference", color = "0.31 0.6 0.85", style="rounded"];
+	14[label = "get_raw_data", color = "0.12 0.6 0.85", style="rounded"];
 	2 -> 0
-	5 -> 0
 	6 -> 0
+	7 -> 0
 	10 -> 0
+	5 -> 0
+	3 -> 0
+	13 -> 0
+	9 -> 0
+	12 -> 0
+	1 -> 0
+	11 -> 0
+	8 -> 0
 	4 -> 0
-	7 -> 1
-	4 -> 1
-	9 -> 2
-	4 -> 3
-	11 -> 4
-	9 -> 5
-	11 -> 6
+	14 -> 1
+	5 -> 2
+	10 -> 2
+	8 -> 3
+	13 -> 4
+	10 -> 5
+	8 -> 5
+	12 -> 6
+	10 -> 6
 	5 -> 7
 	10 -> 7
-	2 -> 7
-	12 -> 8
-	1 -> 8
+	14 -> 8
+	11 -> 10
+	9 -> 10
+	13 -> 11
+	2 -> 12
+	10 -> 12
 }            
