@@ -183,3 +183,33 @@ rule hicpro_merge:
           -i {params.indir} \
           -o {params.outdir} &> {log}
         """
+
+rule build_contact_maps:
+    input:
+        config = hicpro_config,
+        pairs = rules.hicpro_merge.output.pairs
+    output:
+        bed = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_{type}.bed"],
+                     sample = samples, bin = bins, type = ['abs', 'ord']),
+        mat = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix"],
+                     sample = samples, bin = bins)
+    params:
+        indir = "data/hic/hic_results/data",
+        outdir = "data/hic"
+    log: "logs/hicpro/build_contact_maps.log"
+    threads: config['hicpro']['ncpu']
+    shell:
+        """
+        ######################################
+        ## Specific to phoenix for now only ##
+        ######################################
+        ## Load modules
+        module load HiC-Pro/2.9.0-foss-2016b
+
+        ##Run HiC-pro responding to yes to any interactive requests
+        HiC-Pro \
+          -s build_contact_maps \
+          -c {input.config} \
+          -i {params.indir} \
+          -o {params.outdir} &> {log}
+        """
