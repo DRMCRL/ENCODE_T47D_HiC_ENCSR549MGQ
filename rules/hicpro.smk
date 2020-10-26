@@ -3,7 +3,7 @@ rule get_chrom_sizes:
     params:
         ftp = "ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/vertebrate_mammalian/Homo_sapiens/all_assembly_versions",
         genbank = config['ref']['genbank'],
-        build = config['ref']['build']
+        build = build
     threads: 1
     shell:
         """
