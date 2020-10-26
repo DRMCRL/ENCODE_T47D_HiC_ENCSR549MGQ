@@ -130,6 +130,7 @@ rule hicpro_proc:
           -i {params.indir} \
           -o {params.outdir} &> {log}
         """
+
 rule hicpro_qc:
     input:
         config = hicpro_config,

@@ -13,6 +13,7 @@ read_ext = [config['hicpro']['pair1_ext'], config['hicpro']['pair2_ext']]
 #################################
 ## Variables for the reference ##
 #################################
+
 build = config['ref']['build']
 ref_root = os.path.join(config['ref']['root'], "gencode-release-" + str(config['ref']['gencode']),
                         build, "dna")
@@ -22,6 +23,31 @@ ref_fa = build + "." + assembly + ".fa"
 ref_fagz = ref_fa + ".gz"
 chr_sizes = os.path.join(os.getcwd(), "config", build + ".chr_sizes.tsv")
 rs_frags = os.path.join(os.getcwd(), "config", build + "_" + config['hicpro']['enzyme'] + "_fragment.bed")
+
+##########################################################
+## Define all the required outputs from the setup steps ##
+##########################################################
+
+REFS = [chr_sizes, rs_frags]
+FAGZ = [os.path.join(ref_root, ref_fagz)]
+BOWTIEIDX = expand([ref_root + "/bt2/{prefix}.{sub}.bt2"],
+               prefix = config['ref']['build'] + "." + assembly,
+               sub = ['1', '2', '3', '4', 'rev.1', 'rev.2'] )
+FQC_OUTS = expand(["data/{step}/FastQC/{sample}_{reads}_fastqc.{suffix}"],
+                 suffix = ['zip', 'html'],
+                 reads = ['R1', 'R2'],
+                 sample = samples,
+                 step = ['raw', 'trimmed'])
+TRIM_OUTS = expand(["data/trimmed/fastq/{sample}/{sample}_{reads}{suffix}"],
+                  sample = samples, suffix = suffix,
+                  reads = ['R1', 'R2'])
+
+ALL_OUTPUTS = []
+ALL_OUTPUTS.extend(REFS)
+ALL_OUTPUTS.extend([BOWTIEIDX])
+ALL_OUTPUTS.extend(FAGZ)
+ALL_OUTPUTS.extend(FQC_OUTS)
+ALL_OUTPUTS.extend(TRIM_OUTS)
 
 #####################
 ## HiC-Pro outputs ##
@@ -43,26 +69,6 @@ HIC_MAT = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}
 HIC_BED = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_{type}.bed"],
                   sample = samples, bin = bins, type = ['abs', 'ord'])
 
-## Define all the required outputs as a single object
-REFS = [chr_sizes, rs_frags]
-FAGZ = [os.path.join(ref_root, ref_fagz)]
-BOWTIEIDX = expand([ref_root + "/bt2/{prefix}.{sub}.bt2"],
-               prefix = config['ref']['build'] + "." + assembly,
-               sub = ['1', '2', '3', '4', 'rev.1', 'rev.2'] )
-FQC_OUTS = expand(["data/{step}/FastQC/{sample}_{reads}_fastqc.{suffix}"],
-                 suffix = ['zip', 'html'],
-                 reads = ['R1', 'R2'],
-                 sample = samples,
-                 step = ['raw', 'trimmed'])
-TRIM_OUTS = expand(["data/trimmed/fastq/{sample}/{sample}_{reads}{suffix}"],
-                  sample = samples, suffix = suffix,
-                  reads = ['R1', 'R2'])
-ALL_OUTPUTS = []
-ALL_OUTPUTS.extend(REFS)
-ALL_OUTPUTS.extend([BOWTIEIDX])
-ALL_OUTPUTS.extend(FAGZ)
-ALL_OUTPUTS.extend(FQC_OUTS)
-ALL_OUTPUTS.extend(TRIM_OUTS)
 ALL_OUTPUTS.extend([hicpro_config, digest_script])
 ALL_OUTPUTS.extend(MAPPING)
 ALL_OUTPUTS.extend(PROC_BAM)
@@ -71,6 +77,18 @@ ALL_OUTPUTS.extend(HIC_QC)
 ALL_OUTPUTS.extend(VALID_PAIRS)
 ALL_OUTPUTS.extend(HIC_MAT)
 ALL_OUTPUTS.extend(HIC_BED)
+
+#####################
+## Max HiC Outputs ##
+#####################
+MAXHIC_INTERACTIONS = expand(["output/MaxHiC/{sample}/{bin}/{type}_interactions.txt"],
+                             sample = samples, bin = ['40000'],
+                             type = ['cis', 'trans'])
+ALL_OUTPUTS.extend(MAXHIC_INTERACTIONS)
+
+#####################
+## Rules & Outputs ##
+#####################
 
 rule all:
     input:
