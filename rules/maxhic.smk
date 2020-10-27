@@ -16,8 +16,8 @@ rule run_maxhic:
         maxhic_dir = rules.get_maxhic.output.dir,
         mat = "data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix"
     output:
-        cis = "output/MaxHiC/{sample}/{bin}/cis_interactions.txt",
-        trans = "output/MaxHiC/{sample}/{bin}/trans_interactions.txt"
+        cis = "output/MaxHiC/{sample}/{bin}/cis_interactions.txt.gz",
+        trans = "output/MaxHiC/{sample}/{bin}/trans_interactions.txt.gz"
     conda: "../envs/maxhic.yml"
     log: "logs/MaxHiC/{sample}_{bin}_MaxHiC.log"
     threads: config['hicpro']['ncpu']
@@ -37,5 +37,8 @@ rule run_maxhic:
           -t {threads} \
           $HICDIR \
           $OUTDIR &> {log}
+
+        ## Compress the output files
+        gzip $OUTDIR/*txt
         """
 

@@ -81,8 +81,8 @@ ALL_OUTPUTS.extend(HIC_BED)
 #####################
 ## Max HiC Outputs ##
 #####################
-MAXHIC_INTERACTIONS = expand(["output/MaxHiC/{sample}/{bin}/{type}_interactions.txt"],
-                             sample = samples, bin = ['40000'],
+MAXHIC_INTERACTIONS = expand(["output/MaxHiC/{sample}/{bin}/{type}_interactions.txt.gz"],
+                             sample = samples, bin = bins,
                              type = ['cis', 'trans'])
 ALL_OUTPUTS.extend(MAXHIC_INTERACTIONS)
 
