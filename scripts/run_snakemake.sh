@@ -33,8 +33,8 @@ micromamba activate snakemake
 cd ${PROJ}
 
 ## Create dot and pdf files for visualisation
-snakemake --rulegraph > output/rulegraph.dot
-dot -Tpdf output/rulegraph.dot > output/rulegraph.pdf
+#snakemake --rulegraph > output/rulegraph.dot
+#dot -Tpdf output/rulegraph.dot > output/rulegraph.pdf
 
 ## Run snakemake
 snakemake \

@@ -30,7 +30,7 @@ rule run_maxhic:
 
         if compgen -G "$HICDIR/*ord.bed" > /dev/null; then
           echo -e "Deleting unnecessary symlink"
-          rm "$HICDIR/*ord.bed""
+          rm $HICDIR/*ord.bed
         fi
 
         python scripts/MaxHiC/Main.py \
