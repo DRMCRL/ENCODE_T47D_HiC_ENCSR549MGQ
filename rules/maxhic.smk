@@ -23,8 +23,16 @@ rule run_maxhic:
     threads: config['hicpro']['ncpu']
     shell:
         """
+        ## Given the problems with the raw output from HiC-Pro, we should
+        ## delete the *ord.bed* file
         HICDIR=$(dirname {input.mat})
         OUTDIR=$(dirname {output.cis})
+
+        if compgen -G "$HICDIR/*ord.bed" > /dev/null; then
+          echo -e "Deleting unnecessary symlink"
+          rm "$HICDIR/*ord.bed""
+        fi
+
         python scripts/MaxHiC/Main.py \
           -t {threads} \
           $HICDIR \

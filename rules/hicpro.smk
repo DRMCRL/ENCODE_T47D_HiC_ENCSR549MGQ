@@ -191,8 +191,8 @@ rule build_contact_maps:
         config = hicpro_config,
         pairs = rules.hicpro_merge.output.pairs
     output:
-        bed = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_{type}.bed"],
-                     sample = samples, bin = bins, type = ['abs', 'ord']),
+        bed = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_abs.bed"],
+                     sample = samples, bin = bins),
         mat = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix"],
                      sample = samples, bin = bins)
     params:

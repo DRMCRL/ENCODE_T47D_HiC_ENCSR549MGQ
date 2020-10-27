@@ -66,8 +66,8 @@ VALID_PAIRS = expand(["data/hic/hic_results/data/{sample}/{sample}_allValidPairs
                        sample = samples)
 HIC_MAT = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix"],
                   sample = samples, bin = bins)
-HIC_BED = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_{type}.bed"],
-                  sample = samples, bin = bins, type = ['abs', 'ord'])
+HIC_BED = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_abs.bed"],
+                  sample = samples, bin = bins)
 
 ALL_OUTPUTS.extend([hicpro_config, digest_script])
 ALL_OUTPUTS.extend(MAPPING)
