@@ -65,7 +65,7 @@ HIC_MAT = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}
 HIC_BED = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_abs.bed"],
                   sample = samples, bin = bins)
 MERGED_INT = expand(["data/hic/hic_results/matrix/merged/raw/{bin}/merged_{bin}{suffix}"],
-                    bin = ['100000'], suffix = ['.matrix', '_abs.bed'])
+                    bin = ['500000'], suffix = ['.matrix', '_abs.bed'])
 
 ALL_OUTPUTS.extend([hicpro_config, digest_script])
 ALL_OUTPUTS.extend(PROC_PAIRS)
@@ -80,7 +80,7 @@ ALL_OUTPUTS.extend(MERGED_INT)
 ## Max HiC Outputs ##
 #####################
 MAXHIC_INTERACTIONS = expand(["output/MaxHiC/merged/{bin}/{type}_interactions.txt.gz"],
-                             bin = ['100000'], type = ['cis', 'trans'])
+                             bin = ['500000'], type = ['cis', 'trans'])
 ALL_OUTPUTS.extend(MAXHIC_INTERACTIONS)
 
 #####################
