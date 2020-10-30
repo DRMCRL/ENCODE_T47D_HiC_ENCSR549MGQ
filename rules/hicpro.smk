@@ -71,8 +71,8 @@ rule hicpro_mapping:
         files = expand(["data/trimmed/fastq/{sample}/{sample}{reads}{suffix}"],
                        sample = samples, suffix = suffix, reads = read_ext)
     output:
-        bam = expand(["data/hic/bowtie_results/bwt2/{sample}/{sample}{reads}_" + build + "." + assembly + ".bwt2merged.bam"],
-                     reads = read_ext, sample = samples)
+        bam = temp(expand(["data/hic/bowtie_results/bwt2/{sample}/{sample}{reads}_" + build + "." + assembly + ".bwt2merged.bam"],
+                     reads = read_ext, sample = samples))
     params:
         indir = "data/test_data",
         outdir = "data/hic"
@@ -106,8 +106,8 @@ rule hicpro_proc:
         config = hicpro_config,
         files = rules.hicpro_mapping.output.bam
     output:
-        bam = expand(["data/hic/bowtie_results/bwt2/{sample}/{sample}_" + build + "." + assembly + ".bwt2pairs.bam"],
-                     sample = samples),
+        bam = temp(expand(["data/hic/bowtie_results/bwt2/{sample}/{sample}_" + build + "." + assembly + ".bwt2pairs.bam"],
+                     sample = samples)),
         pairs = expand(["data/hic/hic_results/data/{sample}/{sample}_" + build + "." + assembly + ".bwt2pairs.validPairs"],
                      sample = samples)
     params:

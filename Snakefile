@@ -55,10 +55,6 @@ ALL_OUTPUTS.extend(TRIM_OUTS)
 bins = re.split(r" ", config['hicpro']['bin_size'])
 hicpro_config = "config/hicpro-config.txt"
 digest_script = "scripts/digest_genome.py"
-MAPPING =  expand(["data/hic/bowtie_results/bwt2/{sample}/{sample}{reads}_" + build + "." + assembly + ".bwt2merged.bam"],
-                  reads = read_ext, sample = samples)
-PROC_BAM = expand(["data/hic/bowtie_results/bwt2/{sample}/{sample}_" + build + "." + assembly + ".bwt2pairs.bam"],
-                  sample = samples)
 PROC_PAIRS = expand(["data/hic/hic_results/data/{sample}/{sample}_" + build + "." + assembly + ".bwt2pairs.validPairs"],
                     sample = samples)
 HIC_QC = ['data/hic/hic_results/pic']
@@ -70,8 +66,6 @@ HIC_BED = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}
                   sample = samples, bin = bins)
 
 ALL_OUTPUTS.extend([hicpro_config, digest_script])
-ALL_OUTPUTS.extend(MAPPING)
-ALL_OUTPUTS.extend(PROC_BAM)
 ALL_OUTPUTS.extend(PROC_PAIRS)
 ALL_OUTPUTS.extend(HIC_QC)
 ALL_OUTPUTS.extend(VALID_PAIRS)
