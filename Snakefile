@@ -64,6 +64,8 @@ HIC_MAT = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}
                   sample = samples, bin = bins)
 HIC_BED = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_abs.bed"],
                   sample = samples, bin = bins)
+MERGED_INT = expand(["data/hic/hic_results/matrix/merged/raw/{bin}/merged_{bin}{suffix}"],
+                    bin = bins, suffix = ['.matrix', '_abs.bed'])
 
 ALL_OUTPUTS.extend([hicpro_config, digest_script])
 ALL_OUTPUTS.extend(PROC_PAIRS)
@@ -71,13 +73,14 @@ ALL_OUTPUTS.extend(HIC_QC)
 ALL_OUTPUTS.extend(VALID_PAIRS)
 ALL_OUTPUTS.extend(HIC_MAT)
 ALL_OUTPUTS.extend(HIC_BED)
+ALL_OUTPUTS.extend(MERGED_INT)
+
 
 #####################
 ## Max HiC Outputs ##
 #####################
-MAXHIC_INTERACTIONS = expand(["output/MaxHiC/{sample}/{bin}/{type}_interactions.txt.gz"],
-                             sample = samples, bin = bins,
-                             type = ['cis', 'trans'])
+MAXHIC_INTERACTIONS = expand(["output/MaxHiC/merged/{bin}/{type}_interactions.txt.gz"],
+                             bin = bins, type = ['cis', 'trans'])
 ALL_OUTPUTS.extend(MAXHIC_INTERACTIONS)
 
 #####################
@@ -93,5 +96,6 @@ include: "rules/reference.smk"
 include: "rules/qc.smk"
 include: "rules/trimming.smk"
 include: "rules/hicpro.smk"
+include: "rules/merge_matrices.smk"
 include: "rules/maxhic.smk"
 

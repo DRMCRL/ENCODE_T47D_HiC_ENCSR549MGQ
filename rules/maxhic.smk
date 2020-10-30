@@ -14,12 +14,13 @@ rule get_maxhic:
 rule run_maxhic:
     input:
         maxhic_dir = rules.get_maxhic.output.dir,
-        mat = "data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix"
+        mat = rules.merge_interaction_matrices.output.mat,
+        bed = rules.merge_interaction_matrices.output.bed
     output:
-        cis = "output/MaxHiC/{sample}/{bin}/cis_interactions.txt.gz",
-        trans = "output/MaxHiC/{sample}/{bin}/trans_interactions.txt.gz"
+        cis = "output/MaxHiC/merged/{bin}/cis_interactions.txt.gz",
+        trans = "output/MaxHiC/merged/{bin}/trans_interactions.txt.gz"
     conda: "../envs/maxhic.yml"
-    log: "logs/MaxHiC/{sample}_{bin}_MaxHiC.log"
+    log: "logs/MaxHiC/merged_{bin}_MaxHiC.log"
     threads: 16
     shell:
         """
