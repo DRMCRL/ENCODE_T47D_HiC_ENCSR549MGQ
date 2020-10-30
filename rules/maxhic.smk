@@ -20,7 +20,7 @@ rule run_maxhic:
         trans = "output/MaxHiC/{sample}/{bin}/trans_interactions.txt.gz"
     conda: "../envs/maxhic.yml"
     log: "logs/MaxHiC/{sample}_{bin}_MaxHiC.log"
-    threads: config['hicpro']['ncpu']
+    threads: 16
     shell:
         """
         ## Given the problems with the raw output from HiC-Pro, we should
