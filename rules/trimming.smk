@@ -3,8 +3,8 @@ rule adapter_removal:
         r1 = "data/raw/fastq/{sample}/{sample}_R1.fastq.gz",
         r2 = "data/raw/fastq/{sample}/{sample}_R2.fastq.gz"
     output:
-        t1 = "data/trimmed/fastq/{sample}/{sample}_R1.fastq.gz",
-        t2 = "data/trimmed/fastq/{sample}/{sample}_R2.fastq.gz",
+        t1 = temp("data/trimmed/fastq/{sample}/{sample}_R1.fastq.gz"),
+        t2 = temp("data/trimmed/fastq/{sample}/{sample}_R2.fastq.gz"),
         log = "data/trimmed/logs/{sample}.settings"
     conda:
         "../envs/adapterremoval.yml"

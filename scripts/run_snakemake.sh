@@ -2,7 +2,7 @@
 #SBATCH -p batch
 #SBATCH -N 1
 #SBATCH -n 16
-#SBATCH --time=3:00:00
+#SBATCH --time=6:00:00
 #SBATCH --mem=128GB
 #SBATCH -o /home/a1018048/slurm/ENCODE_T47D_HiC_ENCSR549MGQ/%x_%j.out
 #SBATCH -e /home/a1018048/slurm/ENCODE_T47D_HiC_ENCSR549MGQ/%x_%j.err
