@@ -13,23 +13,13 @@ rule adapter_removal:
         adapter2 = config['trimming']['adapter2'],
         minlength = config['trimming']['minlength'],
         minqual = config['trimming']['minqual'],
-        maxns = config['trimming']['maxns'],
-        discard_path = "data/trimmed/discarded"
+        maxns = config['trimming']['maxns']
     threads: 1
     log:
         "logs/adapterremoval/{sample}.log"
     shell:
         """
         SAMPLE=$(basename $(dirname {input.r1}))
-
-        ## The discarded files may or may not be created so they are placed here
-        ## As a result, the directory may not be created by snakemake, so this is
-        ## performed here
-        if [[ ! -d {params.discard_path} ]]; then
-          mkdir {params.discard_path}
-        fi
-        DISCARD={params.discard_path}/$SAMPLE.discarded.fastq.gz
-        SINGLE={params.discard_path}/$SAMPLE.singleton.truncated.fastq.gz
 
         AdapterRemoval \
             --adapter1 {params.adapter1} \
@@ -44,7 +34,8 @@ rule adapter_removal:
             --minlength {params.minlength} \
             --output1 {output.t1} \
             --output2 {output.t2} \
-            --discarded $DISCARD \
-            --singleton $SINGLE \
+            --discarded /dev/null \
+            --singleton /dev/null \
             --settings {output.log} &> {log}
+
         """
