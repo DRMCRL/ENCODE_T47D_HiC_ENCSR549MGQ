@@ -16,6 +16,8 @@ args <- commandArgs(TRUE)
 #   "data/hic/hic_results/matrix/merged/raw/10000/merged_10000.matrix",
 #   "data/hic/hic_results/matrix/merged/raw/10000/merged_10000_abs.bed"
 # )
+message("Supplied arguments are: ", args)
+
 
 ## Check the two bed files are identical, then just choose one
 md5 <- vapply(args[3:4] , tools::md5sum, character(1))
