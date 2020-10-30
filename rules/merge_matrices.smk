@@ -1,12 +1,12 @@
 rule merge_interaction_matrices:
     input:
         mat=expand(
-          ["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix"],
-          sample = samples, bin = bins
+          "data/hic/hic_results/matrix/{sample}/raw/{{bin}}/{sample}_{{bin}}.matrix",
+          sample = samples
         ),
         bed=expand(
-          ["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_abs.bed"],
-          sample = samples, bin = bins
+          "data/hic/hic_results/matrix/{sample}/raw/{{bin}}/{sample}_{{bin}}_abs.bed",
+          sample = samples
         )
     output:
         mat="data/hic/hic_results/matrix/merged/raw/{bin}/merged_{bin}.matrix",
