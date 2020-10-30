@@ -71,8 +71,25 @@ rule hicpro_mapping:
         files = expand(["data/trimmed/fastq/{sample}/{sample}{reads}{suffix}"],
                        sample = samples, suffix = suffix, reads = read_ext)
     output:
-        bam = temp(expand(["data/hic/bowtie_results/bwt2/{sample}/{sample}{reads}_" + build + "." + assembly + ".bwt2merged.bam"],
-                     reads = read_ext, sample = samples))
+        bam = temp(
+            expand(
+                ["data/hic/bowtie_results/bwt2/{sample}/{sample}{reads}_" + build + "." + assembly + ".bwt2merged.bam"],
+                reads = read_ext, sample = samples
+            )
+        ),
+        glob = temp(
+            expand(
+                ["data/hic/bowtie_results/bwt2_global/{sample}/{sample}{reads}_" + build + "." + assembly + ".bwt2glob.{suffix}"],
+                reads = read_ext, sample = samples,
+                suffix = ['bam', 'unmap.fastq', 'unmap_trimmed.fastq']
+            )
+        ),
+        local = temp(
+            expand(
+                ["data/hic/bowtie_results/bwt2_local/{sample}/{sample}{reads}_" + build + "." + assembly + ".bwt2glob.unmap_bwt2loc.bam"],
+                reads = read_ext, sample = samples
+             )
+        )
     params:
         indir = "data/test_data",
         outdir = "data/hic"
@@ -163,8 +180,14 @@ rule hicpro_merge:
         config = hicpro_config,
         files = rules.hicpro_proc.output.pairs
     output:
-        pairs = expand(["data/hic/hic_results/data/{sample}/{sample}_allValidPairs"],
-                       sample = samples)
+        pairs = expand(
+            ["data/hic/hic_results/data/{sample}/{sample}_allValidPairs"],
+            sample = samples
+        ),
+        stat = expand(
+            ["data/hic/hic_results/data/{sample}/{sample}_allValidPairs.mergestat"],
+            sample = samples
+        )
     params:
         indir = "data/hic/hic_results/data",
         outdir = "data/hic"
