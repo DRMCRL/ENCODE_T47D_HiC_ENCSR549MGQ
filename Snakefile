@@ -57,7 +57,7 @@ hicpro_config = "config/hicpro-config.txt"
 digest_script = "scripts/digest_genome.py"
 PROC_PAIRS = expand(["data/hic/hic_results/data/{sample}/{sample}_" + build + "." + assembly + ".bwt2pairs.validPairs"],
                     sample = samples)
-HIC_QC = ['data/hic/hic_results/pic']
+HIC_QC = expand(["data/hic/hic_results/pic/{sample}"], sample = samples)
 VALID_PAIRS = expand(["data/hic/hic_results/data/{sample}/{sample}_allValidPairs"],
                        sample = samples)
 HIC_MAT = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix"],
