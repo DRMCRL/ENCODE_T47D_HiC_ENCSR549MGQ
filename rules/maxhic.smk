@@ -1,6 +1,6 @@
 rule get_maxhic:
     output:
-        dir = directory("scripts/MaxHiC")
+        dir = temp(directory("scripts/MaxHiC"))
     threads: 1
     shell:
         """
