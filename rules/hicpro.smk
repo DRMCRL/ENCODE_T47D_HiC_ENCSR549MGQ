@@ -93,7 +93,7 @@ rule hicpro_mapping:
     params:
         indir = "data/test_data",
         outdir = "data/hic"
-    log: "logs/hicpro/hicpro_mapping.log"
+    log: "logs/hicpro/hicpro_mapping_{sample}.log"
     threads: config['hicpro']['ncpu']
     shell:
         """
@@ -121,16 +121,17 @@ rule hicpro_mapping:
 rule hicpro_proc:
     input:
         config = hicpro_config,
-        files = rules.hicpro_mapping.output.bam
+        files = expand(
+                ["data/hic/bowtie_results/bwt2/{{sample}}/{{sample}}{reads}_" + build + "." + assembly + ".bwt2merged.bam"],
+                reads = read_ext
+            )
     output:
-        bam = temp(expand(["data/hic/bowtie_results/bwt2/{sample}/{sample}_" + build + "." + assembly + ".bwt2pairs.bam"],
-                     sample = samples)),
-        pairs = expand(["data/hic/hic_results/data/{sample}/{sample}_" + build + "." + assembly + ".bwt2pairs.validPairs"],
-                     sample = samples)
+        bam = temp("data/hic/bowtie_results/bwt2/{sample}/{sample}_" + build + "." + assembly + ".bwt2pairs.bam"),
+        pairs = "data/hic/hic_results/data/{sample}/{sample}_" + build + "." + assembly + ".bwt2pairs.validPairs"
     params:
         indir = "data/hic/bowtie_results/bwt2",
         outdir = "data/hic"
-    log: "logs/hicpro/hicpro_proc.log"
+    log: "logs/hicpro/hicpro_proc_{sample}.log"
     threads: config['hicpro']['ncpu']
     shell:
         """
@@ -151,13 +152,16 @@ rule hicpro_proc:
 rule hicpro_qc:
     input:
         config = hicpro_config,
-        files = rules.hicpro_mapping.output.bam
+        files = expand(
+                ["data/hic/bowtie_results/bwt2/{{sample}}/{{sample}}{reads}_" + build + "." + assembly + ".bwt2merged.bam"],
+                reads = read_ext
+            )
     output:
-        pic = directory("data/hic/hic_results/pic")
+        pic = directory("data/hic/hic_results/pic/{sample}")
     params:
         indir = "data/hic/bowtie_results/bwt2",
         outdir = "data/hic"
-    log: "logs/hicpro/hicpro_qc.log"
+    log: "logs/hicpro/hicpro_qc_{sample}.log"
     threads: config['hicpro']['ncpu']
     shell:
         """
@@ -178,20 +182,14 @@ rule hicpro_qc:
 rule hicpro_merge:
     input:
         config = hicpro_config,
-        files = rules.hicpro_proc.output.pairs
+        files = "data/hic/hic_results/data/{sample}/{sample}_" + build + "." + assembly + ".bwt2pairs.validPairs"
     output:
-        pairs = expand(
-            ["data/hic/hic_results/data/{sample}/{sample}_allValidPairs"],
-            sample = samples
-        ),
-        stat = expand(
-            ["data/hic/hic_results/data/{sample}/{sample}_allValidPairs.mergestat"],
-            sample = samples
-        )
+        pairs = "data/hic/hic_results/data/{sample}/{sample}_allValidPairs",
+        stat = "data/hic/hic_results/data/{sample}/{sample}_allValidPairs.mergestat",
     params:
         indir = "data/hic/hic_results/data",
         outdir = "data/hic"
-    log: "logs/hicpro/hicpro_merge.log"
+    log: "logs/hicpro/hicpro_merge_{sample}.log"
     threads: config['hicpro']['ncpu']
     shell:
         """
@@ -212,16 +210,16 @@ rule hicpro_merge:
 rule build_contact_maps:
     input:
         config = hicpro_config,
-        pairs = rules.hicpro_merge.output.pairs
+        pairs = "data/hic/hic_results/data/{sample}/{sample}_allValidPairs"
     output:
-        bed = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_abs.bed"],
-                     sample = samples, bin = bins),
-        mat = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix"],
-                     sample = samples, bin = bins)
+        bed = expand(["data/hic/hic_results/matrix/{{sample}}/raw/{bin}/{{sample}}_{bin}_abs.bed"],
+                     bin = bins),
+        mat = expand(["data/hic/hic_results/matrix/{{sample}}/raw/{bin}/{{sample}}_{bin}.matrix"],
+                     bin = bins)
     params:
         indir = "data/hic/hic_results/data",
         outdir = "data/hic"
-    log: "logs/hicpro/build_contact_maps.log"
+    log: "logs/hicpro/build_contact_maps_{sample}.log"
     threads: config['hicpro']['ncpu']
     shell:
         """
