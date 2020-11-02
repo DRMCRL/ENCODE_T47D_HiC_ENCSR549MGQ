@@ -68,26 +68,26 @@ rule make_hicpro_config:
 rule hicpro_mapping:
     input:
         config = hicpro_config,
-        files = expand(["data/trimmed/fastq/{sample}/{sample}{reads}{suffix}"],
-                       sample = samples, suffix = suffix, reads = read_ext)
+        files = expand(["data/trimmed/fastq/{{sample}}/{{sample}}{reads}{suffix}"],
+                       suffix = suffix, reads = read_ext)
     output:
         bam = temp(
             expand(
-                ["data/hic/bowtie_results/bwt2/{sample}/{sample}{reads}_" + build + "." + assembly + ".bwt2merged.bam"],
-                reads = read_ext, sample = samples
+                ["data/hic/bowtie_results/bwt2/{{sample}}/{{sample}}{reads}_" + build + "." + assembly + ".bwt2merged.bam"],
+                reads = read_ext
             )
         ),
         glob = temp(
             expand(
-                ["data/hic/bowtie_results/bwt2_global/{sample}/{sample}{reads}_" + build + "." + assembly + ".bwt2glob.{suffix}"],
-                reads = read_ext, sample = samples,
+                ["data/hic/bowtie_results/bwt2_global/{{sample}}/{{sample}}{reads}_" + build + "." + assembly + ".bwt2glob.{suffix}"],
+                reads = read_ext,
                 suffix = ['bam', 'unmap.fastq', 'unmap_trimmed.fastq']
             )
         ),
         local = temp(
             expand(
-                ["data/hic/bowtie_results/bwt2_local/{sample}/{sample}{reads}_" + build + "." + assembly + ".bwt2glob.unmap_bwt2loc.bam"],
-                reads = read_ext, sample = samples
+                ["data/hic/bowtie_results/bwt2_local/{{sample}}/{{sample}}{reads}_" + build + "." + assembly + ".bwt2glob.unmap_bwt2loc.bam"],
+                reads = read_ext
              )
         )
     params:
