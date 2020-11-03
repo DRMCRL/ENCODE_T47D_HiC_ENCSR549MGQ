@@ -1,6 +1,6 @@
 rule raw_fastqc:
     input:
-        "data/raw/fastq/{sample}/{sample}_{reads}.fastq.gz"
+        raw_path + "/{sample}/{sample}_{reads}.fastq.gz"
     output:
         html = "data/raw/FastQC/{sample}_{reads}_fastqc.html",
         zip = "data/raw/FastQC/{sample}_{reads}_fastqc.zip"
@@ -30,7 +30,7 @@ rule raw_fastqc:
 
 rule trim_fastqc:
     input:
-        "data/trimmed/fastq/{sample}/{sample}_{reads}.fastq.gz"
+        trim_path + "/{sample}/{sample}_{reads}.fastq.gz"
     output:
         html = "data/trimmed/FastQC/{sample}_{reads}_fastqc.html",
         zip = "data/trimmed/FastQC/{sample}_{reads}_fastqc.zip"

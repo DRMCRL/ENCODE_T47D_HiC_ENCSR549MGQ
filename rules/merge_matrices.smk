@@ -1,16 +1,16 @@
 rule merge_interaction_matrices:
     input:
         mat=expand(
-          "data/hic/hic_results/matrix/{sample}/raw/{{bin}}/{sample}_{{bin}}.matrix",
+          hic_path + "/hic_results/matrix/{sample}/raw/{{bin}}/{sample}_{{bin}}.matrix",
           sample = samples
         ),
         bed=expand(
-          "data/hic/hic_results/matrix/{sample}/raw/{{bin}}/{sample}_{{bin}}_abs.bed",
+          hic_path + "/hic_results/matrix/{sample}/raw/{{bin}}/{sample}_{{bin}}_abs.bed",
           sample = samples
         )
     output:
-        mat="data/hic/hic_results/matrix/merged/raw/{bin}/merged_{bin}.matrix",
-        bed="data/hic/hic_results/matrix/merged/raw/{bin}/merged_{bin}_abs.bed"
+        mat = hic_path + "/hic_results/matrix/merged/raw/{bin}/merged_{bin}.matrix",
+        bed = hic_path + "/hic_results/matrix/merged/raw/{bin}/merged_{bin}_abs.bed"
     conda: "../envs/rtracklayer.yml"
     log: "logs/merge/merge_{bin}.log"
     threads: 4

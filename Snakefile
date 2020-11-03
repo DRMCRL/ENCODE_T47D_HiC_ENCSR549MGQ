@@ -28,6 +28,11 @@ rs_frags = os.path.join(os.getcwd(), "config", build + "_" + config['hicpro']['e
 ## Define all the required outputs from the setup steps ##
 ##########################################################
 
+## Directories
+raw_path = "data/raw/fastq"
+trim_path = "data/trimmed/fastq"
+hic_path = "data/hic"
+
 REFS = [chr_sizes, rs_frags]
 FAGZ = [os.path.join(ref_root, ref_fagz)]
 BOWTIEIDX = expand([ref_root + "/bt2/{prefix}.{sub}.bt2"],
@@ -38,7 +43,7 @@ FQC_OUTS = expand(["data/{step}/FastQC/{sample}_{reads}_fastqc.{suffix}"],
                  reads = ['R1', 'R2'],
                  sample = samples,
                  step = ['raw', 'trimmed'])
-TRIM_OUTS = expand(["data/trimmed/fastq/{sample}/{sample}_{reads}{suffix}"],
+TRIM_OUTS = expand([trim_path + "/{sample}/{sample}_{reads}{suffix}"],
                   sample = samples, suffix = suffix,
                   reads = ['R1', 'R2'])
 
@@ -55,16 +60,16 @@ ALL_OUTPUTS.extend(TRIM_OUTS)
 bins = re.split(r" ", config['hicpro']['bin_size'])
 hicpro_config = "config/hicpro-config.txt"
 digest_script = "scripts/digest_genome.py"
-PROC_PAIRS = expand(["data/hic/hic_results/data/{sample}/{sample}_" + build + "." + assembly + ".bwt2pairs.validPairs"],
+PROC_PAIRS = expand([hic_path + "/hic_results/data/{sample}/{sample}_" + build + "." + assembly + ".bwt2pairs.validPairs"],
                     sample = samples)
-HIC_QC = expand(["data/hic/hic_results/pic/{sample}"], sample = samples)
-VALID_PAIRS = expand(["data/hic/hic_results/data/{sample}/{sample}_allValidPairs"],
+HIC_QC = expand([hic_path + "/hic_results/pic/{sample}"], sample = samples)
+VALID_PAIRS = expand([hic_path + "/hic_results/data/{sample}/{sample}_allValidPairs"],
                        sample = samples)
-HIC_MAT = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix"],
+HIC_MAT = expand([hic_path + "/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix"],
                   sample = samples, bin = bins)
-HIC_BED = expand(["data/hic/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_abs.bed"],
+HIC_BED = expand([hic_path + "/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_abs.bed"],
                   sample = samples, bin = bins)
-MERGED_INT = expand(["data/hic/hic_results/matrix/merged/raw/{bin}/merged_{bin}{suffix}"],
+MERGED_INT = expand([hic_path + "/hic_results/matrix/merged/raw/{bin}/merged_{bin}{suffix}"],
                     bin = bins, suffix = ['.matrix', '_abs.bed'])
 
 ALL_OUTPUTS.extend([hicpro_config, digest_script])

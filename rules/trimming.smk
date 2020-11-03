@@ -3,8 +3,8 @@ rule adapter_removal:
         r1 = "data/raw/fastq/{sample}/{sample}_R1.fastq.gz",
         r2 = "data/raw/fastq/{sample}/{sample}_R2.fastq.gz"
     output:
-        t1 = temp("data/trimmed/fastq/{sample}/{sample}_R1.fastq.gz"),
-        t2 = temp("data/trimmed/fastq/{sample}/{sample}_R2.fastq.gz"),
+        t1 = temp(trim_path + "/{sample}/{sample}_R1.fastq.gz"),
+        t2 = temp(trim_path + "/{sample}/{sample}_R2.fastq.gz"),
         log = "data/trimmed/logs/{sample}.settings"
     conda:
         "../envs/adapterremoval.yml"
@@ -19,8 +19,6 @@ rule adapter_removal:
         "logs/adapterremoval/{sample}.log"
     shell:
         """
-        SAMPLE=$(basename $(dirname {input.r1}))
-
         AdapterRemoval \
             --adapter1 {params.adapter1} \
             --adapter2 {params.adapter2} \
@@ -37,5 +35,4 @@ rule adapter_removal:
             --discarded /dev/null \
             --singleton /dev/null \
             --settings {output.log} &> {log}
-
         """
