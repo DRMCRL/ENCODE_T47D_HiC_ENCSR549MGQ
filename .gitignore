@@ -6,10 +6,10 @@ bowtie_results/
 *fastq.gz
 *fastq
 *bam
+*tar.gz
 data/hic/rawdata
-data/hic/hic_results/matrix/**/*matrix
-data/hic/hic_results/matrix/**/*ord.bed
-data/hic/hic_results/matrix/**/iced/
-data/hic/hic_results/data/**/**
+data/hic/hic_results/matrix/
+data/hic/hic_results/data/
 !data/hic/hic_results/data/**/*.mergestat
 data/hic/hicpro*
+output/MaxHiC
