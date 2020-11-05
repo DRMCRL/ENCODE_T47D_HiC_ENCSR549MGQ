@@ -8,4 +8,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+Re-analysis of the HiC data from https://www.encodeproject.org/experiments/ENCSR549MGQ/.
+This contains two technical (i.e. isogenic) replicates from the cell line T47D.
+
+Whilst this is strictly HiC data in this workflow, ENCODE also have DNase-Seq, ChIP Seq (*ESR1*, *CTCF*, *EP300*, *FOXA1*, *GATA3* and *JUND*) and DNAme array data associated with these samples.

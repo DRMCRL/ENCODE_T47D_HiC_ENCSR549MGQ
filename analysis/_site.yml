@@ -5,8 +5,8 @@ navbar:
   left:
   - text: Home
     href: index.html
-  - text: About
-    href: about.html
+  - text: Workflow Description
+    href: description.html
 output:
   workflowr::wflow_html:
     toc: yes
