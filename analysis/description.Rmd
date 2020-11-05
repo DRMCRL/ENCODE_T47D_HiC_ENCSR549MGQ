@@ -70,3 +70,5 @@ samples <- config$samples %>%
 n_fact <- sum(vapply(samples, is.factor, logical(1)))
 ```
 
+Two technical replicates (`r pander(unique(samples$sample))`) were contained in this dataset and both were merged before detectino of significant interactions.
+Both replicates were sequenced using paired-end data, as is an essential part of the HiC library preparation.
