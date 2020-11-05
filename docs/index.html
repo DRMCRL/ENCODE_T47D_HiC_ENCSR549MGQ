@@ -20,6 +20,7 @@
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 
@@ -262,6 +263,9 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -303,6 +307,14 @@ $(document).ready(function () {
 </div><!--/.navbar -->
 
 <div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
 
 
 
@@ -362,16 +374,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtreef00c02751012358e08aa1bdfd98343d2c0b0c69atargetblankf00c027a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/f00c02751012358e08aa1bdfd98343d2c0b0c69a" target="_blank">f00c027</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree57fadf927b0c65e06f82f92255abf9d1768ec987targetblank57fadf9a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/57fadf927b0c65e06f82f92255abf9d1768ec987" target="_blank">57fadf9</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtreef00c02751012358e08aa1bdfd98343d2c0b0c69atargetblankf00c027a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree57fadf927b0c65e06f82f92255abf9d1768ec987targetblank57fadf9a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/f00c02751012358e08aa1bdfd98343d2c0b0c69a" target="_blank">f00c027</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/57fadf927b0c65e06f82f92255abf9d1768ec987" target="_blank">57fadf9</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -384,6 +396,9 @@ Ignored files:
     Ignored:    matrix.tar.gz
     Ignored:    maxhic.tar.gz
     Ignored:    output/MaxHiC/
+
+Unstaged changes:
+    Modified:   analysis/_site.yml
 
 </code></pre>
 <p>
@@ -422,6 +437,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/57fadf927b0c65e06f82f92255abf9d1768ec987/docs/index.html" target="_blank">57fadf9</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-05
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -511,6 +543,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
