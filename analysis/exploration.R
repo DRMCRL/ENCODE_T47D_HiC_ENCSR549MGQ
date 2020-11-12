@@ -5,12 +5,19 @@ library(tidyverse)
 library(vroom)
 library(Gviz)
 library(glue)
+library(plyranges)
 
 # Let's start working with the standard files (40K)
 sz <- 40000
-gr <- import.bed(
+bins <- import.bed(
   glue("data/hic/hic_results/matrix/merged/raw/{sz}/merged_{sz}_abs.bed")
 )
+sq <- Seqinfo(
+  seqnames = seqlevels(bins),
+  seqlengths = bins %>% range() %>% end(),
+  genome = "GRCh37"
+)
+seqinfo(bins) <- sq
 ## The FDR values are wrong and we don't need the bias columns
 ## Skip those and import everything else. Unfortunately, 3 columns (1:3)
 ## should be integers, but are doubles
@@ -28,6 +35,7 @@ gi <- GInteractions(
   exp_interactions = cis_int$exp_interactions,
   p = exp(-cis_int$neg_ln_p_val)
 )
+seqinfo(gi) <- sq
 ## Add the correct FDR
 gi$fdr = p.adjust(gi$p, "BH")
 ## Add the distance between pairs
@@ -65,45 +73,98 @@ mcols(gi) %>%
   ggplot(aes(logRatio, -log10(p))) +
   geom_point()
 
+gi <- read_rds(
+  here::here(
+    glue("output/gi_{sz}.rds")
+  )
+)
 ## Now only keep the significant interactions and collect garbage
 gi <- subset(gi, fdr < 0.05)
 gc()
 
-## Load in the genes. This was downloaded using `wget`
+## Load in the gene & other annotations. This was downloaded using `wget`
 gtf_ftp <- "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_33/GRCh37_mapping/gencode.v33lift37.annotation.gtf.gz"
 gtf <- here::here("data/external/gencode.v33lift37.annotation.gtf.gz")
 ## Load the complete gtf, then subset to form the useable GR objects
-allGR <- import.gff(gtf)
+allGR <- import.gff(gtf) %>%
+  subset(seqnames != "chrM")
+seqinfo(allGR, new2old = match(seqlevels(sq), seqlevels(allGR))) <- sq
 mcols(allGR) <- mcols(allGR) %>%
   .[str_ends(colnames(.), "(id|type|name|status)") & !str_starts(colnames(.), "hgnc|remap|ccds")]
+allGR$gene_id <- str_extract(allGR$gene_id, "ENSG[0-9]+")
+allGR$transcript_id <- str_extract(allGR$transcript_id, "ENST[0-9]+")
+allGR$exon_id <- str_extract(allGR$exon_id, "ENSE[0-9]+")
+## Just the genes
 genesGR <- subset(allGR, type == "gene")
 mcols(genesGR) <- mcols(genesGR) %>%
   .[str_starts(colnames(.), "gene")]
+names(genesGR) <- genesGR$gene_id
+## Just the transcripts
+transGR <- subset(allGR, type == "transcript")
+mcols(transGR) <- mcols(transGR) %>%
+  .[str_starts(colnames(.), "transcript|gene")]
+names(transGR) <- transGR$transcript_id
 
-
-transGR <- import.gff(gtf, feature.type = "transcript")
-%>%
-  subset(type %in% c("exon", "UTR"))
-mcols(transGR) <- mcols(transGR)[str_ends(colnames(mcols(transGR)), "_(id|type|name|status)")]
-transProm <- promoters(transGR) %>%
-  GenomicRanges::reduce()
+## GViz requires specific structures for gene & transcript models
+## Compress the multiple exons for each gene for a single structure for each gene
+exonGR <- subset(allGR, type %in% c("exon", "UTR"))
+geneModels <- exonGR %>%
+  split(f = .$gene_id) %>%
+  GenomicRanges::reduce() %>%
+  as("GRangesList") %>%
+  unlist() %>%
+  sort()
+geneModels$type <- "exon"
+geneModels$gene <- names(geneModels)
+geneModels$exon <- paste(
+  geneModels$gene,
+  unlist(
+    lapply(
+      split(geneModels$gene, f = fct_inorder(geneModels$gene)),
+      seq_along
+    )
+  ),
+  sep = "_"
+)
+geneModels$transcript <- geneModels$gene
+geneModels$symbol <- genesGR[names(geneModels)]$gene_name
+write_rds(geneModels, here::here("output/geneModels.rds"), compress = "gz")
+## Create an object for visualising transcript level annotation using the same strategy
+transModels <- exonGR %>%
+  split(f = .$transcript_id) %>%
+  GenomicRanges::reduce() %>%
+  as("GRangesList") %>%
+  unlist() %>%
+  sort()
+transModels$type <- "exon"
+transModels$gene <- transGR[names(transModels)]$gene_id
+transModels$exon <- paste(
+  names(transModels),
+  unlist(
+    lapply(
+      split(names(transModels), f = fct_inorder(names(transModels))),
+      seq_along
+    )
+  ),
+  sep = "_"
+)
+transModels$transcript <- names(transModels)
+transModels$symbol <- transGR[names(transModels)]$gene_name
+write_rds(transModels, here::here("output/transModels.rds"), compress = "gz")
 
 # We need the bed files with ChIP peaks to really explore & figure the visualisations out now
 # EHF is chr11:34642640-34700000
-ehf <- transGR %>%
-  subset(gene_name == "EHF")
+ehf <- subset(genesGR, gene_name %in% c("EHF"))
 # Get the peaks which overlap EHF
-e2Peaks <- import.bed("data/external/BED/Consensus_T47D_AR_E2_peaks_only.bed")
-ehfPeaks <- subsetByOverlaps(e2Peaks, ehf)
+e2Peaks <- import.bed("data/external/BED/Consensus_T47D_AR_E2_peaks_only.bed", seqinfo = sq)
+dhtPeaks <- import.bed("data/external/BED/Consensus_T47D_AR_E2_DHT_peaks.bed", seqinfo = sq)
+ehfPeaks <- subsetByOverlaps(dhtPeaks, ehf)
 # See if any have significant interactions
-gi %>%
-  subset(sig) %>%
-  subsetByOverlaps(ehfPeaks)
+gi %>% subsetByOverlaps(ehfPeaks)
 # Map these to genes
 genesGR %>%
   subsetByOverlaps(
     gi %>%
-      subset(sig) %>%
       subsetByOverlaps(ehfPeaks)
   )
 
@@ -113,47 +174,135 @@ gen <- "hg19"
 chr <- "chr11"
 ideo <- IdeogramTrack(genome = gen, chromosome = chr)
 ax <- GenomeAxisTrack()
-fullGM <- granges(allGR)
-fullGM$feature <- allGR$type
-fullGM$gene <- str_extract(allGR$gene_id, "ENSG[0-9]+")
-fullGM$exon <- str_extract(allGR$exon_id, "ENSE[0-9]+")
-fullGM$transcript <- str_extract(allGR$transcript_id, "ENST[0-9]+")
-fullGM$symbol <- allGR$gene_name
-g <- genesGR %>%
+peaks <- ehfPeaks %>%
+  AnnotationTrack(name = "ChIP Peaks", col = "black")
+gr <- genesGR %>%
   subsetByOverlaps(
-    gi %>%
-      subset(sig) %>%
-      subsetByOverlaps(ehfPeaks)
+    subsetByOverlaps(gi, ehfPeaks)
   ) %>%
-  mcols() %>%
-  .[["gene_name"]]
-bins <- gr %>%
-  subsetByOverlaps(
-    subset(genesGR, gene_name %in% g) %>%
-      range(ignore.strand = TRUE)
-  ) %>%
+  range(ignore.strand = TRUE)
+bt <- bins %>%
+  subsetByOverlaps(gr) %>%
   AnnotationTrack(name = "HiC Bins")
 it <- gi %>%
-  subset(sig) %>%
   subsetByOverlaps(ehfPeaks) %>%
   as("GenomicInteractions") %>%
-  InteractionTrack(name = "40KB Interactions")
-peaks <- e2Peaks %>%
-  subsetByOverlaps(
-    subset(genesGR, gene_name %in% g)
-  ) %>%
-  AnnotationTrack(name = "ChIP Peaks")
-gm <- fullGM %>%
-  subsetByOverlaps(
-    subset(genesGR, gene_name %in% g) %>%
-      range(ignore.strand = TRUE)
-  ) %>%
+  InteractionTrack(name = glue("{sz/1000}KB Interactions"))
+gm <- geneModels %>%
+  subsetByOverlaps(gr) %>%
   GeneRegionTrack(
     name = "Genes",
     transcriptAnnotation = "symbol"
   )
+tm <-  transModels %>%
+  subsetByOverlaps(gr) %>%
+  GeneRegionTrack(
+    name = "Transcripts",
+    transcriptAnnotation = "symbol"
+  )
 plotTracks(
-  list(ideo, ax, it, bins, peaks, gm)
+  list(ideo, ax, it, peaks, gm)
 )
 # Now we just need to tidy this up
 # We could also just change the genes to genes and add a chromHMM track
+
+
+
+# Bed file is
+# https://egg2.wustl.edu/roadmap/data/byFileType/chromhmmSegmentations/ChmmModels/imputed12marks/jointModel/final/E119_25_imputed12marks_dense.bed.gz
+# The list of tissues is https://egg2.wustl.edu/roadmap/data/byFileType/chromhmmSegmentations/ChmmModels/imputed12marks/jointModel/final/EIDlegend.txt
+tissueMap <- "https://egg2.wustl.edu/roadmap/data/byFileType/chromhmmSegmentations/ChmmModels/imputed12marks/jointModel/final/EIDlegend.txt" %>%
+  read_tsv(col_names = c("code", "tissue"))
+## See what's available
+tissueMap %>%
+  dplyr::filter(str_detect(tissue, "reast|amm"))
+
+
+
+stateMap <- "https://egg2.wustl.edu/roadmap/data/byFileType/chromhmmSegmentations/ChmmModels/imputed12marks/jointModel/final/annotation_25_imputed12marks.txt" %>%
+  read_tsv() %>%
+  rename_all(str_to_lower) %>%
+  rename_all(str_replace_all, pattern = " ", replacement = "_") %>%
+  rename_all(str_remove_all, pattern = "\\.") %>%
+  unite(name, state_no, mnemonic, sep = "_", remove = FALSE) %>%
+  separate(color_code, into = c("r", "g", "b"), sep = ",") %>%
+  mutate(
+    across(c("name", "mnemonic", "description"), fct_inorder),
+    itemRgb = rgb(r, g, b, maxColorValue = 255),
+    state_no = as.integer(state_no)
+  ) %>%
+  dplyr::select(-any_of(c("r", "g", "b")))
+# Plot the chromHMM states
+stateMap %>%
+  ggplot(aes(1, state_no, fill = name)) +
+  geom_raster() +
+  scale_fill_manual(values = stateMap$itemRgb) +
+  scale_x_continuous(expand = expansion(0, 0)) +
+  scale_y_reverse(
+    breaks = stateMap$state_no,
+    labels = stateMap$description,
+    expand = expansion(0, 0)
+  ) +
+  theme_bw() +
+  theme(
+    axis.ticks.x = element_blank(),
+    axis.text.x = element_blank(),
+    axis.title = element_blank(),
+    legend.position = "none"
+  )
+
+
+# To add these to the track use dput(chromCols) & paste the output in
+chromCols <- setNames(stateMap$itemRgb, stateMap$name)
+hmecHMM <- import.bed("data/external/E119_25_imputed12marks_dense.bed.gz", seqinfo = sq) %>%
+  sort()
+hmecHMM$cell <- "HMEC"
+hmmcHMM <- import.bed("data/external/E027_25_imputed12marks_dense.bed.gz", seqinfo = sq) %>%
+  sort()
+hmmcHMM$cell <- "HMMC"
+hmecTrack <- hmecHMM %>%
+  subsetByOverlaps(gr) %>%
+  AnnotationTrack(
+    name = "HMEC",
+    id = .$name,
+    stacking = "dense",
+    feature = .$name,
+    group = .$name,
+    col = "transparent",
+    `1_TssA` = "#FF0000", `10_TxEnh5'` = "#C2E105", `11_TxEnh3'` = "#C2E105",
+    `12_TxEnhW` = "#C2E105", `13_EnhA1` = "#FFC34D", `14_EnhA2` = "#FFC34D",
+    `15_EnhAF` = "#FFC34D", `16_EnhW1` = "#FFFF00", `17_EnhW2` = "#FFFF00",
+    `18_EnhAc` = "#FFFF00", `19_DNase` = "#FFFF66", `2_PromU` = "#FF4500",
+    `20_ZNF/Rpts` = "#66CDAA", `21_Het` = "#8A91D0", `22_PromP` = "#E6B8B7",
+    `23_PromBiv` = "#7030A0", `24_ReprPC` = "#808080", `25_Quies` = "#FFFFFF",
+    `3_PromD1` = "#FF4500", `4_PromD2` = "#FF4500", `5_Tx5'` = "#008000",
+    `6_Tx` = "#008000", `7_Tx3'` = "#008000", `8_TxWk` = "#009600",
+    `9_TxReg` = "#C2E105"
+    )
+hmmcTrack <- hmmcHMM %>%
+  subsetByOverlaps(gr) %>%
+  AnnotationTrack(
+    name = "HMMC",
+    id = .$name,
+    stacking = "dense",
+    feature = .$name,
+    group = .$name,
+    col = "transparent",
+    `1_TssA` = "#FF0000", `10_TxEnh5'` = "#C2E105", `11_TxEnh3'` = "#C2E105",
+    `12_TxEnhW` = "#C2E105", `13_EnhA1` = "#FFC34D", `14_EnhA2` = "#FFC34D",
+    `15_EnhAF` = "#FFC34D", `16_EnhW1` = "#FFFF00", `17_EnhW2` = "#FFFF00",
+    `18_EnhAc` = "#FFFF00", `19_DNase` = "#FFFF66", `2_PromU` = "#FF4500",
+    `20_ZNF/Rpts` = "#66CDAA", `21_Het` = "#8A91D0", `22_PromP` = "#E6B8B7",
+    `23_PromBiv` = "#7030A0", `24_ReprPC` = "#808080", `25_Quies` = "#FFFFFF",
+    `3_PromD1` = "#FF4500", `4_PromD2` = "#FF4500", `5_Tx5'` = "#008000",
+    `6_Tx` = "#008000", `7_Tx3'` = "#008000", `8_TxWk` = "#009600",
+    `9_TxReg` = "#C2E105"
+  )
+
+plotTracks(
+  list(ideo, ax, it, hmecTrack, hmmcTrack, peaks, gm)
+  # from = start(gr),
+  # to = end(gr)
+)
+
+
