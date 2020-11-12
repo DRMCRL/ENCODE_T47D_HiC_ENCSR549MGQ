@@ -4,54 +4,46 @@ library(rtracklayer)
 library(tidyverse)
 library(vroom)
 library(Gviz)
+library(glue)
 
 # Let's start working with the standard files (40K)
-gr <- import.bed("data/hic/hic_results/matrix/merged/raw/40000/merged_40000_abs.bed")
-cis_int <- vroom("output/MaxHiC/merged/40000/cis_interactions.txt.gz")
-  # mutate(
-  #   across(contains("bin"), as.integer),
-  #   observed_interactions = as.integer(observed_interactions)
-  # )
-
-# gi <- with(
-#   cis_int,
-#   GenomicInteractions(
-#     anchor1 = gr[bin1ID],
-#     anchor2 = gr[bin2ID],
-#     counts = observed_interactions,
-#     p = exp(-neg_ln_p_val),
-#     fdr = p.adjust(exp(-neg_ln_p_val), "BH")
-#   )
-# )
-# These objects appear to have trouble with subset
-# Try a Ginteractions object instead
-gi <- with(
-  cis_int,
-  GInteractions(
-    anchor1 = gr[as.integer(bin1ID)],
-    anchor2 = gr[as.integer(bin2ID)],
-    counts = as.integer(observed_interactions),
-    exp_interactions = exp_interactions,
-    p = exp(-neg_ln_p_val),
-    fdr = p.adjust(exp(-neg_ln_p_val), "BH")
-  )
+sz <- 40000
+gr <- import.bed(
+  glue("data/hic/hic_results/matrix/merged/raw/{sz}/merged_{sz}_abs.bed")
 )
+## The FDR values are wrong and we don't need the bias columns
+## Skip those and import everything else. Unfortunately, 3 columns (1:3)
+## should be integers, but are doubles
+cis_int <- vroom(
+  glue("output/MaxHiC/merged/{sz}/cis_interactions.txt.gz"),
+  col_types = "dddd-d--"
+)
+
+## GenomicInteractions objects have issues using subset
+## Use a Ginteractions object instead
+gi <- GInteractions(
+  anchor1 = gr[as.integer(cis_int$bin1ID)],
+  anchor2 = gr[as.integer(cis_int$bin2ID)],
+  counts = as.integer(cis_int$observed_interactions),
+  exp_interactions = cis_int$exp_interactions,
+  p = exp(-cis_int$neg_ln_p_val)
+)
+## Add the correct FDR
+gi$fdr = p.adjust(gi$p, "BH")
 ## Add the distance between pairs
 gi$distance <- pairdist(gi)
 gi$logRatio <- log2(gi$counts / gi$exp_interactions)
-gi$sig <- Rle(gi$fdr < 0.05)
-## Also remove the pairs with only one count
-## as these are always non-significant & will save resources
-gi <- subset(gi, counts > 1 & logRatio > 0)
-
-# Remove the original file
+## Export the file as is
+write_rds(
+  x = gi,
+  file = here::here(
+    glue("output/gi_{sz}.rds")
+  ),
+  compress = "gz"
+)
+# Remove the original file & collect garbage
 rm(cis_int)
 gc()
-
-## Check the p-values
-hist(gi$p, breaks = 100)
-## They look pretty odd to me
-
 
 # Plot the association between pairwise distances & p-values
 # There are a lot of points here
@@ -73,12 +65,24 @@ mcols(gi) %>%
   ggplot(aes(logRatio, -log10(p))) +
   geom_point()
 
-# Load in the genes
+## Now only keep the significant interactions and collect garbage
+gi <- subset(gi, fdr < 0.05)
+gc()
+
+## Load in the genes. This was downloaded using `wget`
 gtf_ftp <- "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_33/GRCh37_mapping/gencode.v33lift37.annotation.gtf.gz"
 gtf <- here::here("data/external/gencode.v33lift37.annotation.gtf.gz")
-genesGR <- import.gff(gtf, feature.type = "gene")
+## Load the complete gtf, then subset to form the useable GR objects
+allGR <- import.gff(gtf)
+mcols(allGR) <- mcols(allGR) %>%
+  .[str_ends(colnames(.), "(id|type|name|status)") & !str_starts(colnames(.), "hgnc|remap|ccds")]
+genesGR <- subset(allGR, type == "gene")
+mcols(genesGR) <- mcols(genesGR) %>%
+  .[str_starts(colnames(.), "gene")]
+
+
 transGR <- import.gff(gtf, feature.type = "transcript")
-allGR <- import.gff(gtf) %>%
+%>%
   subset(type %in% c("exon", "UTR"))
 mcols(transGR) <- mcols(transGR)[str_ends(colnames(mcols(transGR)), "_(id|type|name|status)")]
 transProm <- promoters(transGR) %>%
@@ -152,3 +156,4 @@ plotTracks(
   list(ideo, ax, it, bins, peaks, gm)
 )
 # Now we just need to tidy this up
+# We could also just change the genes to genes and add a chromHMM track
