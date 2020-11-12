@@ -82,75 +82,6 @@ gi <- read_rds(
 gi <- subset(gi, fdr < 0.05)
 gc()
 
-## Load in the gene & other annotations. This was downloaded using `wget`
-gtf_ftp <- "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_33/GRCh37_mapping/gencode.v33lift37.annotation.gtf.gz"
-gtf <- here::here("data/external/gencode.v33lift37.annotation.gtf.gz")
-## Load the complete gtf, then subset to form the useable GR objects
-allGR <- import.gff(gtf) %>%
-  subset(seqnames != "chrM")
-seqinfo(allGR, new2old = match(seqlevels(sq), seqlevels(allGR))) <- sq
-mcols(allGR) <- mcols(allGR) %>%
-  .[str_ends(colnames(.), "(id|type|name|status)") & !str_starts(colnames(.), "hgnc|remap|ccds")]
-allGR$gene_id <- str_extract(allGR$gene_id, "ENSG[0-9]+")
-allGR$transcript_id <- str_extract(allGR$transcript_id, "ENST[0-9]+")
-allGR$exon_id <- str_extract(allGR$exon_id, "ENSE[0-9]+")
-## Just the genes
-genesGR <- subset(allGR, type == "gene")
-mcols(genesGR) <- mcols(genesGR) %>%
-  .[str_starts(colnames(.), "gene")]
-names(genesGR) <- genesGR$gene_id
-## Just the transcripts
-transGR <- subset(allGR, type == "transcript")
-mcols(transGR) <- mcols(transGR) %>%
-  .[str_starts(colnames(.), "transcript|gene")]
-names(transGR) <- transGR$transcript_id
-
-## GViz requires specific structures for gene & transcript models
-## Compress the multiple exons for each gene for a single structure for each gene
-exonGR <- subset(allGR, type %in% c("exon", "UTR"))
-geneModels <- exonGR %>%
-  split(f = .$gene_id) %>%
-  GenomicRanges::reduce() %>%
-  as("GRangesList") %>%
-  unlist() %>%
-  sort()
-geneModels$type <- "exon"
-geneModels$gene <- names(geneModels)
-geneModels$exon <- paste(
-  geneModels$gene,
-  unlist(
-    lapply(
-      split(geneModels$gene, f = fct_inorder(geneModels$gene)),
-      seq_along
-    )
-  ),
-  sep = "_"
-)
-geneModels$transcript <- geneModels$gene
-geneModels$symbol <- genesGR[names(geneModels)]$gene_name
-write_rds(geneModels, here::here("output/geneModels.rds"), compress = "gz")
-## Create an object for visualising transcript level annotation using the same strategy
-transModels <- exonGR %>%
-  split(f = .$transcript_id) %>%
-  GenomicRanges::reduce() %>%
-  as("GRangesList") %>%
-  unlist() %>%
-  sort()
-transModels$type <- "exon"
-transModels$gene <- transGR[names(transModels)]$gene_id
-transModels$exon <- paste(
-  names(transModels),
-  unlist(
-    lapply(
-      split(names(transModels), f = fct_inorder(names(transModels))),
-      seq_along
-    )
-  ),
-  sep = "_"
-)
-transModels$transcript <- names(transModels)
-transModels$symbol <- transGR[names(transModels)]$gene_name
-write_rds(transModels, here::here("output/transModels.rds"), compress = "gz")
 
 # We need the bed files with ChIP peaks to really explore & figure the visualisations out now
 # EHF is chr11:34642640-34700000
@@ -210,46 +141,6 @@ plotTracks(
 
 # Bed file is
 # https://egg2.wustl.edu/roadmap/data/byFileType/chromhmmSegmentations/ChmmModels/imputed12marks/jointModel/final/E119_25_imputed12marks_dense.bed.gz
-# The list of tissues is https://egg2.wustl.edu/roadmap/data/byFileType/chromhmmSegmentations/ChmmModels/imputed12marks/jointModel/final/EIDlegend.txt
-tissueMap <- "https://egg2.wustl.edu/roadmap/data/byFileType/chromhmmSegmentations/ChmmModels/imputed12marks/jointModel/final/EIDlegend.txt" %>%
-  read_tsv(col_names = c("code", "tissue"))
-## See what's available
-tissueMap %>%
-  dplyr::filter(str_detect(tissue, "reast|amm"))
-
-
-
-stateMap <- "https://egg2.wustl.edu/roadmap/data/byFileType/chromhmmSegmentations/ChmmModels/imputed12marks/jointModel/final/annotation_25_imputed12marks.txt" %>%
-  read_tsv() %>%
-  rename_all(str_to_lower) %>%
-  rename_all(str_replace_all, pattern = " ", replacement = "_") %>%
-  rename_all(str_remove_all, pattern = "\\.") %>%
-  unite(name, state_no, mnemonic, sep = "_", remove = FALSE) %>%
-  separate(color_code, into = c("r", "g", "b"), sep = ",") %>%
-  mutate(
-    across(c("name", "mnemonic", "description"), fct_inorder),
-    itemRgb = rgb(r, g, b, maxColorValue = 255),
-    state_no = as.integer(state_no)
-  ) %>%
-  dplyr::select(-any_of(c("r", "g", "b")))
-# Plot the chromHMM states
-stateMap %>%
-  ggplot(aes(1, state_no, fill = name)) +
-  geom_raster() +
-  scale_fill_manual(values = stateMap$itemRgb) +
-  scale_x_continuous(expand = expansion(0, 0)) +
-  scale_y_reverse(
-    breaks = stateMap$state_no,
-    labels = stateMap$description,
-    expand = expansion(0, 0)
-  ) +
-  theme_bw() +
-  theme(
-    axis.ticks.x = element_blank(),
-    axis.text.x = element_blank(),
-    axis.title = element_blank(),
-    legend.position = "none"
-  )
 
 
 # To add these to the track use dput(chromCols) & paste the output in
