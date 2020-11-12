@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Stephen Pederson Dame Roma Mitchell Cancer Research Laboratories Adelaide Medical School University of Adelaide" />
+
+
+<title>Annotation Setup</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">ENCODE_T47D_HiC_ENCSR549MGQ</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="description.html">Workflow Description</a>
+</li>
+<li>
+  <a href="annotation_setup.html">Annotations</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Annotation Setup</h1>
+<h4 class="author">Stephen Pederson<br>Dame Roma Mitchell Cancer Research Laboratories<br>Adelaide Medical School<br>University of Adelaide</h4>
+<h4 class="date">13 November, 2020</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2020-11-13
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>ENCODE_T47D_HiC_ENCSR549MGQ/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20200918code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20200918)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20200918code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20200918)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree2455b2a6bb50f54cf5ddea76bd268b6b64f63c91targetblank2455b2aa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/2455b2a6bb50f54cf5ddea76bd268b6b64f63c91" target="_blank">2455b2a</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree2455b2a6bb50f54cf5ddea76bd268b6b64f63c91targetblank2455b2aa" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/2455b2a6bb50f54cf5ddea76bd268b6b64f63c91" target="_blank">2455b2a</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    .snakemake/
+    Ignored:    matrix.tar.gz
+    Ignored:    maxhic.tar.gz
+    Ignored:    output/MaxHiC/
+
+Untracked files:
+    Untracked:  data/external/gencode.v33lift37.annotation.gtf.gz
+    Untracked:  output/allGR.rds
+    Untracked:  output/gi_40000.rds
+
+Unstaged changes:
+    Modified:   analysis/_site.yml
+    Modified:   analysis/exploration.R
+    Modified:   output/geneModels.rds
+    Modified:   output/transModels.rds
+    Modified:   rules/reference.smk
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/annotation_setup.Rmd</code>) and HTML (<code>docs/annotation_setup.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/2455b2a6bb50f54cf5ddea76bd268b6b64f63c91/analysis/annotation_setup.Rmd" target="_blank">2455b2a</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-13
+</td>
+<td>
+Defined Annotations
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<pre class="r"><code>library(tidyverse)
+library(magrittr)
+library(rtracklayer)
+library(yaml)
+library(glue)
+library(pander)
+library(scales)</code></pre>
+<pre class="r"><code>panderOptions(&quot;table.split.table&quot;, Inf)
+panderOptions(&quot;big.mark&quot;, &quot;,&quot;)</code></pre>
+<pre class="r"><code>config &lt;- here::here(&quot;config/config.yml&quot;) %&gt;%
+  read_yaml()</code></pre>
+<div id="genome-annotations" class="section level1">
+<h1>Genome Annotations</h1>
+<p>Before analysing the interactions detected using Max-HiC, a series of annotation files were required which will be applied to all bed files and bin sizes.</p>
+<div id="genome-description" class="section level2">
+<h2>Genome Description</h2>
+<pre class="r"><code>sq &lt;- here::here(&quot;config/GRCh37.chr_sizes.tsv&quot;) %&gt;%
+  read_lines() %&gt;%
+  matrix(ncol = 2, byrow = TRUE) %&gt;%
+  set_colnames(c(&quot;seqnames&quot;, &quot;seqlengths&quot;)) %&gt;%
+  as.data.frame() %&gt;%
+  mutate(
+    seqlengths = str_remove_all(seqlengths, &quot;\t&quot;),
+    genome = config$ref$build
+  ) %&gt;%
+  as(&quot;Seqinfo&quot;)</code></pre>
+<p>As the foundation for all annotation objects, the description of the underlying genome is required as a <code>Seqinfo</code> object. For this analysis, both the mitochondrial genome and scaffolds were excluded, giving only the autosomes and sex chromosomes as defined in GRCh37.</p>
+</div>
+<div id="gene-and-transcript-annotations" class="section level2">
+<h2>Gene and Transcript Annotations</h2>
+<pre class="r"><code>gtf_ftp &lt;- &quot;ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_33/GRCh37_mapping/gencode.v33lift37.annotation.gtf.gz&quot;
+gtf &lt;- here::here(&quot;data/external&quot;, basename(gtf_ftp))
+if (!file.exists(gtf)){
+  cmd &lt;- glue(&quot;-O {gtf} {gtf_ftp}&quot;)
+  system2(&quot;wget&quot;, cmd)
+}</code></pre>
+<pre class="r"><code>allGR &lt;- import.gff(gtf) %&gt;%
+  subset(seqnames != &quot;chrM&quot;)
+seqinfo(allGR, new2old = match(seqlevels(sq), seqlevels(allGR))) &lt;- sq
+mcols(allGR) &lt;- mcols(allGR) %&gt;%
+  .[str_ends(colnames(.), &quot;(id|type|name|status)&quot;) &amp; !str_starts(colnames(.), &quot;protein|hgnc|remap|ccds&quot;)]
+mcols(allGR)[c(&quot;gene_id&quot;, &quot;transcript_id&quot;, &quot;exon_id&quot;)] %&lt;&gt;%
+  lapply(str_extract, pattern = &quot;ENS[GTE][0-9]+&quot;)
+allGR &lt;- allGR %&gt;%
+  subset(type %in% c(&quot;gene&quot;, &quot;transcript&quot;, &quot;exon&quot;)) %&gt;%
+  split(f = .$type)
+allGR %&gt;%
+  write_rds(
+    here::here(&quot;output/allGR.rds&quot;), 
+    compress = &quot;gz&quot;
+  )</code></pre>
+<p>No formal R object classes, such as an <code>EnsDb</code> object exist for this specific build (Gencode Release 33), and as such the gtf file for this release was downloaded and used to build all annotation objects.</p>
+<ul>
+<li>The complete set of features was loaded, excluding mitochondrial features.</li>
+<li>Version numbers were removed from all gene, transcript and exon identifiers for convenience, with the minimal set of columns (<em>type</em>, <em>gene_id</em>, <em>gene_type</em>, <em>gene_name</em>, <em>transcript_id</em>, <em>transcript_type</em>, <em>transcript_name</em>, <em>exon_id</em>, <em>gene_status</em> and <em>transcript_status</em>) retained.</li>
+<li>The manually generated <code>Seqinfo</code> was also placed as the foundation of this annotation object.</li>
+<li>Only exon, transcript and gene-level annotations were retained with these being all separated and contained in a single <code>GRangesList</code> object.</li>
+<li>This master set of annotations was exported as an <code>rds</code> file for simple import into subsequent steps of the analysis</li>
+</ul>
+<p>In total this object contained annotations for 62,449 genes, 229,655 transcripts and 1,379,777 exons.</p>
+</div>
+<div id="gene-and-transcript-models" class="section level2">
+<h2>Gene and Transcript Models</h2>
+<pre class="r"><code>geneModels &lt;- allGR$exon %&gt;%
+  split(f = .$gene_id) %&gt;%
+  GenomicRanges::reduce() %&gt;%
+  as(&quot;GRangesList&quot;) %&gt;%
+  unlist() %&gt;%
+  sort()
+geneModels$type &lt;- &quot;exon&quot;
+geneModels$gene &lt;- names(geneModels)
+geneModels$exon &lt;- paste(
+  geneModels$gene,
+  unlist(
+    lapply(
+      split(geneModels$gene, f = fct_inorder(geneModels$gene)),
+      seq_along
+    )
+  ),
+  sep = &quot;_&quot;
+)
+geneModels$transcript &lt;- geneModels$gene
+geneModels$symbol &lt;- allGR$gene %&gt;%
+  with(
+    structure(gene_name, names = gene_id)
+  ) %&gt;%
+  .[geneModels$gene]
+write_rds(geneModels, here::here(&quot;output/geneModels.rds&quot;), compress = &quot;gz&quot;)</code></pre>
+<pre class="r"><code>transModels &lt;- allGR$exon %&gt;%
+  split(f = .$transcript_id) %&gt;%
+  GenomicRanges::reduce() %&gt;%
+  as(&quot;GRangesList&quot;) %&gt;%
+  unlist() %&gt;%
+  sort()
+transModels$type &lt;- &quot;exon&quot;
+transModels$gene &lt;- allGR$transcript %&gt;%
+  with(
+    structure(gene_id, names = transcript_id)
+  ) %&gt;%
+  .[names(transModels)]
+transModels$exon &lt;- names(transModels) %&gt;%
+  enframe(name = c(), value = &quot;transcript&quot;) %&gt;% 
+  group_by(transcript) %&gt;%
+  mutate(exon = seq_along(transcript)) %&gt;% 
+  unite(exon, transcript, exon, sep = &quot;_&quot;) %&gt;%
+  pull(exon)
+transModels$transcript &lt;- names(transModels)
+transModels$symbol &lt;- geneModels[transModels$gene]$symbol
+write_rds(transModels, here::here(&quot;output/transModels.rds&quot;), compress = &quot;gz&quot;)</code></pre>
+<p>Visualisation using the Bioconductor package <code>Gviz</code> requires specific structures for gene and transcript models to be displayed and these were formed once, so they too could be simply imported during all visualisation stages.</p>
+</div>
+</div>
+<div id="chromhmm-models" class="section level1">
+<h1>ChromHMM Models</h1>
+<div id="available-tissues" class="section level2">
+<h2>Available Tissues</h2>
+<pre class="r"><code>tissueMap &lt;- &quot;https://egg2.wustl.edu/roadmap/data/byFileType/chromhmmSegmentations/ChmmModels/imputed12marks/jointModel/final/EIDlegend.txt&quot; %&gt;%
+  read_tsv(col_names = c(&quot;code&quot;, &quot;tissue&quot;))
+tissueMap %&gt;%
+  pander(
+    style = &quot;rmarkdown&quot;,
+    justify = &quot;ll&quot;,
+    emphasize.strong.rows = which(str_detect(.$tissue, &quot;reast|amm&quot;)),
+    caption = &quot;*Tissues for which ChromHMM predictions are available*&quot;
+  )</code></pre>
+<table>
+<caption><em>Tissues for which ChromHMM predictions are available</em></caption>
+<thead>
+<tr class="header">
+<th align="left">code</th>
+<th align="left">tissue</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">E001</td>
+<td align="left">ES-I3 Cell Line</td>
+</tr>
+<tr class="even">
+<td align="left">E002</td>
+<td align="left">ES-WA7 Cell Line</td>
+</tr>
+<tr class="odd">
+<td align="left">E003</td>
+<td align="left">H1 Cell Line</td>
+</tr>
+<tr class="even">
+<td align="left">E004</td>
+<td align="left">H1 BMP4 Derived Mesendoderm Cultured Cells</td>
+</tr>
+<tr class="odd">
+<td align="left">E005</td>
+<td align="left">H1 BMP4 Derived Trophoblast Cultured Cells</td>
+</tr>
+<tr class="even">
+<td align="left">E006</td>
+<td align="left">H1 Derived Mesenchymal Stem Cells</td>
+</tr>
+<tr class="odd">
+<td align="left">E007</td>
+<td align="left">H1 Derived Neuronal Progenitor Cultured Cells</td>
+</tr>
+<tr class="even">
+<td align="left">E008</td>
+<td align="left">H9 Cell Line</td>
+</tr>
+<tr class="odd">
+<td align="left">E009</td>
+<td align="left">H9 Derived Neuronal Progenitor Cultured Cells</td>
+</tr>
+<tr class="even">
+<td align="left">E010</td>
+<td align="left">H9 Derived Neuron Cultured Cells</td>
+</tr>
+<tr class="odd">
+<td align="left">E011</td>
+<td align="left">hESC Derived CD184+ Endoderm Cultured Cells</td>
+</tr>
+<tr class="even">
+<td align="left">E012</td>
+<td align="left">hESC Derived CD56+ Ectoderm Cultured Cells</td>
+</tr>
+<tr class="odd">
+<td align="left">E013</td>
+<td align="left">hESC Derived CD56+ Mesoderm Cultured Cells</td>
+</tr>
+<tr class="even">
+<td align="left">E014</td>
+<td align="left">HUES48 Cell Line</td>
+</tr>
+<tr class="odd">
+<td align="left">E015</td>
+<td align="left">HUES6 Cell Line</td>
+</tr>
+<tr class="even">
+<td align="left">E016</td>
+<td align="left">HUES64 Cell Line</td>
+</tr>
+<tr class="odd">
+<td align="left">E017</td>
+<td align="left">IMR90 fetal lung fibroblasts Cell Line</td>
+</tr>
+<tr class="even">
+<td align="left">E018</td>
+<td align="left">iPS-15b Cell Line</td>
+</tr>
+<tr class="odd">
+<td align="left">E019</td>
+<td align="left">iPS-18 Cell Line</td>
+</tr>
+<tr class="even">
+<td align="left">E020</td>
+<td align="left">iPS-20b Cell Line</td>
+</tr>
+<tr class="odd">
+<td align="left">E021</td>
+<td align="left">iPS DF 6.9 Cell Line</td>
+</tr>
+<tr class="even">
+<td align="left">E022</td>
+<td align="left">iPS DF 19.11 Cell Line</td>
+</tr>
+<tr class="odd">
+<td align="left">E023</td>
+<td align="left">Mesenchymal Stem Cell Derived Adipocyte Cultured Cells</td>
+</tr>
+<tr class="even">
+<td align="left">E024</td>
+<td align="left">ES-UCSF4 Cell Line</td>
+</tr>
+<tr class="odd">
+<td align="left">E025</td>
+<td align="left">Adipose Derived Mesenchymal Stem Cell Cultured Cells</td>
+</tr>
+<tr class="even">
+<td align="left">E026</td>
+<td align="left">Bone Marrow Derived Cultured Mesenchymal Stem Cells</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>E027</strong></td>
+<td align="left"><strong>Breast Myoepithelial Primary Cells</strong></td>
+</tr>
+<tr class="even">
+<td align="left"><strong>E028</strong></td>
+<td align="left"><strong>Breast variant Human Mammary Epithelial Cells (vHMEC)</strong></td>
+</tr>
+<tr class="odd">
+<td align="left">E029</td>
+<td align="left">Primary monocytes fromperipheralblood</td>
+</tr>
+<tr class="even">
+<td align="left">E030</td>
+<td align="left">Primary neutrophils fromperipheralblood</td>
+</tr>
+<tr class="odd">
+<td align="left">E031</td>
+<td align="left">Primary B cells from cord blood</td>
+</tr>
+<tr class="even">
+<td align="left">E032</td>
+<td align="left">Primary B cells from peripheral blood</td>
+</tr>
+<tr class="odd">
+<td align="left">E033</td>
+<td align="left">Primary T cells from cord blood</td>
+</tr>
+<tr class="even">
+<td align="left">E034</td>
+<td align="left">Primary T cells fromperipheralblood</td>
+</tr>
+<tr class="odd">
+<td align="left">E035</td>
+<td align="left">Primary hematopoietic stem cells</td>
+</tr>
+<tr class="even">
+<td align="left">E036</td>
+<td align="left">Primary hematopoietic stem cells short term culture</td>
+</tr>
+<tr class="odd">
+<td align="left">E037</td>
+<td align="left">Primary T helper memory cells from peripheral blood 2</td>
+</tr>
+<tr class="even">
+<td align="left">E038</td>
+<td align="left">Primary T helper naive cells from peripheral blood</td>
+</tr>
+<tr class="odd">
+<td align="left">E039</td>
+<td align="left">Primary T helper naive cells fromperipheralblood</td>
+</tr>
+<tr class="even">
+<td align="left">E040</td>
+<td align="left">Primary T helper memory cells from peripheral blood 1</td>
+</tr>
+<tr class="odd">
+<td align="left">E041</td>
+<td align="left">Primary T helper cells PMA-I stimulated</td>
+</tr>
+<tr class="even">
+<td align="left">E042</td>
+<td align="left">Primary T helper 17 cells PMA-I stimulated</td>
+</tr>
+<tr class="odd">
+<td align="left">E043</td>
+<td align="left">Primary T helper cells fromperipheralblood</td>
+</tr>
+<tr class="even">
+<td align="left">E044</td>
+<td align="left">Primary T regulatory cells fromperipheralblood</td>
+</tr>
+<tr class="odd">
+<td align="left">E045</td>
+<td align="left">Primary T cells effector/memory enriched fromperipheralblood</td>
+</tr>
+<tr class="even">
+<td align="left">E046</td>
+<td align="left">Primary Natural Killer cells fromperipheralblood</td>
+</tr>
+<tr class="odd">
+<td align="left">E047</td>
+<td align="left">Primary T killer naive cells fromperipheralblood</td>
+</tr>
+<tr class="even">
+<td align="left">E048</td>
+<td align="left">Primary T killer memory cells from peripheral blood</td>
+</tr>
+<tr class="odd">
+<td align="left">E049</td>
+<td align="left">Mesenchymal Stem Cell Derived Chondrocyte Cultured Cells</td>
+</tr>
+<tr class="even">
+<td align="left">E050</td>
+<td align="left">Primary hematopoietic stem cells G-CSF-mobilized Female</td>
+</tr>
+<tr class="odd">
+<td align="left">E051</td>
+<td align="left">Primary hematopoietic stem cells G-CSF-mobilized Male</td>
+</tr>
+<tr class="even">
+<td align="left">E052</td>
+<td align="left">Muscle Satellite Cultured Cells</td>
+</tr>
+<tr class="odd">
+<td align="left">E053</td>
+<td align="left">Cortex derived primary cultured neurospheres</td>
+</tr>
+<tr class="even">
+<td align="left">E054</td>
+<td align="left">Ganglion Eminence derived primary cultured neurospheres</td>
+</tr>
+<tr class="odd">
+<td align="left">E055</td>
+<td align="left">Foreskin Fibroblast Primary Cells skin01</td>
+</tr>
+<tr class="even">
+<td align="left">E056</td>
+<td align="left">Foreskin Fibroblast Primary Cells skin02</td>
+</tr>
+<tr class="odd">
+<td align="left">E057</td>
+<td align="left">Foreskin Keratinocyte Primary Cells skin02</td>
+</tr>
+<tr class="even">
+<td align="left">E058</td>
+<td align="left">Foreskin Keratinocyte Primary Cells skin03</td>
+</tr>
+<tr class="odd">
+<td align="left">E059</td>
+<td align="left">Foreskin Melanocyte Primary Cells skin01</td>
+</tr>
+<tr class="even">
+<td align="left">E061</td>
+<td align="left">Foreskin Melanocyte Primary Cells skin03</td>
+</tr>
+<tr class="odd">
+<td align="left">E062</td>
+<td align="left">Primary mononuclear cells fromperipheralblood</td>
+</tr>
+<tr class="even">
+<td align="left">E063</td>
+<td align="left">Adipose Nuclei</td>
+</tr>
+<tr class="odd">
+<td align="left">E065</td>
+<td align="left">Aorta</td>
+</tr>
+<tr class="even">
+<td align="left">E066</td>
+<td align="left">Liver</td>
+</tr>
+<tr class="odd">
+<td align="left">E067</td>
+<td align="left">Brain Angular Gyrus</td>
+</tr>
+<tr class="even">
+<td align="left">E068</td>
+<td align="left">Brain Anterior Caudate</td>
+</tr>
+<tr class="odd">
+<td align="left">E069</td>
+<td align="left">Brain Cingulate Gyrus</td>
+</tr>
+<tr class="even">
+<td align="left">E070</td>
+<td align="left">Brain Germinal Matrix</td>
+</tr>
+<tr class="odd">
+<td align="left">E071</td>
+<td align="left">Brain Hippocampus Middle</td>
+</tr>
+<tr class="even">
+<td align="left">E072</td>
+<td align="left">Brain Inferior Temporal Lobe</td>
+</tr>
+<tr class="odd">
+<td align="left">E073</td>
+<td align="left">Brain Dorsolateral Prefrontal Cortex</td>
+</tr>
+<tr class="even">
+<td align="left">E074</td>
+<td align="left">Brain Substantia Nigra</td>
+</tr>
+<tr class="odd">
+<td align="left">E075</td>
+<td align="left">Colonic Mucosa</td>
+</tr>
+<tr class="even">
+<td align="left">E076</td>
+<td align="left">Colon Smooth Muscle</td>
+</tr>
+<tr class="odd">
+<td align="left">E077</td>
+<td align="left">Duodenum Mucosa</td>
+</tr>
+<tr class="even">
+<td align="left">E078</td>
+<td align="left">Duodenum Smooth Muscle</td>
+</tr>
+<tr class="odd">
+<td align="left">E079</td>
+<td align="left">Esophagus</td>
+</tr>
+<tr class="even">
+<td align="left">E080</td>
+<td align="left">Fetal Adrenal Gland</td>
+</tr>
+<tr class="odd">
+<td align="left">E081</td>
+<td align="left">Fetal Brain Male</td>
+</tr>
+<tr class="even">
+<td align="left">E082</td>
+<td align="left">Fetal Brain Female</td>
+</tr>
+<tr class="odd">
+<td align="left">E083</td>
+<td align="left">Fetal Heart</td>
+</tr>
+<tr class="even">
+<td align="left">E084</td>
+<td align="left">Fetal Intestine Large</td>
+</tr>
+<tr class="odd">
+<td align="left">E085</td>
+<td align="left">Fetal Intestine Small</td>
+</tr>
+<tr class="even">
+<td align="left">E086</td>
+<td align="left">Fetal Kidney</td>
+</tr>
+<tr class="odd">
+<td align="left">E087</td>
+<td align="left">Pancreatic Islets</td>
+</tr>
+<tr class="even">
+<td align="left">E088</td>
+<td align="left">Fetal Lung</td>
+</tr>
+<tr class="odd">
+<td align="left">E089</td>
+<td align="left">Fetal Muscle Trunk</td>
+</tr>
+<tr class="even">
+<td align="left">E090</td>
+<td align="left">Fetal Muscle Leg</td>
+</tr>
+<tr class="odd">
+<td align="left">E091</td>
+<td align="left">Placenta</td>
+</tr>
+<tr class="even">
+<td align="left">E092</td>
+<td align="left">Fetal Stomach</td>
+</tr>
+<tr class="odd">
+<td align="left">E093</td>
+<td align="left">Fetal Thymus</td>
+</tr>
+<tr class="even">
+<td align="left">E094</td>
+<td align="left">Gastric</td>
+</tr>
+<tr class="odd">
+<td align="left">E095</td>
+<td align="left">Left Ventricle</td>
+</tr>
+<tr class="even">
+<td align="left">E096</td>
+<td align="left">Lung</td>
+</tr>
+<tr class="odd">
+<td align="left">E097</td>
+<td align="left">Ovary</td>
+</tr>
+<tr class="even">
+<td align="left">E098</td>
+<td align="left">Pancreas</td>
+</tr>
+<tr class="odd">
+<td align="left">E099</td>
+<td align="left">Placenta Amnion</td>
+</tr>
+<tr class="even">
+<td align="left">E100</td>
+<td align="left">Psoas Muscle</td>
+</tr>
+<tr class="odd">
+<td align="left">E101</td>
+<td align="left">Rectal Mucosa Donor 29</td>
+</tr>
+<tr class="even">
+<td align="left">E102</td>
+<td align="left">Rectal Mucosa Donor 31</td>
+</tr>
+<tr class="odd">
+<td align="left">E103</td>
+<td align="left">Rectal Smooth Muscle</td>
+</tr>
+<tr class="even">
+<td align="left">E104</td>
+<td align="left">Right Atrium</td>
+</tr>
+<tr class="odd">
+<td align="left">E105</td>
+<td align="left">Right Ventricle</td>
+</tr>
+<tr class="even">
+<td align="left">E106</td>
+<td align="left">Sigmoid Colon</td>
+</tr>
+<tr class="odd">
+<td align="left">E107</td>
+<td align="left">Skeletal Muscle Male</td>
+</tr>
+<tr class="even">
+<td align="left">E108</td>
+<td align="left">Skeletal Muscle Female</td>
+</tr>
+<tr class="odd">
+<td align="left">E109</td>
+<td align="left">Small Intestine</td>
+</tr>
+<tr class="even">
+<td align="left">E110</td>
+<td align="left">Stomach Mucosa</td>
+</tr>
+<tr class="odd">
+<td align="left">E111</td>
+<td align="left">Stomach Smooth Muscle</td>
+</tr>
+<tr class="even">
+<td align="left">E112</td>
+<td align="left">Thymus</td>
+</tr>
+<tr class="odd">
+<td align="left">E113</td>
+<td align="left">Spleen</td>
+</tr>
+<tr class="even">
+<td align="left">E114</td>
+<td align="left">A549 EtOH 0.02pct Lung Carcinoma Cell Line</td>
+</tr>
+<tr class="odd">
+<td align="left">E115</td>
+<td align="left">Dnd41 TCell Leukemia Cell Line</td>
+</tr>
+<tr class="even">
+<td align="left">E116</td>
+<td align="left">GM12878 Lymphoblastoid Cell Line</td>
+</tr>
+<tr class="odd">
+<td align="left">E117</td>
+<td align="left">HeLa-S3 Cervical Carcinoma Cell Line</td>
+</tr>
+<tr class="even">
+<td align="left">E118</td>
+<td align="left">HepG2 Hepatocellular Carcinoma Cell Line</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>E119</strong></td>
+<td align="left"><strong>HMEC Mammary Epithelial Primary Cells</strong></td>
+</tr>
+<tr class="even">
+<td align="left">E120</td>
+<td align="left">HSMM Skeletal Muscle Myoblasts Cell Line</td>
+</tr>
+<tr class="odd">
+<td align="left">E121</td>
+<td align="left">HSMM cell derived Skeletal Muscle Myotubes Cell Line</td>
+</tr>
+<tr class="even">
+<td align="left">E122</td>
+<td align="left">HUVEC Umbilical Vein Endothelial Cells Cell Line</td>
+</tr>
+<tr class="odd">
+<td align="left">E123</td>
+<td align="left">K562 Leukemia Cell Line</td>
+</tr>
+<tr class="even">
+<td align="left">E124</td>
+<td align="left">Monocytes-CD14+ RO01746 Cell Line</td>
+</tr>
+<tr class="odd">
+<td align="left">E125</td>
+<td align="left">NH-A Astrocytes Cell Line</td>
+</tr>
+<tr class="even">
+<td align="left">E126</td>
+<td align="left">NHDF-Ad Adult Dermal Fibroblast Primary Cells</td>
+</tr>
+<tr class="odd">
+<td align="left">E127</td>
+<td align="left">NHEK-Epidermal Keratinocyte Primary Cells</td>
+</tr>
+<tr class="even">
+<td align="left">E128</td>
+<td align="left">NHLF Lung Fibroblast Primary Cells</td>
+</tr>
+<tr class="odd">
+<td align="left">E129</td>
+<td align="left">Osteoblast Primary Cells</td>
+</tr>
+</tbody>
+</table>
+<p>ChromHMM model have been defined as part of the ENCODE project and the Epigenomics Roadmap, which predict the state of chromatin across the entire genome by integrating multiple data types, such as ChIP-Seq, Methylation Data, Histone marks etc. As these marks are tissue specific, the modelling has been performed on 127 cell/tissue types, with those associated with Breast Tissue highlighted in the table above.</p>
+</div>
+<div id="chromatin-states" class="section level2">
+<h2>Chromatin States</h2>
+<pre class="r"><code>stateMap &lt;- &quot;https://egg2.wustl.edu/roadmap/data/byFileType/chromhmmSegmentations/ChmmModels/imputed12marks/jointModel/final/annotation_25_imputed12marks.txt&quot; %&gt;%
+  read_tsv() %&gt;%
+  rename_all(str_to_lower) %&gt;%
+  rename_all(str_replace_all, pattern = &quot; &quot;, replacement = &quot;_&quot;) %&gt;%
+  rename_all(str_remove_all, pattern = &quot;\\.&quot;) %&gt;%
+  unite(name, state_no, mnemonic, sep = &quot;_&quot;, remove = FALSE) %&gt;%
+  separate(color_code, into = c(&quot;r&quot;, &quot;g&quot;, &quot;b&quot;), sep = &quot;,&quot;) %&gt;%
+  mutate(
+    across(c(&quot;name&quot;, &quot;mnemonic&quot;, &quot;description&quot;), fct_inorder),
+    itemRgb = rgb(r, g, b, maxColorValue = 255),
+    state_no = as.integer(state_no)
+  ) %&gt;%
+  dplyr::select(-any_of(c(&quot;r&quot;, &quot;g&quot;, &quot;b&quot;)))</code></pre>
+<pre class="r"><code>stateMap %&gt;%
+  rename_all(str_to_title) %&gt;%
+  dplyr::select(
+    Name, Mnemonic, Description, Colour = Color_name, RGB = Itemrgb
+  ) %&gt;%
+  pander(
+    justify = &quot;llllr&quot;,
+    caption = &quot;*Chromatin States as defined by the ChromHMM model*&quot;
+  )</code></pre>
+<table>
+<caption><em>Chromatin States as defined by the ChromHMM model</em></caption>
+<colgroup>
+<col width="16%" />
+<col width="12%" />
+<col width="36%" />
+<col width="23%" />
+<col width="11%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Mnemonic</th>
+<th align="left">Description</th>
+<th align="left">Colour</th>
+<th align="right">RGB</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1_TssA</td>
+<td align="left">TssA</td>
+<td align="left">Active TSS</td>
+<td align="left">Red</td>
+<td align="right">#FF0000</td>
+</tr>
+<tr class="even">
+<td align="left">2_PromU</td>
+<td align="left">PromU</td>
+<td align="left">Promoter Upstream TSS</td>
+<td align="left">Orange Red</td>
+<td align="right">#FF4500</td>
+</tr>
+<tr class="odd">
+<td align="left">3_PromD1</td>
+<td align="left">PromD1</td>
+<td align="left">Promoter Downstream TSS with DNase</td>
+<td align="left">Orange Red</td>
+<td align="right">#FF4500</td>
+</tr>
+<tr class="even">
+<td align="left">4_PromD2</td>
+<td align="left">PromD2</td>
+<td align="left">Promoter Downstream TSS</td>
+<td align="left">Orange Red</td>
+<td align="right">#FF4500</td>
+</tr>
+<tr class="odd">
+<td align="left">5_Tx5’</td>
+<td align="left">Tx5’</td>
+<td align="left">Transcription 5’</td>
+<td align="left">Green</td>
+<td align="right">#008000</td>
+</tr>
+<tr class="even">
+<td align="left">6_Tx</td>
+<td align="left">Tx</td>
+<td align="left">Transcription</td>
+<td align="left">Green</td>
+<td align="right">#008000</td>
+</tr>
+<tr class="odd">
+<td align="left">7_Tx3’</td>
+<td align="left">Tx3’</td>
+<td align="left">Transcription 3’</td>
+<td align="left">Green</td>
+<td align="right">#008000</td>
+</tr>
+<tr class="even">
+<td align="left">8_TxWk</td>
+<td align="left">TxWk</td>
+<td align="left">Weak transcription</td>
+<td align="left">Light Green</td>
+<td align="right">#009600</td>
+</tr>
+<tr class="odd">
+<td align="left">9_TxReg</td>
+<td align="left">TxReg</td>
+<td align="left">Transcription Regulatory</td>
+<td align="left">GreenYellow</td>
+<td align="right">#C2E105</td>
+</tr>
+<tr class="even">
+<td align="left">10_TxEnh5’</td>
+<td align="left">TxEnh5’</td>
+<td align="left">Transcription 5’ Enhancer</td>
+<td align="left">GreenYellow</td>
+<td align="right">#C2E105</td>
+</tr>
+<tr class="odd">
+<td align="left">11_TxEnh3’</td>
+<td align="left">TxEnh3’</td>
+<td align="left">Transcription 3’ Enhancer</td>
+<td align="left">GreenYellow</td>
+<td align="right">#C2E105</td>
+</tr>
+<tr class="even">
+<td align="left">12_TxEnhW</td>
+<td align="left">TxEnhW</td>
+<td align="left">Transcription Weak Enhancer</td>
+<td align="left">GreenYellow</td>
+<td align="right">#C2E105</td>
+</tr>
+<tr class="odd">
+<td align="left">13_EnhA1</td>
+<td align="left">EnhA1</td>
+<td align="left">Active Enhancer 1</td>
+<td align="left">Orange</td>
+<td align="right">#FFC34D</td>
+</tr>
+<tr class="even">
+<td align="left">14_EnhA2</td>
+<td align="left">EnhA2</td>
+<td align="left">Active Enhancer 2</td>
+<td align="left">Orange</td>
+<td align="right">#FFC34D</td>
+</tr>
+<tr class="odd">
+<td align="left">15_EnhAF</td>
+<td align="left">EnhAF</td>
+<td align="left">Active Enhancer Flank</td>
+<td align="left">Orange</td>
+<td align="right">#FFC34D</td>
+</tr>
+<tr class="even">
+<td align="left">16_EnhW1</td>
+<td align="left">EnhW1</td>
+<td align="left">Weak Enhancer 1</td>
+<td align="left">Yellow</td>
+<td align="right">#FFFF00</td>
+</tr>
+<tr class="odd">
+<td align="left">17_EnhW2</td>
+<td align="left">EnhW2</td>
+<td align="left">Weak Enhancer 2</td>
+<td align="left">Yellow</td>
+<td align="right">#FFFF00</td>
+</tr>
+<tr class="even">
+<td align="left">18_EnhAc</td>
+<td align="left">EnhAc</td>
+<td align="left">Enhancer Acetylation Only</td>
+<td align="left">Yellow</td>
+<td align="right">#FFFF00</td>
+</tr>
+<tr class="odd">
+<td align="left">19_DNase</td>
+<td align="left">DNase</td>
+<td align="left">DNase only</td>
+<td align="left">Light Yellow</td>
+<td align="right">#FFFF66</td>
+</tr>
+<tr class="even">
+<td align="left">20_ZNF/Rpts</td>
+<td align="left">ZNF/Rpts</td>
+<td align="left">ZNF genes &amp; repeats</td>
+<td align="left">Medium Aquamarine</td>
+<td align="right">#66CDAA</td>
+</tr>
+<tr class="odd">
+<td align="left">21_Het</td>
+<td align="left">Het</td>
+<td align="left">Heterochromatin</td>
+<td align="left">PaleTurquoise</td>
+<td align="right">#8A91D0</td>
+</tr>
+<tr class="even">
+<td align="left">22_PromP</td>
+<td align="left">PromP</td>
+<td align="left">Poised Promoter</td>
+<td align="left">Light Purple</td>
+<td align="right">#E6B8B7</td>
+</tr>
+<tr class="odd">
+<td align="left">23_PromBiv</td>
+<td align="left">PromBiv</td>
+<td align="left">Bivalent Promoter</td>
+<td align="left">Purple</td>
+<td align="right">#7030A0</td>
+</tr>
+<tr class="even">
+<td align="left">24_ReprPC</td>
+<td align="left">ReprPC</td>
+<td align="left">Repressed PolyComb</td>
+<td align="left">Silver</td>
+<td align="right">#808080</td>
+</tr>
+<tr class="odd">
+<td align="left">25_Quies</td>
+<td align="left">Quies</td>
+<td align="left">Quiescent/Low</td>
+<td align="left">White</td>
+<td align="right">#FFFFFF</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>stateMap %&gt;%
+  ggplot(aes(1, state_no, fill = name)) +
+  geom_raster() +
+  scale_fill_manual(values = stateMap$itemRgb) +
+  scale_x_continuous(expand = expansion(0, 0)) +
+  scale_y_reverse(
+    breaks = stateMap$state_no,
+    labels = stateMap$description,
+    expand = expansion(0, 0)
+  ) +
+  theme_bw() +
+  theme(
+    axis.ticks.x = element_blank(),
+    axis.text.x = element_blank(),
+    axis.title = element_blank(),
+    legend.position = &quot;none&quot;
+  )</code></pre>
+<div class="figure" style="text-align: center">
+<img src="figure/annotation_setup.Rmd/stateMapLegend-1.png" alt="*Standard colours used to indicate ChromHMM predicted states*" width="288" />
+<p class="caption">
+<em>Standard colours used to indicate ChromHMM predicted states</em>
+</p>
+</div>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.0.3 (2020-10-10)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 18.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1
+
+locale:
+ [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8    
+ [5] LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
+ [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] parallel  stats4    stats     graphics  grDevices utils     datasets 
+[8] methods   base     
+
+other attached packages:
+ [1] scales_1.1.1         pander_0.6.3         glue_1.4.2          
+ [4] yaml_2.2.1           rtracklayer_1.50.0   GenomicRanges_1.42.0
+ [7] GenomeInfoDb_1.26.0  IRanges_2.24.0       S4Vectors_0.28.0    
+[10] BiocGenerics_0.36.0  magrittr_1.5         forcats_0.5.0       
+[13] stringr_1.4.0        dplyr_1.0.2          purrr_0.3.4         
+[16] readr_1.4.0          tidyr_1.1.2          tibble_3.0.4        
+[19] ggplot2_3.3.2        tidyverse_1.3.0      workflowr_1.6.2     
+
+loaded via a namespace (and not attached):
+ [1] bitops_1.0-6                matrixStats_0.57.0         
+ [3] fs_1.5.0                    lubridate_1.7.9            
+ [5] httr_1.4.2                  rprojroot_1.3-2            
+ [7] tools_4.0.3                 backports_1.2.0            
+ [9] R6_2.5.0                    DBI_1.1.0                  
+[11] colorspace_1.4-1            withr_2.3.0                
+[13] tidyselect_1.1.0            curl_4.3                   
+[15] compiler_4.0.3              git2r_0.27.1               
+[17] cli_2.1.0                   rvest_0.3.6                
+[19] Biobase_2.50.0              xml2_1.3.2                 
+[21] DelayedArray_0.16.0         labeling_0.4.2             
+[23] digest_0.6.27               Rsamtools_2.6.0            
+[25] rmarkdown_2.5               XVector_0.30.0             
+[27] pkgconfig_2.0.3             htmltools_0.5.0            
+[29] MatrixGenerics_1.2.0        highr_0.8                  
+[31] dbplyr_2.0.0                rlang_0.4.8                
+[33] readxl_1.3.1                rstudioapi_0.11            
+[35] farver_2.0.3                generics_0.1.0             
+[37] jsonlite_1.7.1              BiocParallel_1.24.0        
+[39] RCurl_1.98-1.2              GenomeInfoDbData_1.2.4     
+[41] Matrix_1.2-18               Rcpp_1.0.5                 
+[43] munsell_0.5.0               fansi_0.4.1                
+[45] lifecycle_0.2.0             stringi_1.5.3              
+[47] whisker_0.4                 SummarizedExperiment_1.20.0
+[49] zlibbioc_1.36.0             grid_4.0.3                 
+[51] promises_1.1.1              crayon_1.3.4               
+[53] lattice_0.20-41             Biostrings_2.58.0          
+[55] haven_2.3.1                 hms_0.5.3                  
+[57] knitr_1.30                  pillar_1.4.6               
+[59] reprex_0.3.0                XML_3.99-0.5               
+[61] evaluate_0.14               modelr_0.1.8               
+[63] vctrs_0.3.4                 httpuv_1.5.4               
+[65] cellranger_1.1.0            gtable_0.3.0               
+[67] assertthat_0.2.1            xfun_0.19                  
+[69] broom_0.7.2                 later_1.1.0.1              
+[71] GenomicAlignments_1.26.0    ellipsis_0.3.1             
+[73] here_0.1                   </code></pre>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

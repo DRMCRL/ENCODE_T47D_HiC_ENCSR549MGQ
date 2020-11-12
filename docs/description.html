@@ -27,6 +27,8 @@
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 <script src="site_libs/htmlwidgets-1.5.2/htmlwidgets.js"></script>
 <script src="site_libs/viz-1.8.2/viz.js"></script>
 <link href="site_libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
@@ -47,7 +49,7 @@ div.section {
   div.column{display: inline-block; vertical-align: top; width: 50%;}
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
-      </style>
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -379,6 +381,9 @@ div.tocify {
 <li>
   <a href="description.html">Workflow Description</a>
 </li>
+<li>
+  <a href="annotation_setup.html">Annotations</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -401,7 +406,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Description of Workflow</h1>
 <h4 class="author">Stephen Pederson<br>Dame Roma Mitchell Cancer Research Laboratories<br>Adelaide Medical School<br>University of Adelaide</h4>
-<h4 class="date">05 November, 2020</h4>
+<h4 class="date">13 November, 2020</h4>
 
 </div>
 
@@ -426,7 +431,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-11-05
+<strong>Last updated:</strong> 2020-11-13
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -517,16 +522,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree84663abdd057640aa4c6c96a726f5208966b5d27targetblank84663aba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/84663abdd057640aa4c6c96a726f5208966b5d27" target="_blank">84663ab</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree2455b2a6bb50f54cf5ddea76bd268b6b64f63c91targetblank2455b2aa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/2455b2a6bb50f54cf5ddea76bd268b6b64f63c91" target="_blank">2455b2a</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree84663abdd057640aa4c6c96a726f5208966b5d27targetblank84663aba" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree2455b2a6bb50f54cf5ddea76bd268b6b64f63c91targetblank2455b2aa" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/84663abdd057640aa4c6c96a726f5208966b5d27" target="_blank">84663ab</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/2455b2a6bb50f54cf5ddea76bd268b6b64f63c91" target="_blank">2455b2a</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -540,8 +545,17 @@ Ignored files:
     Ignored:    maxhic.tar.gz
     Ignored:    output/MaxHiC/
 
+Untracked files:
+    Untracked:  data/external/gencode.v33lift37.annotation.gtf.gz
+    Untracked:  output/allGR.rds
+    Untracked:  output/gi_40000.rds
+
 Unstaged changes:
     Modified:   analysis/_site.yml
+    Modified:   analysis/exploration.R
+    Modified:   output/geneModels.rds
+    Modified:   output/transModels.rds
+    Modified:   rules/reference.smk
 
 </code></pre>
 <p>
@@ -580,6 +594,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/1e90482bf8ed5bec8d6f091f4aebd1c9fdcdf2ae/analysis/description.Rmd" target="_blank">1e90482</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-11
+</td>
+<td>
+Figured out first plot
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/fa4e74703a54627eb830b95eb563d0d50189a427/docs/description.html" target="_blank">fa4e747</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-05
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -677,7 +725,7 @@ library(spBioUtils)</code></pre>
   grViz()</code></pre>
 <div class="figure" style="text-align: center">
 <div id="htmlwidget-4e666953f0fda2f63352" style="width:672px;height:480px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-4e666953f0fda2f63352">{"x":{"diagram":"digraph snakemake_dag {\n    graph[bgcolor=white, margin=0];\n    node[shape=box, style=rounded, fontname=sans,                 fontsize=10, penwidth=2];\n    edge[penwidth=2, color=grey];\n\t1[label = \"adapter_removal\", color = \"#00FF00\", style=\"rounded\"];\n\t2[label = \"build_contact_maps\", color = \"#FF0000\", style=\"rounded\"];\n\t3[label = \"find_rs_fragments\", color = \"#0000FF\", style=\"rounded\"];\n\t4[label = \"make_hicpro_config\", color = \"#FF0000\", style=\"rounded\"];\n\t5[label = \"raw_fastqc\", color = \"#00FF00\", style=\"rounded\"];\n\t6[label = \"run_maxhic\", color = \"#8066B3\", style=\"rounded\"];\n\t7[label = \"get_reference\", color = \"#0000FF\", style=\"rounded\"];\n\t8[label = \"hicpro_merge\", color = \"#FF0000\", style=\"rounded\"];\n\t9[label = \"merge_interaction_matrices\", color = \"#8066B3\", style=\"rounded\"];\n\t10[label = \"trim_fastqc\", color = \"#00FF00\", style=\"rounded\"];\n\t11[label = \"bowtie2_index\", color = \"#0000FF\", style=\"rounded\"];\n\t12[label = \"hicpro_proc\", color = \"#FF0000\", style=\"rounded\"];\n\t13[label = \"hicpro_qc\", color = \"#FF0000\", style=\"rounded\"];\n\t14[label = \"get_chrom_sizes\", color = \"#0000FF\", style=\"rounded\"];\n\t15[label = \"get_raw_data\", color = \"#00FF00\", style=\"rounded\"];\n\t16[label = \"get_maxhic\", color = \"#8066B3\", style=\"rounded\"];\n\t17[label = \"hicpro_mapping\", color = \"#FF0000\", style=\"rounded\"];\n\t15 -> 1\n\t8 -> 2\n\t4 -> 2\n\t7 -> 3\n\t14 -> 4\n\t11 -> 4\n\t3 -> 4\n\t15 -> 5\n\t16 -> 6\n\t9 -> 6\n\t4 -> 8\n\t12 -> 8\n\t2 -> 9\n\t1 -> 10\n\t7 -> 11\n\t4 -> 12\n\t17 -> 12\n\t4 -> 13\n\t17 -> 13\n\t4 -> 17\n\t1 -> 17\n}            ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-4e666953f0fda2f63352">{"x":{"diagram":"digraph snakemake_dag {\n    graph[bgcolor=white, margin=0];\n    node[shape=box, style=rounded, fontname=sans,                 fontsize=10, penwidth=2];\n    edge[penwidth=2, color=grey];\n\t1[label = \"build_contact_maps\", color = \"#FF0000\", style=\"rounded\"];\n\t2[label = \"bowtie2_index\", color = \"#0000FF\", style=\"rounded\"];\n\t3[label = \"trim_fastqc\", color = \"#00FF00\", style=\"rounded\"];\n\t4[label = \"hicpro_merge\", color = \"#FF0000\", style=\"rounded\"];\n\t5[label = \"run_maxhic\", color = \"#8066B3\", style=\"rounded\"];\n\t6[label = \"adapter_removal\", color = \"#00FF00\", style=\"rounded\"];\n\t7[label = \"hicpro_qc\", color = \"#FF0000\", style=\"rounded\"];\n\t8[label = \"find_rs_fragments\", color = \"#0000FF\", style=\"rounded\"];\n\t9[label = \"raw_fastqc\", color = \"#00FF00\", style=\"rounded\"];\n\t10[label = \"get_reference\", color = \"#0000FF\", style=\"rounded\"];\n\t11[label = \"merge_interaction_matrices\", color = \"#8066B3\", style=\"rounded\"];\n\t12[label = \"hicpro_proc\", color = \"#FF0000\", style=\"rounded\"];\n\t13[label = \"get_chrom_sizes\", color = \"#0000FF\", style=\"rounded\"];\n\t14[label = \"make_hicpro_config\", color = \"#FF0000\", style=\"rounded\"];\n\t15[label = \"get_maxhic\", color = \"#8066B3\", style=\"rounded\"];\n\t16[label = \"get_raw_data\", color = \"#00FF00\", style=\"rounded\"];\n\t17[label = \"hicpro_mapping\", color = \"#FF0000\", style=\"rounded\"];\n\t14 -> 1\n\t4 -> 1\n\t10 -> 2\n\t6 -> 3\n\t12 -> 4\n\t14 -> 4\n\t11 -> 5\n\t15 -> 5\n\t16 -> 6\n\t14 -> 7\n\t17 -> 7\n\t10 -> 8\n\t16 -> 9\n\t1 -> 11\n\t14 -> 12\n\t17 -> 12\n\t13 -> 14\n\t2 -> 14\n\t8 -> 14\n\t14 -> 17\n\t6 -> 17\n}            ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 <p class="caption">
 <em>Summary of workflow. Node names indicate snakemake rules. Blue nodes indicate preparation of the genomic reference, green nodes indicate preparation of the sequencing data, red nodes indicate the HiC-Pro workflow, whlist the remaining purple nodes indicate the detection of significant interactions</em>
 </p>
@@ -735,7 +783,7 @@ library(spBioUtils)</code></pre>
     as.factor
   )
 n_fact &lt;- sum(vapply(samples, is.factor, logical(1)))</code></pre>
-<p>Two technical replicates (<em>1</em> and <em>2</em>) were contained in this dataset and both were merged before detectino of significant interactions. Both replicates were sequenced using paired-end data, as is an essential part of the HiC library preparation.</p>
+<p>Two technical replicates (<em>1</em> and <em>2</em>) were contained in this dataset and both were merged before detection of significant interactions. Both replicates were sequenced using paired-end data, as is an essential part of the HiC library preparation.</p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -767,55 +815,55 @@ other attached packages:
  [1] spBioUtils_0.1.0   tidygraph_1.2.0    ggraph_2.0.3       ggfortify_0.4.11  
  [5] yaml_2.2.1         pander_0.6.3       DiagrammeR_1.0.6.1 forcats_0.5.0     
  [9] stringr_1.4.0      dplyr_1.0.2        purrr_0.3.4        readr_1.4.0       
-[13] tidyr_1.1.2        tibble_3.0.3       ggplot2_3.3.2      tidyverse_1.3.0   
+[13] tidyr_1.1.2        tibble_3.0.4       ggplot2_3.3.2      tidyverse_1.3.0   
 [17] workflowr_1.6.2   
 
 loaded via a namespace (and not attached):
- [1] matrixStats_0.57.0          bitops_1.0-6               
+ [1] bitops_1.0-6                matrixStats_0.57.0         
  [3] fs_1.5.0                    lubridate_1.7.9            
  [5] RColorBrewer_1.1-2          httr_1.4.2                 
- [7] GenomeInfoDb_1.24.2         rprojroot_1.3-2            
- [9] tools_4.0.3                 backports_1.1.10           
-[11] R6_2.4.1                    BiocGenerics_0.34.0        
-[13] DBI_1.1.0                   colorspace_1.4-1           
+ [7] GenomeInfoDb_1.26.0         rprojroot_1.3-2            
+ [9] tools_4.0.3                 backports_1.2.0            
+[11] R6_2.5.0                    DBI_1.1.0                  
+[13] BiocGenerics_0.36.0         colorspace_1.4-1           
 [15] withr_2.3.0                 tidyselect_1.1.0           
 [17] gridExtra_2.3               compiler_4.0.3             
-[19] git2r_0.27.1                Biobase_2.48.0             
-[21] cli_2.0.2                   rvest_0.3.6                
-[23] xml2_1.3.2                  DelayedArray_0.14.1        
-[25] scales_1.1.1                digest_0.6.25              
-[27] rmarkdown_2.4               XVector_0.28.0             
+[19] git2r_0.27.1                Biobase_2.50.0             
+[21] cli_2.1.0                   rvest_0.3.6                
+[23] xml2_1.3.2                  DelayedArray_0.16.0        
+[25] scales_1.1.1                digest_0.6.27              
+[27] rmarkdown_2.5               XVector_0.30.0             
 [29] pkgconfig_2.0.3             htmltools_0.5.0            
-[31] limma_3.44.3                dbplyr_1.4.4               
-[33] htmlwidgets_1.5.2           rlang_0.4.7                
-[35] readxl_1.3.1                rstudioapi_0.11            
-[37] visNetwork_2.0.9            farver_2.0.3               
-[39] generics_0.0.2              jsonlite_1.7.1             
-[41] RCurl_1.98-1.2              magrittr_1.5               
-[43] GenomeInfoDbData_1.2.3      Matrix_1.2-18              
-[45] Rcpp_1.0.5                  munsell_0.5.0              
-[47] S4Vectors_0.26.1            fansi_0.4.1                
-[49] viridis_0.5.1               lifecycle_0.2.0            
-[51] edgeR_3.30.3                stringi_1.5.3              
-[53] whisker_0.4                 zlibbioc_1.34.0            
-[55] SummarizedExperiment_1.18.2 MASS_7.3-53                
-[57] grid_4.0.3                  blob_1.2.1                 
+[31] MatrixGenerics_1.2.0        limma_3.46.0               
+[33] dbplyr_2.0.0                htmlwidgets_1.5.2          
+[35] rlang_0.4.8                 readxl_1.3.1               
+[37] rstudioapi_0.11             visNetwork_2.0.9           
+[39] farver_2.0.3                generics_0.1.0             
+[41] jsonlite_1.7.1              RCurl_1.98-1.2             
+[43] magrittr_1.5                GenomeInfoDbData_1.2.4     
+[45] Matrix_1.2-18               Rcpp_1.0.5                 
+[47] munsell_0.5.0               S4Vectors_0.28.0           
+[49] fansi_0.4.1                 viridis_0.5.1              
+[51] lifecycle_0.2.0             edgeR_3.32.0               
+[53] stringi_1.5.3               whisker_0.4                
+[55] zlibbioc_1.36.0             SummarizedExperiment_1.20.0
+[57] MASS_7.3-53                 grid_4.0.3                 
 [59] parallel_4.0.3              promises_1.1.1             
 [61] ggrepel_0.8.2               crayon_1.3.4               
-[63] lattice_0.20-41             graphlayouts_0.7.0         
+[63] lattice_0.20-41             graphlayouts_0.7.1         
 [65] haven_2.3.1                 hms_0.5.3                  
 [67] locfit_1.5-9.4              knitr_1.30                 
-[69] pillar_1.4.6                GenomicRanges_1.40.0       
+[69] pillar_1.4.6                GenomicRanges_1.42.0       
 [71] igraph_1.2.6                stats4_4.0.3               
 [73] reprex_0.3.0                glue_1.4.2                 
 [75] evaluate_0.14               modelr_0.1.8               
 [77] vctrs_0.3.4                 tweenr_1.0.1               
 [79] httpuv_1.5.4                cellranger_1.1.0           
 [81] gtable_0.3.0                polyclip_1.10-0            
-[83] assertthat_0.2.1            xfun_0.18                  
-[85] ggforce_0.3.2               broom_0.7.1                
+[83] assertthat_0.2.1            xfun_0.19                  
+[85] ggforce_0.3.2               broom_0.7.2                
 [87] later_1.1.0.1               viridisLite_0.3.0          
-[89] IRanges_2.22.2              ellipsis_0.3.1             
+[89] IRanges_2.24.0              ellipsis_0.3.1             
 [91] here_0.1                   </code></pre>
 </div>
 </div>
@@ -843,7 +891,7 @@ footer is added to webpages before the MathJax javascript. -->
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
