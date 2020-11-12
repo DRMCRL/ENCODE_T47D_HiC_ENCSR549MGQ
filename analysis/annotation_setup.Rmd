@@ -1,0 +1,229 @@
+---
+title: "Annotation Setup"
+author: "Stephen Pederson<br>Dame Roma Mitchell Cancer Research Laboratories<br>Adelaide Medical School<br>University of Adelaide"
+date: "`r format(Sys.Date(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.align = "center"
+)
+```
+
+```{r packages}
+library(tidyverse)
+library(magrittr)
+library(rtracklayer)
+library(yaml)
+library(glue)
+library(pander)
+library(scales)
+```
+
+```{r}
+panderOptions("table.split.table", Inf)
+panderOptions("big.mark", ",")
+```
+
+
+
+```{r config}
+config <- here::here("config/config.yml") %>%
+  read_yaml()
+```
+
+
+
+# Genome Annotations
+
+Before analysing the interactions detected using Max-HiC, a series of annotation files were required which will be applied to all bed files and bin sizes.
+
+## Genome Description
+
+```{r}
+sq <- here::here("config/GRCh37.chr_sizes.tsv") %>%
+  read_lines() %>%
+  matrix(ncol = 2, byrow = TRUE) %>%
+  set_colnames(c("seqnames", "seqlengths")) %>%
+  as.data.frame() %>%
+  mutate(
+    seqlengths = str_remove_all(seqlengths, "\t"),
+    genome = config$ref$build
+  ) %>%
+  as("Seqinfo")
+```
+
+As the foundation for all annotation objects, the description of the underlying genome is required as a `Seqinfo` object.
+For this analysis, both the mitochondrial genome and scaffolds were excluded, giving only the autosomes and sex chromosomes as defined in `r config$ref$build`.
+
+## Gene and Transcript Annotations
+
+```{r downloadGTF}
+gtf_ftp <- "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_33/GRCh37_mapping/gencode.v33lift37.annotation.gtf.gz"
+gtf <- here::here("data/external", basename(gtf_ftp))
+if (!file.exists(gtf)){
+  cmd <- glue("-O {gtf} {gtf_ftp}")
+  system2("wget", cmd)
+}
+```
+
+```{r allGR}
+allGR <- import.gff(gtf) %>%
+  subset(seqnames != "chrM")
+seqinfo(allGR, new2old = match(seqlevels(sq), seqlevels(allGR))) <- sq
+mcols(allGR) <- mcols(allGR) %>%
+  .[str_ends(colnames(.), "(id|type|name|status)") & !str_starts(colnames(.), "protein|hgnc|remap|ccds")]
+mcols(allGR)[c("gene_id", "transcript_id", "exon_id")] %<>%
+  lapply(str_extract, pattern = "ENS[GTE][0-9]+")
+allGR <- allGR %>%
+  subset(type %in% c("gene", "transcript", "exon")) %>%
+  split(f = .$type)
+allGR %>%
+  write_rds(
+    here::here("output/allGR.rds"), 
+    compress = "gz"
+  )
+```
+
+No formal R object classes, such as an `EnsDb` object exist for this specific build (Gencode Release `r config$ref$gencode`), and as such the gtf file for this release was downloaded and used to build all annotation objects.
+
+- The complete set of features was loaded, excluding mitochondrial features.
+- Version numbers were removed from all gene, transcript and exon identifiers for convenience, with the minimal set of columns (`r pander(colnames(mcols(allGR$gene)))`) retained.
+- The manually generated `Seqinfo` was also placed as the foundation of this annotation object.
+- Only exon, transcript and gene-level annotations were retained with these being all separated and contained in a single `GRangesList` object.
+- This master set of annotations was exported as an `rds` file for simple import into subsequent steps of the analysis
+
+In total this object contained annotations for `r comma(length(allGR$gene))` genes, `r comma(length(allGR$transcript))` transcripts and `r comma(length(allGR$exon))` exons.
+
+## Gene and Transcript Models
+
+```{r geneModels}
+geneModels <- allGR$exon %>%
+  split(f = .$gene_id) %>%
+  GenomicRanges::reduce() %>%
+  as("GRangesList") %>%
+  unlist() %>%
+  sort()
+geneModels$type <- "exon"
+geneModels$gene <- names(geneModels)
+geneModels$exon <- paste(
+  geneModels$gene,
+  unlist(
+    lapply(
+      split(geneModels$gene, f = fct_inorder(geneModels$gene)),
+      seq_along
+    )
+  ),
+  sep = "_"
+)
+geneModels$transcript <- geneModels$gene
+geneModels$symbol <- allGR$gene %>%
+  with(
+    structure(gene_name, names = gene_id)
+  ) %>%
+  .[geneModels$gene]
+write_rds(geneModels, here::here("output/geneModels.rds"), compress = "gz")
+```
+
+```{r transModels}
+transModels <- allGR$exon %>%
+  split(f = .$transcript_id) %>%
+  GenomicRanges::reduce() %>%
+  as("GRangesList") %>%
+  unlist() %>%
+  sort()
+transModels$type <- "exon"
+transModels$gene <- allGR$transcript %>%
+  with(
+    structure(gene_id, names = transcript_id)
+  ) %>%
+  .[names(transModels)]
+transModels$exon <- names(transModels) %>%
+  enframe(name = c(), value = "transcript") %>% 
+  group_by(transcript) %>%
+  mutate(exon = seq_along(transcript)) %>% 
+  unite(exon, transcript, exon, sep = "_") %>%
+  pull(exon)
+transModels$transcript <- names(transModels)
+transModels$symbol <- geneModels[transModels$gene]$symbol
+write_rds(transModels, here::here("output/transModels.rds"), compress = "gz")
+```
+
+Visualisation using the Bioconductor package `Gviz` requires specific structures for gene and transcript models to be displayed and these were formed once, so they too could be simply imported during all visualisation stages.
+
+# ChromHMM Models
+
+## Available Tissues
+
+```{r tissueMap}
+tissueMap <- "https://egg2.wustl.edu/roadmap/data/byFileType/chromhmmSegmentations/ChmmModels/imputed12marks/jointModel/final/EIDlegend.txt" %>%
+  read_tsv(col_names = c("code", "tissue"))
+tissueMap %>%
+  pander(
+    style = "rmarkdown",
+    justify = "ll",
+    emphasize.strong.rows = which(str_detect(.$tissue, "reast|amm")),
+    caption = "*Tissues for which ChromHMM predictions are available*"
+  )
+```
+
+ChromHMM model have been defined as part of the ENCODE project and the Epigenomics Roadmap, which predict the state of chromatin across the entire genome by integrating multiple data types, such as ChIP-Seq, Methylation Data, Histone marks etc.
+As these marks are tissue specific, the modelling has been performed on `r nrow(tissueMap)` cell/tissue types, with those associated with Breast Tissue highlighted in the table above.
+
+## Chromatin States
+
+```{r stateMap}
+stateMap <- "https://egg2.wustl.edu/roadmap/data/byFileType/chromhmmSegmentations/ChmmModels/imputed12marks/jointModel/final/annotation_25_imputed12marks.txt" %>%
+  read_tsv() %>%
+  rename_all(str_to_lower) %>%
+  rename_all(str_replace_all, pattern = " ", replacement = "_") %>%
+  rename_all(str_remove_all, pattern = "\\.") %>%
+  unite(name, state_no, mnemonic, sep = "_", remove = FALSE) %>%
+  separate(color_code, into = c("r", "g", "b"), sep = ",") %>%
+  mutate(
+    across(c("name", "mnemonic", "description"), fct_inorder),
+    itemRgb = rgb(r, g, b, maxColorValue = 255),
+    state_no = as.integer(state_no)
+  ) %>%
+  dplyr::select(-any_of(c("r", "g", "b")))
+```
+
+```{r stateMapTable}
+stateMap %>%
+  rename_all(str_to_title) %>%
+  dplyr::select(
+    Name, Mnemonic, Description, Colour = Color_name, RGB = Itemrgb
+  ) %>%
+  pander(
+    justify = "llllr",
+    caption = "*Chromatin States as defined by the ChromHMM model*"
+  )
+```
+
+
+```{r stateMapLegend, fig.width=3, fig.height=7, fig.cap="*Standard colours used to indicate ChromHMM predicted states*"}
+stateMap %>%
+  ggplot(aes(1, state_no, fill = name)) +
+  geom_raster() +
+  scale_fill_manual(values = stateMap$itemRgb) +
+  scale_x_continuous(expand = expansion(0, 0)) +
+  scale_y_reverse(
+    breaks = stateMap$state_no,
+    labels = stateMap$description,
+    expand = expansion(0, 0)
+  ) +
+  theme_bw() +
+  theme(
+    axis.ticks.x = element_blank(),
+    axis.text.x = element_blank(),
+    axis.title = element_blank(),
+    legend.position = "none"
+  )
+```
+
