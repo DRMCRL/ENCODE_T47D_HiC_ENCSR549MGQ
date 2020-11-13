@@ -1,0 +1,142 @@
+---
+title: "interactions_setup"
+author: "Stephen Pederson<br>Dame Roma Mitchell Cancer Research Laboratories<br>Adelaide Medical School<br>University of Adelaide"
+date: "`r format(Sys.Date(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.align = "center"
+)
+```
+
+```{r packages}
+library(tidyverse)
+library(magrittr)
+library(yaml)
+library(rtracklayer)
+library(InteractionSet)
+library(vroom)
+library(glue)
+library(scales)
+library(pander)
+```
+
+```{r setOpts}
+theme_set(theme_bw())
+```
+
+
+```{r config}
+config <- here::here("config/config.yml") %>%
+  read_yaml()
+```
+
+# Introduction
+
+The output from MaxHiC is extremely large and for some bin-sizes, near impossible to wrangle on a standard laptop.
+In this workflow, each set of outputs containing the **cis** interactions will be loaded and reduced to only the *significant* interactions.
+These far smaller sets of interactions are easily managed in a standard compute environment.
+Analyses were run for genomic bins of `r pander(as.numeric(str_split(config$hicpro$bin_size, pattern = " ")[[1]])/1e3)`kb.
+
+```{r}
+allGR <- read_rds(
+  here::here("output/allGR.rds")
+)
+sq <- seqinfo(allGR)
+```
+
+
+# Data Preparation {.tabset}
+
+```{r sz40}
+sz <- 40000
+```
+
+## `r sz/1e3'kb Bins
+
+```{r bins40}
+bins <- import.bed(
+  glue("data/hic/hic_results/matrix/merged/raw/{sz}/merged_{sz}_abs.bed"),
+  seqinfo = sq
+)
+```
+
+
+```{r cis_int_40}
+cis_int <- vroom(
+  glue("output/MaxHiC/merged/{sz}/cis_interactions.txt.gz"),
+  col_types = "dddd-d--"
+)
+```
+
+By default, any bin pairs with no observed interactions were excluded fro the Max-HiC output.
+Using `r sz/1e3`kb bins, a total of `r nrow(cis_int)` non-zero interactions were observed between bin pairs.
+The median observed interaction count was `r median(cis_int$observed_interactions)`, whilst the maximum was `r max(cis_int$observed_interactions)`.
+
+By default, the FDR provided by Max-HiC is incorrect and was ignored.
+The MaxHiC output was defined as a `GInteractions` object, with correct FDR added and interactions filtered for those with an FDR < 0.05
+
+```{r gi40}
+gi <- GInteractions(
+  anchor1 = bins[as.integer(cis_int$bin1ID)],
+  anchor2 = bins[as.integer(cis_int$bin2ID)],
+  counts = as.integer(cis_int$observed_interactions),
+  exp_interactions = cis_int$exp_interactions,
+  p = exp(-cis_int$neg_ln_p_val)
+)
+seqinfo(gi) <- sq
+gi$fdr <- p.adjust(gi$p, "fdr")
+gi$distance <- pairdist(gi)
+gi$logObsExp <- log2(gi$counts / gi$exp_interactions)
+```
+
+```{r subset_gi40}
+gi <- subset(gi, fdr < 0.05)
+write_rds(
+  gi,
+  here::here(
+    "output",
+    glue("gi_{sz}.rds")
+  ),
+  compress = "gz"
+)
+gc()
+```
+
+After filtering interactions to only those considered significant:
+
+- `r comma(length(gi))` bin-pair interactions were retained.
+- The observed interactions between bins ranged between `r pander(range(gi$counts))`
+- The log~2~ ratio of of observed to expected counts ranged between `r pander(round(range(gi$logObsExp), 2))`. These values represent enrichment for interactions well above that expected by the background model.
+
+```{r, fig.height=6, fig.cap = glue("*Distribution of significant interactions using {sz/1e3}kb bins*")}
+gi %>%
+  anchors("first") %>%
+  seqnames() %>%
+  table() %>%
+  enframe(
+    name = "chr",
+    value = "count"
+  ) %>%
+  mutate(
+    chr =factor(chr, levels = seqlevels(sq)),
+    count = as.integer(count)
+  ) %>%
+  ggplot(
+    aes(chr, count)
+  ) +
+  geom_col() +
+  labs(
+    x = "Chromosome",
+    y = glue("Total Significant Cis Interactions ({sz/1e3}kb bins)")
+  ) +
+  scale_y_continuous(expand = expansion(c(0, 0.05)))
+```
+
