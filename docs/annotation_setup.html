@@ -524,16 +524,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree30ba122e80501bb3f66443323c7ec46f93f19df5targetblank30ba122a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/30ba122e80501bb3f66443323c7ec46f93f19df5" target="_blank">30ba122</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree3bb72288d54c4296d55bde798a47ecfd7120eb47targetblank3bb7228a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/3bb72288d54c4296d55bde798a47ecfd7120eb47" target="_blank">3bb7228</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree30ba122e80501bb3f66443323c7ec46f93f19df5targetblank30ba122a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree3bb72288d54c4296d55bde798a47ecfd7120eb47targetblank3bb7228a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/30ba122e80501bb3f66443323c7ec46f93f19df5" target="_blank">30ba122</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/3bb72288d54c4296d55bde798a47ecfd7120eb47" target="_blank">3bb7228</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -588,6 +588,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/3bb72288d54c4296d55bde798a47ecfd7120eb47/analysis/annotation_setup.Rmd" target="_blank">3bb7228</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-13
+</td>
+<td>
+Fixed Typos
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/e42c38725b705435e30e7f4ad8d892a6dfd3b84c/docs/annotation_setup.html" target="_blank">e42c387</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -702,8 +736,8 @@ allGR %&gt;%
 <p>No formal R object classes, such as an <code>EnsDb</code> object exist for this specific build (Gencode Release 33), and as such the gtf file for this release was downloaded and used to build all annotation objects.</p>
 <ul>
 <li>The complete set of features was loaded, excluding mitochondrial features.</li>
+<li>The manually generated <code>Seqinfo</code> was also placed as the foundation of this annotation object, ensuring this propagates through all subsequent objects</li>
 <li>Version numbers were removed from all gene, transcript and exon identifiers for convenience, with the minimal set of columns (<em>type</em>, <em>gene_id</em>, <em>gene_type</em>, <em>gene_name</em>, <em>transcript_id</em>, <em>transcript_type</em>, <em>transcript_name</em>, <em>exon_id</em>, <em>gene_status</em> and <em>transcript_status</em>) retained.</li>
-<li>The manually generated <code>Seqinfo</code> was also placed as the foundation of this annotation object.</li>
 <li>Only exon, transcript and gene-level annotations were retained with these being all separated and contained in a single <code>GRangesList</code> object.</li>
 <li>This master set of annotations was exported as an <code>rds</code> file for simple import into subsequent steps of the analysis</li>
 </ul>
@@ -1309,6 +1343,7 @@ tissueMap %&gt;%
     state_no = as.integer(state_no)
   ) %&gt;%
   dplyr::select(-any_of(c(&quot;r&quot;, &quot;g&quot;, &quot;b&quot;)))</code></pre>
+<p>The ChromHMM states currently predict 25 different chromatin states as shown in the table below.</p>
 <pre class="r"><code>htmltools::div(
   class = &quot;enriched-tf&quot;,
   htmltools::div(
@@ -1321,6 +1356,7 @@ tissueMap %&gt;%
       Name, Mnemonic, Description, Colour = Color_name, RGB = Itemrgb
     ) %&gt;%
     reactable(
+      defaultPageSize = nrow(.),
       columns = list(
         RGB = colDef(style = function(x){
           list(background = x, color = x)
@@ -1333,7 +1369,7 @@ tissueMap %&gt;%
 <em>Chromatin States as defined by the ChromHMM model</em>
 </div>
 <div id="htmlwidget-87108ed967ae66cfb25d" class="reactable html-widget" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-87108ed967ae66cfb25d">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Name":["1_TssA","2_PromU","3_PromD1","4_PromD2","5_Tx5'","6_Tx","7_Tx3'","8_TxWk","9_TxReg","10_TxEnh5'","11_TxEnh3'","12_TxEnhW","13_EnhA1","14_EnhA2","15_EnhAF","16_EnhW1","17_EnhW2","18_EnhAc","19_DNase","20_ZNF/Rpts","21_Het","22_PromP","23_PromBiv","24_ReprPC","25_Quies"],"Mnemonic":["TssA","PromU","PromD1","PromD2","Tx5'","Tx","Tx3'","TxWk","TxReg","TxEnh5'","TxEnh3'","TxEnhW","EnhA1","EnhA2","EnhAF","EnhW1","EnhW2","EnhAc","DNase","ZNF/Rpts","Het","PromP","PromBiv","ReprPC","Quies"],"Description":["Active TSS","Promoter Upstream TSS","Promoter Downstream TSS with DNase","Promoter Downstream TSS","Transcription 5'","Transcription","Transcription 3'","Weak transcription","Transcription Regulatory","Transcription 5' Enhancer","Transcription 3' Enhancer","Transcription Weak Enhancer","Active Enhancer 1","Active Enhancer 2","Active Enhancer Flank","Weak Enhancer 1","Weak Enhancer 2","Enhancer Acetylation Only","DNase only","ZNF genes & repeats","Heterochromatin","Poised Promoter","Bivalent Promoter","Repressed PolyComb","Quiescent/Low"],"Colour":["Red","Orange Red","Orange Red","Orange Red","Green","Green","Green","Light Green","GreenYellow","GreenYellow","GreenYellow","GreenYellow","Orange","Orange","Orange","Yellow","Yellow","Yellow","Light Yellow","Medium Aquamarine","PaleTurquoise","Light Purple","Purple","Silver","White"],"RGB":["#FF0000","#FF4500","#FF4500","#FF4500","#008000","#008000","#008000","#009600","#C2E105","#C2E105","#C2E105","#C2E105","#FFC34D","#FFC34D","#FFC34D","#FFFF00","#FFFF00","#FFFF00","#FFFF66","#66CDAA","#8A91D0","#E6B8B7","#7030A0","#808080","#FFFFFF"]},"columns":[{"accessor":"Name","name":"Name","type":"factor"},{"accessor":"Mnemonic","name":"Mnemonic","type":"factor"},{"accessor":"Description","name":"Description","type":"factor"},{"accessor":"Colour","name":"Colour","type":"character"},{"accessor":"RGB","name":"RGB","type":"character","style":[{"background":"#FF0000","color":"#FF0000"},{"background":"#FF4500","color":"#FF4500"},{"background":"#FF4500","color":"#FF4500"},{"background":"#FF4500","color":"#FF4500"},{"background":"#008000","color":"#008000"},{"background":"#008000","color":"#008000"},{"background":"#008000","color":"#008000"},{"background":"#009600","color":"#009600"},{"background":"#C2E105","color":"#C2E105"},{"background":"#C2E105","color":"#C2E105"},{"background":"#C2E105","color":"#C2E105"},{"background":"#C2E105","color":"#C2E105"},{"background":"#FFC34D","color":"#FFC34D"},{"background":"#FFC34D","color":"#FFC34D"},{"background":"#FFC34D","color":"#FFC34D"},{"background":"#FFFF00","color":"#FFFF00"},{"background":"#FFFF00","color":"#FFFF00"},{"background":"#FFFF00","color":"#FFFF00"},{"background":"#FFFF66","color":"#FFFF66"},{"background":"#66CDAA","color":"#66CDAA"},{"background":"#8A91D0","color":"#8A91D0"},{"background":"#E6B8B7","color":"#E6B8B7"},{"background":"#7030A0","color":"#7030A0"},{"background":"#808080","color":"#808080"},{"background":"#FFFFFF","color":"#FFFFFF"}]}],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"dataKey":"6579a16e3e7909f850f8fcd84fc6d88f","key":"6579a16e3e7909f850f8fcd84fc6d88f"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-87108ed967ae66cfb25d">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Name":["1_TssA","2_PromU","3_PromD1","4_PromD2","5_Tx5'","6_Tx","7_Tx3'","8_TxWk","9_TxReg","10_TxEnh5'","11_TxEnh3'","12_TxEnhW","13_EnhA1","14_EnhA2","15_EnhAF","16_EnhW1","17_EnhW2","18_EnhAc","19_DNase","20_ZNF/Rpts","21_Het","22_PromP","23_PromBiv","24_ReprPC","25_Quies"],"Mnemonic":["TssA","PromU","PromD1","PromD2","Tx5'","Tx","Tx3'","TxWk","TxReg","TxEnh5'","TxEnh3'","TxEnhW","EnhA1","EnhA2","EnhAF","EnhW1","EnhW2","EnhAc","DNase","ZNF/Rpts","Het","PromP","PromBiv","ReprPC","Quies"],"Description":["Active TSS","Promoter Upstream TSS","Promoter Downstream TSS with DNase","Promoter Downstream TSS","Transcription 5'","Transcription","Transcription 3'","Weak transcription","Transcription Regulatory","Transcription 5' Enhancer","Transcription 3' Enhancer","Transcription Weak Enhancer","Active Enhancer 1","Active Enhancer 2","Active Enhancer Flank","Weak Enhancer 1","Weak Enhancer 2","Enhancer Acetylation Only","DNase only","ZNF genes & repeats","Heterochromatin","Poised Promoter","Bivalent Promoter","Repressed PolyComb","Quiescent/Low"],"Colour":["Red","Orange Red","Orange Red","Orange Red","Green","Green","Green","Light Green","GreenYellow","GreenYellow","GreenYellow","GreenYellow","Orange","Orange","Orange","Yellow","Yellow","Yellow","Light Yellow","Medium Aquamarine","PaleTurquoise","Light Purple","Purple","Silver","White"],"RGB":["#FF0000","#FF4500","#FF4500","#FF4500","#008000","#008000","#008000","#009600","#C2E105","#C2E105","#C2E105","#C2E105","#FFC34D","#FFC34D","#FFC34D","#FFFF00","#FFFF00","#FFFF00","#FFFF66","#66CDAA","#8A91D0","#E6B8B7","#7030A0","#808080","#FFFFFF"]},"columns":[{"accessor":"Name","name":"Name","type":"factor"},{"accessor":"Mnemonic","name":"Mnemonic","type":"factor"},{"accessor":"Description","name":"Description","type":"factor"},{"accessor":"Colour","name":"Colour","type":"character"},{"accessor":"RGB","name":"RGB","type":"character","style":[{"background":"#FF0000","color":"#FF0000"},{"background":"#FF4500","color":"#FF4500"},{"background":"#FF4500","color":"#FF4500"},{"background":"#FF4500","color":"#FF4500"},{"background":"#008000","color":"#008000"},{"background":"#008000","color":"#008000"},{"background":"#008000","color":"#008000"},{"background":"#009600","color":"#009600"},{"background":"#C2E105","color":"#C2E105"},{"background":"#C2E105","color":"#C2E105"},{"background":"#C2E105","color":"#C2E105"},{"background":"#C2E105","color":"#C2E105"},{"background":"#FFC34D","color":"#FFC34D"},{"background":"#FFC34D","color":"#FFC34D"},{"background":"#FFC34D","color":"#FFC34D"},{"background":"#FFFF00","color":"#FFFF00"},{"background":"#FFFF00","color":"#FFFF00"},{"background":"#FFFF00","color":"#FFFF00"},{"background":"#FFFF66","color":"#FFFF66"},{"background":"#66CDAA","color":"#66CDAA"},{"background":"#8A91D0","color":"#8A91D0"},{"background":"#E6B8B7","color":"#E6B8B7"},{"background":"#7030A0","color":"#7030A0"},{"background":"#808080","color":"#808080"},{"background":"#FFFFFF","color":"#FFFFFF"}]}],"defaultPageSize":25,"paginationType":"numbers","showPageInfo":true,"minRows":1,"dataKey":"6579a16e3e7909f850f8fcd84fc6d88f","key":"6579a16e3e7909f850f8fcd84fc6d88f"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 <br>
 <p>
