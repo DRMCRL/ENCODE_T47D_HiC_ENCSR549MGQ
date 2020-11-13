@@ -194,6 +194,7 @@ stateMap <- "https://egg2.wustl.edu/roadmap/data/byFileType/chromhmmSegmentation
     state_no = as.integer(state_no)
   ) %>%
   dplyr::select(-any_of(c("r", "g", "b")))
+write_rds(stateMap, here::here("output/stateMap.rds"))
 ```
 
 The ChromHMM states currently predict `r nrow(stateMap)` different chromatin states as shown in the table below.

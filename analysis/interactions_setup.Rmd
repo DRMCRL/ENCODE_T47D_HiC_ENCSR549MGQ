@@ -1,5 +1,5 @@
 ---
-title: "interactions_setup"
+title: "Interactions Setup"
 author: "Stephen Pederson<br>Dame Roma Mitchell Cancer Research Laboratories<br>Adelaide Medical School<br>University of Adelaide"
 date: "`r format(Sys.Date(), '%d %B, %Y')`"
 output: workflowr::wflow_html
