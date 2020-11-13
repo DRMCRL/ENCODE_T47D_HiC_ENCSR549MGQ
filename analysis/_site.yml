@@ -9,6 +9,10 @@ navbar:
     href: description.html
   - text: Annotations
     href: annotation_setup.html
+  - text: Interactions
+    menu:
+      - text: Setup
+        href: interactions_setup.html
 output:
   workflowr::wflow_html:
     toc: yes
