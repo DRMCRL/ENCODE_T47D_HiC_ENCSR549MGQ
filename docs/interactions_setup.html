@@ -530,16 +530,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree567fed2f23009cbaac4a75863ffafc62b43a28c0targetblank567fed2a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/567fed2f23009cbaac4a75863ffafc62b43a28c0" target="_blank">567fed2</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree0067db5c42dd25eac89c3fe63c7bff7a17e25ba2targetblank0067db5a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/0067db5c42dd25eac89c3fe63c7bff7a17e25ba2" target="_blank">0067db5</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree567fed2f23009cbaac4a75863ffafc62b43a28c0targetblank567fed2a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree0067db5c42dd25eac89c3fe63c7bff7a17e25ba2targetblank0067db5a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/567fed2f23009cbaac4a75863ffafc62b43a28c0" target="_blank">567fed2</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/0067db5c42dd25eac89c3fe63c7bff7a17e25ba2" target="_blank">0067db5</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -597,6 +597,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/0067db5c42dd25eac89c3fe63c7bff7a17e25ba2/analysis/interactions_setup.Rmd" target="_blank">0067db5</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-13
+</td>
+<td>
+Added 20kb gi objects
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/ce1495e603187b6bf820253ba41c0b6029341901/docs/interactions_setup.html" target="_blank">ce1495e</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -677,8 +711,119 @@ sq &lt;- seqinfo(allGR)</code></pre>
 </div>
 <div id="data-preparation" class="section level1 tabset">
 <h1>Data Preparation</h1>
-<pre class="r"><code>sz &lt;- 40000</code></pre>
+<pre class="r"><code>sz &lt;- 20000</code></pre>
 <div id="kb-bins" class="section level2">
+<h2>20kb Bins</h2>
+<pre class="r"><code>bins &lt;- import.bed(
+  glue(&quot;data/hic/hic_results/matrix/merged/raw/{sz}/merged_{sz}_abs.bed&quot;),
+  seqinfo = sq
+)</code></pre>
+<pre class="r"><code>cis_int &lt;- vroom(
+  glue(&quot;output/MaxHiC/merged/{sz}/cis_interactions.txt.gz&quot;),
+  col_types = &quot;dddd-d--&quot;
+)</code></pre>
+<p>By default, any bin pairs with no observed interactions were excluded fro the Max-HiC output. Using 20kb bins, a total of 40,041,031 non-zero interactions were observed between bin pairs. The median observed interaction count was 1, whilst the maximum was 181.</p>
+<p>By default, the FDR provided by Max-HiC is incorrect and was ignored. The MaxHiC output was defined as a <code>GInteractions</code> object, with correct FDR added and interactions filtered for those with an FDR &lt; 0.05</p>
+<pre class="r"><code>gi &lt;- GInteractions(
+  anchor1 = bins[as.integer(cis_int$bin1ID)],
+  anchor2 = bins[as.integer(cis_int$bin2ID)],
+  counts = as.integer(cis_int$observed_interactions),
+  exp_interactions = cis_int$exp_interactions,
+  p = exp(-cis_int$neg_ln_p_val)
+)
+seqinfo(gi) &lt;- sq
+gi$fdr &lt;- p.adjust(gi$p, &quot;fdr&quot;)
+gi$distance &lt;- pairdist(gi)
+gi$logObsExp &lt;- log2(gi$counts / gi$exp_interactions)</code></pre>
+<pre class="r"><code>gi &lt;- subset(gi, fdr &lt; 0.05)
+write_rds(
+  gi,
+  here::here(
+    &quot;output&quot;,
+    glue(&quot;gi_{sz}.rds&quot;)
+  ),
+  compress = &quot;gz&quot;
+)
+gc()</code></pre>
+<p>After filtering interactions to only those considered significant:</p>
+<ul>
+<li>8,469 bin-pair interactions were retained.</li>
+<li>The observed interactions between bins ranged between <em>6</em> and <em>181</em></li>
+<li>The log<sub>2</sub> ratio of of observed to expected counts ranged between <em>1.7</em> and <em>4.23</em>. These values represent enrichment for interactions well above that expected by the background model.</li>
+</ul>
+<pre class="r"><code>gi %&gt;%
+  anchors(&quot;first&quot;) %&gt;%
+  seqnames() %&gt;%
+  table() %&gt;%
+  enframe(
+    name = &quot;chr&quot;,
+    value = &quot;count&quot;
+  ) %&gt;%
+  mutate(
+    chr =factor(chr, levels = seqlevels(sq)),
+    count = as.integer(count)
+  ) %&gt;%
+  ggplot(
+    aes(chr, count)
+  ) +
+  geom_col() +
+  labs(
+    x = &quot;Chromosome&quot;,
+    y = glue(&quot;Total Significant Cis Interactions ({sz/1e3}kb bins)&quot;)
+  ) +
+  scale_y_continuous(expand = expansion(c(0, 0.05)))</code></pre>
+<div class="figure" style="text-align: center">
+<img src="figure/interactions_setup.Rmd/unnamed-chunk-2-1.png" alt="*Distribution of significant interactions using 20kb bins*" width="864" />
+<p class="caption">
+<em>Distribution of significant interactions using 20kb bins</em>
+</p>
+</div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-1">
+Past versions of unnamed-chunk-2-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/f321b4b04f8c43ba24ea9d77670de486ff8d6335/docs/figure/interactions_setup.Rmd/unnamed-chunk-2-1.png" target="_blank">f321b4b</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>rm(gi)
+rm(cis_int)
+gc()</code></pre>
+<pre><code>           used  (Mb) gc trigger   (Mb)   max used   (Mb)
+Ncells  9545596 509.8   17438327  931.4   10657369  569.2
+Vcells 75695289 577.6  740573512 5650.2 1157146111 8828.4</code></pre>
+<pre class="r"><code>sz &lt;- 40000</code></pre>
+</div>
+<div id="kb-bins-1" class="section level2">
 <h2>40kb Bins</h2>
 <pre class="r"><code>bins &lt;- import.bed(
   glue(&quot;data/hic/hic_results/matrix/merged/raw/{sz}/merged_{sz}_abs.bed&quot;),
@@ -739,48 +884,17 @@ gc()</code></pre>
   ) +
   scale_y_continuous(expand = expansion(c(0, 0.05)))</code></pre>
 <div class="figure" style="text-align: center">
-<img src="figure/interactions_setup.Rmd/unnamed-chunk-2-1.png" alt="*Distribution of significant interactions using 40kb bins*" width="672" />
+<img src="figure/interactions_setup.Rmd/unnamed-chunk-3-1.png" alt="*Distribution of significant interactions using 40kb bins*" width="864" />
 <p class="caption">
 <em>Distribution of significant interactions using 40kb bins</em>
 </p>
 </div>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-1">
-Past versions of unnamed-chunk-2-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-2-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/f321b4b04f8c43ba24ea9d77670de486ff8d6335/docs/figure/interactions_setup.Rmd/unnamed-chunk-2-1.png" target="_blank">f321b4b</a>
-</td>
-<td>
-Steve Ped
-</td>
-<td>
-2020-11-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<pre class="r"><code>rm(gi)
+rm(cis_int)
+gc()</code></pre>
+<pre><code>           used  (Mb) gc trigger   (Mb)   max used   (Mb)
+Ncells  9471033 505.9   17438327  931.4   11822471  631.4
+Vcells 63052412 481.1  473967048 3616.1 1157146111 8828.4</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
