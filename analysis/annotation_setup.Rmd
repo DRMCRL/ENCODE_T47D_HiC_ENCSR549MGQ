@@ -96,8 +96,8 @@ allGR %>%
 No formal R object classes, such as an `EnsDb` object exist for this specific build (Gencode Release `r config$ref$gencode`), and as such the gtf file for this release was downloaded and used to build all annotation objects.
 
 - The complete set of features was loaded, excluding mitochondrial features.
+- The manually generated `Seqinfo` was also placed as the foundation of this annotation object, ensuring this propagates through all subsequent objects
 - Version numbers were removed from all gene, transcript and exon identifiers for convenience, with the minimal set of columns (`r pander(colnames(mcols(allGR$gene)))`) retained.
-- The manually generated `Seqinfo` was also placed as the foundation of this annotation object.
 - Only exon, transcript and gene-level annotations were retained with these being all separated and contained in a single `GRangesList` object.
 - This master set of annotations was exported as an `rds` file for simple import into subsequent steps of the analysis
 
@@ -196,6 +196,7 @@ stateMap <- "https://egg2.wustl.edu/roadmap/data/byFileType/chromhmmSegmentation
   dplyr::select(-any_of(c("r", "g", "b")))
 ```
 
+The ChromHMM states currently predict `r nrow(stateMap)` different chromatin states as shown in the table below.
 
 ```{r stateMapTable}
 htmltools::div(
@@ -210,6 +211,7 @@ htmltools::div(
       Name, Mnemonic, Description, Colour = Color_name, RGB = Itemrgb
     ) %>%
     reactable(
+      defaultPageSize = nrow(.),
       columns = list(
         RGB = colDef(style = function(x){
           list(background = x, color = x)
