@@ -29,6 +29,12 @@
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
 <script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+<script src="site_libs/core-js-2.5.3/shim.min.js"></script>
+<script src="site_libs/react-16.12.0/react.min.js"></script>
+<script src="site_libs/react-16.12.0/react-dom.min.js"></script>
+<script src="site_libs/reactwidget-1.0.0/react-tools.js"></script>
+<script src="site_libs/htmlwidgets-1.5.2/htmlwidgets.js"></script>
+<script src="site_libs/reactable-binding-0.2.3/reactable.js"></script>
 
 <link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
 <!-- Add a small amount of space between sections. -->
@@ -518,16 +524,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree2455b2a6bb50f54cf5ddea76bd268b6b64f63c91targetblank2455b2aa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/2455b2a6bb50f54cf5ddea76bd268b6b64f63c91" target="_blank">2455b2a</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree30ba122e80501bb3f66443323c7ec46f93f19df5targetblank30ba122a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/30ba122e80501bb3f66443323c7ec46f93f19df5" target="_blank">30ba122</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree2455b2a6bb50f54cf5ddea76bd268b6b64f63c91targetblank2455b2aa" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree30ba122e80501bb3f66443323c7ec46f93f19df5targetblank30ba122a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/2455b2a6bb50f54cf5ddea76bd268b6b64f63c91" target="_blank">2455b2a</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/30ba122e80501bb3f66443323c7ec46f93f19df5" target="_blank">30ba122</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -543,15 +549,7 @@ Ignored files:
 
 Untracked files:
     Untracked:  data/external/gencode.v33lift37.annotation.gtf.gz
-    Untracked:  output/allGR.rds
     Untracked:  output/gi_40000.rds
-
-Unstaged changes:
-    Modified:   analysis/_site.yml
-    Modified:   analysis/exploration.R
-    Modified:   output/geneModels.rds
-    Modified:   output/transModels.rds
-    Modified:   rules/reference.smk
 
 </code></pre>
 <p>
@@ -595,6 +593,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/30ba122e80501bb3f66443323c7ec46f93f19df5/analysis/annotation_setup.Rmd" target="_blank">30ba122</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-13
+</td>
+<td>
+Changed legend for ChrommHMM states
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/730f17321d583eb4b837d935d01552ca5766711e/docs/annotation_setup.html" target="_blank">730f173</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/2455b2a6bb50f54cf5ddea76bd268b6b64f63c91/analysis/annotation_setup.Rmd" target="_blank">2455b2a</a>
 </td>
 <td>
@@ -620,7 +652,9 @@ library(rtracklayer)
 library(yaml)
 library(glue)
 library(pander)
-library(scales)</code></pre>
+library(scales)
+library(reactable)
+library(htmltools)</code></pre>
 <pre class="r"><code>panderOptions(&quot;table.split.table&quot;, Inf)
 panderOptions(&quot;big.mark&quot;, &quot;,&quot;)</code></pre>
 <pre class="r"><code>config &lt;- here::here(&quot;config/config.yml&quot;) %&gt;%
@@ -1275,233 +1309,31 @@ tissueMap %&gt;%
     state_no = as.integer(state_no)
   ) %&gt;%
   dplyr::select(-any_of(c(&quot;r&quot;, &quot;g&quot;, &quot;b&quot;)))</code></pre>
-<pre class="r"><code>stateMap %&gt;%
-  rename_all(str_to_title) %&gt;%
-  dplyr::select(
-    Name, Mnemonic, Description, Colour = Color_name, RGB = Itemrgb
-  ) %&gt;%
-  pander(
-    justify = &quot;llllr&quot;,
-    caption = &quot;*Chromatin States as defined by the ChromHMM model*&quot;
-  )</code></pre>
-<table>
-<caption><em>Chromatin States as defined by the ChromHMM model</em></caption>
-<colgroup>
-<col width="16%" />
-<col width="12%" />
-<col width="36%" />
-<col width="23%" />
-<col width="11%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="left">Name</th>
-<th align="left">Mnemonic</th>
-<th align="left">Description</th>
-<th align="left">Colour</th>
-<th align="right">RGB</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">1_TssA</td>
-<td align="left">TssA</td>
-<td align="left">Active TSS</td>
-<td align="left">Red</td>
-<td align="right">#FF0000</td>
-</tr>
-<tr class="even">
-<td align="left">2_PromU</td>
-<td align="left">PromU</td>
-<td align="left">Promoter Upstream TSS</td>
-<td align="left">Orange Red</td>
-<td align="right">#FF4500</td>
-</tr>
-<tr class="odd">
-<td align="left">3_PromD1</td>
-<td align="left">PromD1</td>
-<td align="left">Promoter Downstream TSS with DNase</td>
-<td align="left">Orange Red</td>
-<td align="right">#FF4500</td>
-</tr>
-<tr class="even">
-<td align="left">4_PromD2</td>
-<td align="left">PromD2</td>
-<td align="left">Promoter Downstream TSS</td>
-<td align="left">Orange Red</td>
-<td align="right">#FF4500</td>
-</tr>
-<tr class="odd">
-<td align="left">5_Tx5’</td>
-<td align="left">Tx5’</td>
-<td align="left">Transcription 5’</td>
-<td align="left">Green</td>
-<td align="right">#008000</td>
-</tr>
-<tr class="even">
-<td align="left">6_Tx</td>
-<td align="left">Tx</td>
-<td align="left">Transcription</td>
-<td align="left">Green</td>
-<td align="right">#008000</td>
-</tr>
-<tr class="odd">
-<td align="left">7_Tx3’</td>
-<td align="left">Tx3’</td>
-<td align="left">Transcription 3’</td>
-<td align="left">Green</td>
-<td align="right">#008000</td>
-</tr>
-<tr class="even">
-<td align="left">8_TxWk</td>
-<td align="left">TxWk</td>
-<td align="left">Weak transcription</td>
-<td align="left">Light Green</td>
-<td align="right">#009600</td>
-</tr>
-<tr class="odd">
-<td align="left">9_TxReg</td>
-<td align="left">TxReg</td>
-<td align="left">Transcription Regulatory</td>
-<td align="left">GreenYellow</td>
-<td align="right">#C2E105</td>
-</tr>
-<tr class="even">
-<td align="left">10_TxEnh5’</td>
-<td align="left">TxEnh5’</td>
-<td align="left">Transcription 5’ Enhancer</td>
-<td align="left">GreenYellow</td>
-<td align="right">#C2E105</td>
-</tr>
-<tr class="odd">
-<td align="left">11_TxEnh3’</td>
-<td align="left">TxEnh3’</td>
-<td align="left">Transcription 3’ Enhancer</td>
-<td align="left">GreenYellow</td>
-<td align="right">#C2E105</td>
-</tr>
-<tr class="even">
-<td align="left">12_TxEnhW</td>
-<td align="left">TxEnhW</td>
-<td align="left">Transcription Weak Enhancer</td>
-<td align="left">GreenYellow</td>
-<td align="right">#C2E105</td>
-</tr>
-<tr class="odd">
-<td align="left">13_EnhA1</td>
-<td align="left">EnhA1</td>
-<td align="left">Active Enhancer 1</td>
-<td align="left">Orange</td>
-<td align="right">#FFC34D</td>
-</tr>
-<tr class="even">
-<td align="left">14_EnhA2</td>
-<td align="left">EnhA2</td>
-<td align="left">Active Enhancer 2</td>
-<td align="left">Orange</td>
-<td align="right">#FFC34D</td>
-</tr>
-<tr class="odd">
-<td align="left">15_EnhAF</td>
-<td align="left">EnhAF</td>
-<td align="left">Active Enhancer Flank</td>
-<td align="left">Orange</td>
-<td align="right">#FFC34D</td>
-</tr>
-<tr class="even">
-<td align="left">16_EnhW1</td>
-<td align="left">EnhW1</td>
-<td align="left">Weak Enhancer 1</td>
-<td align="left">Yellow</td>
-<td align="right">#FFFF00</td>
-</tr>
-<tr class="odd">
-<td align="left">17_EnhW2</td>
-<td align="left">EnhW2</td>
-<td align="left">Weak Enhancer 2</td>
-<td align="left">Yellow</td>
-<td align="right">#FFFF00</td>
-</tr>
-<tr class="even">
-<td align="left">18_EnhAc</td>
-<td align="left">EnhAc</td>
-<td align="left">Enhancer Acetylation Only</td>
-<td align="left">Yellow</td>
-<td align="right">#FFFF00</td>
-</tr>
-<tr class="odd">
-<td align="left">19_DNase</td>
-<td align="left">DNase</td>
-<td align="left">DNase only</td>
-<td align="left">Light Yellow</td>
-<td align="right">#FFFF66</td>
-</tr>
-<tr class="even">
-<td align="left">20_ZNF/Rpts</td>
-<td align="left">ZNF/Rpts</td>
-<td align="left">ZNF genes &amp; repeats</td>
-<td align="left">Medium Aquamarine</td>
-<td align="right">#66CDAA</td>
-</tr>
-<tr class="odd">
-<td align="left">21_Het</td>
-<td align="left">Het</td>
-<td align="left">Heterochromatin</td>
-<td align="left">PaleTurquoise</td>
-<td align="right">#8A91D0</td>
-</tr>
-<tr class="even">
-<td align="left">22_PromP</td>
-<td align="left">PromP</td>
-<td align="left">Poised Promoter</td>
-<td align="left">Light Purple</td>
-<td align="right">#E6B8B7</td>
-</tr>
-<tr class="odd">
-<td align="left">23_PromBiv</td>
-<td align="left">PromBiv</td>
-<td align="left">Bivalent Promoter</td>
-<td align="left">Purple</td>
-<td align="right">#7030A0</td>
-</tr>
-<tr class="even">
-<td align="left">24_ReprPC</td>
-<td align="left">ReprPC</td>
-<td align="left">Repressed PolyComb</td>
-<td align="left">Silver</td>
-<td align="right">#808080</td>
-</tr>
-<tr class="odd">
-<td align="left">25_Quies</td>
-<td align="left">Quies</td>
-<td align="left">Quiescent/Low</td>
-<td align="left">White</td>
-<td align="right">#FFFFFF</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code>stateMap %&gt;%
-  ggplot(aes(1, state_no, fill = name)) +
-  geom_raster() +
-  scale_fill_manual(values = stateMap$itemRgb) +
-  scale_x_continuous(expand = expansion(0, 0)) +
-  scale_y_reverse(
-    breaks = stateMap$state_no,
-    labels = stateMap$description,
-    expand = expansion(0, 0)
-  ) +
-  theme_bw() +
-  theme(
-    axis.ticks.x = element_blank(),
-    axis.text.x = element_blank(),
-    axis.title = element_blank(),
-    legend.position = &quot;none&quot;
-  )</code></pre>
-<div class="figure" style="text-align: center">
-<img src="figure/annotation_setup.Rmd/stateMapLegend-1.png" alt="*Standard colours used to indicate ChromHMM predicted states*" width="288" />
-<p class="caption">
-<em>Standard colours used to indicate ChromHMM predicted states</em>
-</p>
+<pre class="r"><code>htmltools::div(
+  class = &quot;enriched-tf&quot;,
+  htmltools::div(
+    class = &quot;title&quot;,
+    em(&quot;Chromatin States as defined by the ChromHMM model&quot;)
+  ),
+  stateMap %&gt;%
+    rename_all(str_to_title) %&gt;%
+    dplyr::select(
+      Name, Mnemonic, Description, Colour = Color_name, RGB = Itemrgb
+    ) %&gt;%
+    reactable(
+      columns = list(
+        RGB = colDef(style = function(x){
+          list(background = x, color = x)
+        })
+      )
+    )
+)</code></pre>
+<div class="enriched-tf">
+<div class="title">
+<em>Chromatin States as defined by the ChromHMM model</em>
+</div>
+<div id="htmlwidget-87108ed967ae66cfb25d" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-87108ed967ae66cfb25d">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Name":["1_TssA","2_PromU","3_PromD1","4_PromD2","5_Tx5'","6_Tx","7_Tx3'","8_TxWk","9_TxReg","10_TxEnh5'","11_TxEnh3'","12_TxEnhW","13_EnhA1","14_EnhA2","15_EnhAF","16_EnhW1","17_EnhW2","18_EnhAc","19_DNase","20_ZNF/Rpts","21_Het","22_PromP","23_PromBiv","24_ReprPC","25_Quies"],"Mnemonic":["TssA","PromU","PromD1","PromD2","Tx5'","Tx","Tx3'","TxWk","TxReg","TxEnh5'","TxEnh3'","TxEnhW","EnhA1","EnhA2","EnhAF","EnhW1","EnhW2","EnhAc","DNase","ZNF/Rpts","Het","PromP","PromBiv","ReprPC","Quies"],"Description":["Active TSS","Promoter Upstream TSS","Promoter Downstream TSS with DNase","Promoter Downstream TSS","Transcription 5'","Transcription","Transcription 3'","Weak transcription","Transcription Regulatory","Transcription 5' Enhancer","Transcription 3' Enhancer","Transcription Weak Enhancer","Active Enhancer 1","Active Enhancer 2","Active Enhancer Flank","Weak Enhancer 1","Weak Enhancer 2","Enhancer Acetylation Only","DNase only","ZNF genes & repeats","Heterochromatin","Poised Promoter","Bivalent Promoter","Repressed PolyComb","Quiescent/Low"],"Colour":["Red","Orange Red","Orange Red","Orange Red","Green","Green","Green","Light Green","GreenYellow","GreenYellow","GreenYellow","GreenYellow","Orange","Orange","Orange","Yellow","Yellow","Yellow","Light Yellow","Medium Aquamarine","PaleTurquoise","Light Purple","Purple","Silver","White"],"RGB":["#FF0000","#FF4500","#FF4500","#FF4500","#008000","#008000","#008000","#009600","#C2E105","#C2E105","#C2E105","#C2E105","#FFC34D","#FFC34D","#FFC34D","#FFFF00","#FFFF00","#FFFF00","#FFFF66","#66CDAA","#8A91D0","#E6B8B7","#7030A0","#808080","#FFFFFF"]},"columns":[{"accessor":"Name","name":"Name","type":"factor"},{"accessor":"Mnemonic","name":"Mnemonic","type":"factor"},{"accessor":"Description","name":"Description","type":"factor"},{"accessor":"Colour","name":"Colour","type":"character"},{"accessor":"RGB","name":"RGB","type":"character","style":[{"background":"#FF0000","color":"#FF0000"},{"background":"#FF4500","color":"#FF4500"},{"background":"#FF4500","color":"#FF4500"},{"background":"#FF4500","color":"#FF4500"},{"background":"#008000","color":"#008000"},{"background":"#008000","color":"#008000"},{"background":"#008000","color":"#008000"},{"background":"#009600","color":"#009600"},{"background":"#C2E105","color":"#C2E105"},{"background":"#C2E105","color":"#C2E105"},{"background":"#C2E105","color":"#C2E105"},{"background":"#C2E105","color":"#C2E105"},{"background":"#FFC34D","color":"#FFC34D"},{"background":"#FFC34D","color":"#FFC34D"},{"background":"#FFC34D","color":"#FFC34D"},{"background":"#FFFF00","color":"#FFFF00"},{"background":"#FFFF00","color":"#FFFF00"},{"background":"#FFFF00","color":"#FFFF00"},{"background":"#FFFF66","color":"#FFFF66"},{"background":"#66CDAA","color":"#66CDAA"},{"background":"#8A91D0","color":"#8A91D0"},{"background":"#E6B8B7","color":"#E6B8B7"},{"background":"#7030A0","color":"#7030A0"},{"background":"#808080","color":"#808080"},{"background":"#FFFFFF","color":"#FFFFFF"}]}],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"dataKey":"6579a16e3e7909f850f8fcd84fc6d88f","key":"6579a16e3e7909f850f8fcd84fc6d88f"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 <br>
 <p>
@@ -1532,13 +1364,14 @@ attached base packages:
 [8] methods   base     
 
 other attached packages:
- [1] scales_1.1.1         pander_0.6.3         glue_1.4.2          
- [4] yaml_2.2.1           rtracklayer_1.50.0   GenomicRanges_1.42.0
- [7] GenomeInfoDb_1.26.0  IRanges_2.24.0       S4Vectors_0.28.0    
-[10] BiocGenerics_0.36.0  magrittr_1.5         forcats_0.5.0       
-[13] stringr_1.4.0        dplyr_1.0.2          purrr_0.3.4         
-[16] readr_1.4.0          tidyr_1.1.2          tibble_3.0.4        
-[19] ggplot2_3.3.2        tidyverse_1.3.0      workflowr_1.6.2     
+ [1] htmltools_0.5.0      reactable_0.2.3      scales_1.1.1        
+ [4] pander_0.6.3         glue_1.4.2           yaml_2.2.1          
+ [7] rtracklayer_1.50.0   GenomicRanges_1.42.0 GenomeInfoDb_1.26.0 
+[10] IRanges_2.24.0       S4Vectors_0.28.0     BiocGenerics_0.36.0 
+[13] magrittr_1.5         forcats_0.5.0        stringr_1.4.0       
+[16] dplyr_1.0.2          purrr_0.3.4          readr_1.4.0         
+[19] tidyr_1.1.2          tibble_3.0.4         ggplot2_3.3.2       
+[22] tidyverse_1.3.0      workflowr_1.6.2     
 
 loaded via a namespace (and not attached):
  [1] bitops_1.0-6                matrixStats_0.57.0         
@@ -1551,33 +1384,32 @@ loaded via a namespace (and not attached):
 [15] compiler_4.0.3              git2r_0.27.1               
 [17] cli_2.1.0                   rvest_0.3.6                
 [19] Biobase_2.50.0              xml2_1.3.2                 
-[21] DelayedArray_0.16.0         labeling_0.4.2             
-[23] digest_0.6.27               Rsamtools_2.6.0            
-[25] rmarkdown_2.5               XVector_0.30.0             
-[27] pkgconfig_2.0.3             htmltools_0.5.0            
-[29] MatrixGenerics_1.2.0        highr_0.8                  
-[31] dbplyr_2.0.0                rlang_0.4.8                
-[33] readxl_1.3.1                rstudioapi_0.11            
-[35] farver_2.0.3                generics_0.1.0             
-[37] jsonlite_1.7.1              BiocParallel_1.24.0        
-[39] RCurl_1.98-1.2              GenomeInfoDbData_1.2.4     
-[41] Matrix_1.2-18               Rcpp_1.0.5                 
-[43] munsell_0.5.0               fansi_0.4.1                
-[45] lifecycle_0.2.0             stringi_1.5.3              
-[47] whisker_0.4                 SummarizedExperiment_1.20.0
-[49] zlibbioc_1.36.0             grid_4.0.3                 
-[51] promises_1.1.1              crayon_1.3.4               
-[53] lattice_0.20-41             Biostrings_2.58.0          
-[55] haven_2.3.1                 hms_0.5.3                  
-[57] knitr_1.30                  pillar_1.4.6               
-[59] reprex_0.3.0                XML_3.99-0.5               
-[61] evaluate_0.14               modelr_0.1.8               
-[63] vctrs_0.3.4                 httpuv_1.5.4               
-[65] cellranger_1.1.0            gtable_0.3.0               
-[67] assertthat_0.2.1            xfun_0.19                  
-[69] broom_0.7.2                 later_1.1.0.1              
-[71] GenomicAlignments_1.26.0    ellipsis_0.3.1             
-[73] here_0.1                   </code></pre>
+[21] DelayedArray_0.16.0         digest_0.6.27              
+[23] Rsamtools_2.6.0             rmarkdown_2.5              
+[25] XVector_0.30.0              pkgconfig_2.0.3            
+[27] MatrixGenerics_1.2.0        dbplyr_2.0.0               
+[29] htmlwidgets_1.5.2           rlang_0.4.8                
+[31] readxl_1.3.1                rstudioapi_0.11            
+[33] generics_0.1.0              jsonlite_1.7.1             
+[35] crosstalk_1.1.0.1           BiocParallel_1.24.0        
+[37] RCurl_1.98-1.2              GenomeInfoDbData_1.2.4     
+[39] Matrix_1.2-18               Rcpp_1.0.5                 
+[41] munsell_0.5.0               fansi_0.4.1                
+[43] lifecycle_0.2.0             stringi_1.5.3              
+[45] whisker_0.4                 SummarizedExperiment_1.20.0
+[47] zlibbioc_1.36.0             grid_4.0.3                 
+[49] promises_1.1.1              crayon_1.3.4               
+[51] lattice_0.20-41             Biostrings_2.58.0          
+[53] haven_2.3.1                 hms_0.5.3                  
+[55] knitr_1.30                  pillar_1.4.6               
+[57] reprex_0.3.0                XML_3.99-0.5               
+[59] evaluate_0.14               modelr_0.1.8               
+[61] vctrs_0.3.4                 httpuv_1.5.4               
+[63] cellranger_1.1.0            gtable_0.3.0               
+[65] reactR_0.4.3                assertthat_0.2.1           
+[67] xfun_0.19                   broom_0.7.2                
+[69] later_1.1.0.1               GenomicAlignments_1.26.0   
+[71] ellipsis_0.3.1              here_0.1                   </code></pre>
 </div>
 </div>
 </div>
