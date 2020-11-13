@@ -59,7 +59,7 @@ sq <- seqinfo(allGR)
 sz <- 40000
 ```
 
-## `r sz/1e3'kb Bins
+## `r sz/1e3`kb Bins
 
 ```{r bins40}
 bins <- import.bed(
@@ -77,7 +77,7 @@ cis_int <- vroom(
 ```
 
 By default, any bin pairs with no observed interactions were excluded fro the Max-HiC output.
-Using `r sz/1e3`kb bins, a total of `r nrow(cis_int)` non-zero interactions were observed between bin pairs.
+Using `r sz/1e3`kb bins, a total of `r comma(nrow(cis_int))` non-zero interactions were observed between bin pairs.
 The median observed interaction count was `r median(cis_int$observed_interactions)`, whilst the maximum was `r max(cis_int$observed_interactions)`.
 
 By default, the FDR provided by Max-HiC is incorrect and was ignored.
@@ -97,7 +97,7 @@ gi$distance <- pairdist(gi)
 gi$logObsExp <- log2(gi$counts / gi$exp_interactions)
 ```
 
-```{r subset_gi40}
+```{r subset_gi40, results='hide'}
 gi <- subset(gi, fdr < 0.05)
 write_rds(
   gi,
