@@ -12,7 +12,7 @@ rule get_reference:
         # Define the URL and download
         URL="ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_{params.gencode}/{params.build}_mapping/$(basename {output.fagz})"
         wget \
-          -O "{output.fagz}z" \
+          -O "{output.fagz}" \
           $URL
         gunzip -c "{output.fagz}" > {output.fa}
         """
