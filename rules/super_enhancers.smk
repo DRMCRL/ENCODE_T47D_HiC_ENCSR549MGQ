@@ -50,7 +50,7 @@ rule make_input_tag_directories:
 rule find_super_enhancers:
   input:
     tagdir = os.path.dirname(rules.make_tag_directories.output.tsv[0]),
-    indir = os.path.dirname(rules.make_input_tag_directories.tsv[0])
+    indir = os.path.dirname(rules.make_input_tag_directories.output.tsv[0])
   output:
     enh = "data/external/H3K27AC/{sample}/enhancers.txt",
     super_enh = "data/external/H3K27AC/{sample}/superEnhancers.txt"
