@@ -40,4 +40,5 @@ dot -Tpdf output/rulegraph.dot > output/rulegraph.pdf
 snakemake \
   --cores ${CORES} \
   --use-conda \
+  --notemp \
   --latency-wait 120 

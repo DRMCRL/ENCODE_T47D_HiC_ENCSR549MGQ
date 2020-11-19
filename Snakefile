@@ -94,9 +94,8 @@ ALL_OUTPUTS.extend(MAXHIC_INTERACTIONS)
 # Additional Data for super-enhancers shold be in data/external/H3K27AC/bam
 h3k27ac_dir = 'data/external/H3K27AC'
 enh = ['T47D_H3K27Ac_E2', 'T47D_H3K27Ac_E2_DHT']
-SE_OUT =  expand(["{path}/{sample}/{file}.txt"],
-                 sample = enh, file = ['enhancers', 'superEnhancers'],
-                 path = h3k27ac_dir)
+SE_OUT =  expand(["output/HOMER/{sample}/{file}.tsv"],
+                 sample = enh, file = ['enhancers', 'superEnhancers'])
 ALL_OUTPUTS.extend(SE_OUT)
 
 

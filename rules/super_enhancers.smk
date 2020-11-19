@@ -49,19 +49,21 @@ rule make_input_tag_directories:
 
 rule find_super_enhancers:
   input:
-    tagdir = os.path.dirname(rules.make_tag_directories.output.tsv[0]),
-    indir = os.path.dirname(rules.make_input_tag_directories.output.tsv[0])
+    tags = rules.make_tag_directories.output.tsv[0],
+    input = rules.make_input_tag_directories.output.tsv[0]
   output:
-    enh = "data/external/H3K27AC/{sample}/enhancers.txt",
-    super_enh = "data/external/H3K27AC/{sample}/superEnhancers.txt"
+    enh = "output/HOMER/{sample}/enhancers.tsv",
+    super_enh = "output/HOMER/{sample}/superEnhancers.tsv"
   conda:  "../envs/homer.yml"
   log: "logs/findPeaks/{sample}.log"
   threads: 2
   shell:
     """
+    TAGS=$(dirname {input.tags})
+    INPUT=$(dirname {input.input})
     findPeaks \
-      {input.tagdir} \
-      -i {input.indir} \
+      $TAGS \
+      -i $INPUT \
       -style super \
       -typical {output.enh} \
       -o {output.super_enh}
