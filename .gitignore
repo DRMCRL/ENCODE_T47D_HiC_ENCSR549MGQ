@@ -7,6 +7,7 @@ bowtie_results/
 *fastq
 *bam
 *tar.gz
+*bigwig
 data/hic/rawdata
 data/hic/hic_results/matrix/
 data/hic/hic_results/data/

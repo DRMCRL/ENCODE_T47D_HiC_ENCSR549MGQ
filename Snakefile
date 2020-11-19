@@ -88,6 +88,18 @@ MAXHIC_INTERACTIONS = expand(["output/MaxHiC/merged/{bin}/{type}_interactions.tx
                              bin = bins, type = ['cis', 'trans'])
 ALL_OUTPUTS.extend(MAXHIC_INTERACTIONS)
 
+#################################
+## Detection of SuperEnhancers ##
+#################################
+# Additional Data for super-enhancers shold be in data/external/H3K27AC/bam
+h3k27ac_dir = 'data/external/H3K27AC/bam'
+enh = ['T47D_H3K27Ac_E2', 'T47D_H3K27Ac_E2_DHT']
+SE_OUT =  expand(["{path}/{sample}/{file}.txt"],
+                 sample = enh, file = ['enhancers', 'superEnhancers'],
+                 path = h3k27ac_dir)
+ALL_OUTPUTS.extend(SE_OUT)
+
+
 #####################
 ## Rules & Outputs ##
 #####################
@@ -103,4 +115,5 @@ include: "rules/trimming.smk"
 include: "rules/hicpro.smk"
 include: "rules/merge_matrices.smk"
 include: "rules/maxhic.smk"
+include: "rules/super_enhancers.smk"
 
