@@ -92,7 +92,7 @@ ALL_OUTPUTS.extend(MAXHIC_INTERACTIONS)
 ## Detection of SuperEnhancers ##
 #################################
 # Additional Data for super-enhancers shold be in data/external/H3K27AC/bam
-h3k27ac_dir = 'data/external/H3K27AC/bam'
+h3k27ac_dir = 'data/external/H3K27AC'
 enh = ['T47D_H3K27Ac_E2', 'T47D_H3K27Ac_E2_DHT']
 SE_OUT =  expand(["{path}/{sample}/{file}.txt"],
                  sample = enh, file = ['enhancers', 'superEnhancers'],

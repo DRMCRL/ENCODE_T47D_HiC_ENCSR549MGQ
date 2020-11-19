@@ -23,7 +23,7 @@ rule make_tag_directories:
       $DIR \
       {input.bams}
     """
-    
+
 rule make_input_tag_directories:
   input:
     bams = "data/external/H3K27AC/bam/T47D_Pooled_input_mapped_reads.bam"
@@ -46,7 +46,7 @@ rule make_input_tag_directories:
       $DIR \
       {input.bams}
     """
-    
+
 rule find_super_enhancers:
   input:
     tagdir = os.path.dirname(rules.make_tag_directories.output.tsv[0]),
