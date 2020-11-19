@@ -222,4 +222,26 @@ htmltools::div(
 )
 ```
 
+The three highlighted tissues from the complete table above were obtained.
+
+```{r getChromHMM}
+chromUrl <- "https://egg2.wustl.edu/roadmap/data/byFileType/chromhmmSegmentations/ChmmModels/imputed12marks/jointModel/final"
+reqChromHMM <- here::here(
+  "data/external/ChromHMM", 
+  c(
+    "E027_25_imputed12marks_dense.bed.gz", 
+    "E028_25_imputed12marks_dense.bed.gz",
+    "E119_25_imputed12marks_dense.bed.gz"
+  )
+)
+for (f in reqChromHMM){
+  if (!file.exists(f)){
+    cmd <- glue(
+      "-O {f} {file.path(chromUrl, basename(f))}"
+    )
+    system2("wget", cmd)
+  }
+}
+```
+
 

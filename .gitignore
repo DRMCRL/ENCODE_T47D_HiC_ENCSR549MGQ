@@ -13,3 +13,4 @@ data/hic/hic_results/data/
 !data/hic/hic_results/data/**/*.mergestat
 data/hic/hicpro*
 output/MaxHiC
+*gencode*
