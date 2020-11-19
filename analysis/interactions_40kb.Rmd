@@ -1,0 +1,609 @@
+---
+title: "Interactions Using 40kb Bins"
+author: "Stephen Pederson<br>Dame Roma Mitchell Cancer Research Laboratories<br>Adelaide Medical School<br>University of Adelaide"
+date: "`r format(Sys.Date(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Setup
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.align = "center"
+)
+```
+
+
+```{r}
+library(GenomicInteractions)
+library(InteractionSet)
+library(rtracklayer)
+library(tidyverse)
+library(Gviz)
+library(glue)
+library(plyranges)
+```
+
+```{r config}
+config <- here::here("config/config.yml") %>%
+  read_yaml()
+```
+
+## Load Annotations 
+
+```{r}
+sz <- "40000"
+```
+
+The previously defined gene and transcript annotations were loaded, along with the significant interactions
+
+```{r loadAnnotations}
+geneModels <- read_rds(
+  here::here("output/geneModels.rds")
+)
+transModels <- read_rds(
+  here::here("output/transModels.rds")
+)
+allGR<- read_rds(
+  here::here("output/allGR.rds")
+)
+gi <- here::here(
+  "output",
+  glue("gi_{sz}.rds")
+) %>%
+  read_rds
+sq <- seqinfo(allGR)
+```
+
+## ChIP Peaks
+
+The bed files provided with the ChIP Peaks were also loaded
+
+```{r loadPeaks}
+e2Peaks <- import.bed("data/external/BED/Consensus_T47D_AR_E2_peaks_only.bed", seqinfo = sq) %>%
+  sort()
+dhtPeaks <- import.bed("data/external/BED/Consensus_T47D_AR_E2_DHT_peaks.bed", seqinfo = sq) %>%
+  sort()
+```
+
+## ChromHMM
+
+```{r}
+stateMap <- read_rds(here::here("output/stateMap.rds"))
+chromCols <- setNames(stateMap$itemRgb, stateMap$name)
+hmecHMM <- import.bed("data/external/E119_25_imputed12marks_dense.bed.gz", seqinfo = sq) %>%
+  sort()
+hmecHMM$cell <- "HMEC"
+hmmcHMM <- import.bed("data/external/E027_25_imputed12marks_dense.bed.gz", seqinfo = sq) %>%
+  sort()
+hmmcHMM$cell <- "HMMC"
+```
+
+
+## Track Setup
+
+Any tracks which remained independent of peaks and genes were also setup
+
+```{r}
+gen <- "hg19"
+ax <- GenomeAxisTrack()
+```
+
+
+# Gene-Level Visualisations {.tabset}
+
+## EHF
+
+
+```{r goi_ehf}
+goi <- "EHF"
+goiGR <- subset(allGR$gene, gene_name == goi)
+```
+
+```{r peaksOfInterest_ehf}
+poi <-list(
+  e2  = e2Peaks,
+  dht = dhtPeaks
+) %>%
+  lapply(
+    subsetByOverlaps,
+    ranges = goiGR
+  ) %>%
+  as("GRangesList")
+```
+
+
+```{r ideo_ehf}
+chr <- seqnames(goiGR) %>%
+  as.character()
+ideo <- IdeogramTrack(genome = gen, chromosome = chr)
+```
+
+```{r interactionsForPeaks_ehf}
+goiInteractions <- gi %>%
+  subsetByOverlaps(
+    unlist(poi)
+  ) %>%
+  subset(distance < 1e7) %>%
+  as("GenomicInteractions")
+plotRange <- goiInteractions %>%
+  anchors() %>%
+  as("GRangesList") %>%
+  unlist() %>%
+  range(ignore.strand = TRUE)
+it <- goiInteractions %>%
+  InteractionTrack(
+    chromosome = chr,
+    name = glue("{as.numeric(sz)/1000}KB Interactions")
+  )
+```
+
+```{r chromHMMTracks_ehf}
+hmecTrack <- hmecHMM %>%
+  subsetByOverlaps(plotRange) %>%
+  AnnotationTrack(
+    name = "HMEC",
+    id = .$name,
+    stacking = "dense",
+    feature = .$name,
+    group = .$name,
+    col = "transparent",
+    `1_TssA` = "#FF0000", `10_TxEnh5'` = "#C2E105", `11_TxEnh3'` = "#C2E105",
+    `12_TxEnhW` = "#C2E105", `13_EnhA1` = "#FFC34D", `14_EnhA2` = "#FFC34D",
+    `15_EnhAF` = "#FFC34D", `16_EnhW1` = "#FFFF00", `17_EnhW2` = "#FFFF00",
+    `18_EnhAc` = "#FFFF00", `19_DNase` = "#FFFF66", `2_PromU` = "#FF4500",
+    `20_ZNF/Rpts` = "#66CDAA", `21_Het` = "#8A91D0", `22_PromP` = "#E6B8B7",
+    `23_PromBiv` = "#7030A0", `24_ReprPC` = "#808080", `25_Quies` = "#FFFFFF",
+    `3_PromD1` = "#FF4500", `4_PromD2` = "#FF4500", `5_Tx5'` = "#008000",
+    `6_Tx` = "#008000", `7_Tx3'` = "#008000", `8_TxWk` = "#009600",
+    `9_TxReg` = "#C2E105"
+    )
+hmmcTrack <- hmmcHMM %>%
+  subsetByOverlaps(plotRange) %>%
+  AnnotationTrack(
+    name = "HMMC",
+    id = .$name,
+    stacking = "dense",
+    feature = .$name,
+    group = .$name,
+    col = "transparent",
+    `1_TssA` = "#FF0000", `10_TxEnh5'` = "#C2E105", `11_TxEnh3'` = "#C2E105",
+    `12_TxEnhW` = "#C2E105", `13_EnhA1` = "#FFC34D", `14_EnhA2` = "#FFC34D",
+    `15_EnhAF` = "#FFC34D", `16_EnhW1` = "#FFFF00", `17_EnhW2` = "#FFFF00",
+    `18_EnhAc` = "#FFFF00", `19_DNase` = "#FFFF66", `2_PromU` = "#FF4500",
+    `20_ZNF/Rpts` = "#66CDAA", `21_Het` = "#8A91D0", `22_PromP` = "#E6B8B7",
+    `23_PromBiv` = "#7030A0", `24_ReprPC` = "#808080", `25_Quies` = "#FFFFFF",
+    `3_PromD1` = "#FF4500", `4_PromD2` = "#FF4500", `5_Tx5'` = "#008000",
+    `6_Tx` = "#008000", `7_Tx3'` = "#008000", `8_TxWk` = "#009600",
+    `9_TxReg` = "#C2E105"
+  )
+```
+
+```{r gt_ehf}
+gt <- geneModels %>%
+  subsetByOverlaps(plotRange) %>%
+  GeneRegionTrack(
+    name = "Genes",
+    transcriptAnnotation = "symbol"
+  )
+```
+
+```{r pt_ehf}
+pt <- list(
+  e2 = e2Peaks, dht = dhtPeaks
+) %>%
+  lapply(subsetByOverlaps, ranges = plotRange)
+```
+
+
+
+```{r tracks_ehf}
+plotTracks(
+  list(
+    ideo,
+    ax, 
+    it,
+    hmecTrack,
+    hmmcTrack,
+    AnnotationTrack(pt$e2, name = "E2 Peaks", col = "blue", stacking = "dense", chromosome = chr),
+    AnnotationTrack(pt$dht,  name = "DHT Peaks", col = "red", stacking = "dense", chromosome = chr),
+    gt
+    ),
+  from = start(plotRange),
+  to = start(plotRange) + width(plotRange) / 10
+)
+```
+
+## ELF5
+
+
+```{r goi_elf5}
+goi <- "ELF5"
+goiGR <- subset(allGR$gene, gene_name == goi) %>%
+  resize(
+    width = width(.) + 10000,
+    fix = "center"
+  )
+```
+
+```{r peaksOfInterest_elf5}
+poi <-list(
+  e2  = e2Peaks,
+  dht = dhtPeaks
+) %>%
+  lapply(
+    subsetByOverlaps,
+    ranges = goiGR
+  ) %>%
+  as("GRangesList")
+```
+
+```{r ideo_elf5}
+chr <- seqnames(goiGR) %>%
+  as.character()
+ideo <- IdeogramTrack(genome = gen, chromosome = chr)
+```
+
+```{r interactionsForPeaks_elf5}
+goiInteractions <- gi %>%
+  subsetByOverlaps(
+    unlist(poi)
+  ) %>%
+  # subset(distance < 1e7) %>%
+  as("GenomicInteractions")
+plotRange <- goiInteractions %>%
+  anchors() %>%
+  c(goiGR) %>%
+  as("GRangesList") %>%
+  unlist() %>%
+  range(ignore.strand = TRUE)
+it <- goiInteractions %>%
+  InteractionTrack(
+    chromosome = chr,
+    name = glue("{as.numeric(sz)/1000}KB Interactions")
+  )
+```
+
+```{r chromHMMTracks_elf5}
+hmecTrack <- hmecHMM %>%
+  subsetByOverlaps(plotRange) %>%
+  AnnotationTrack(
+    name = "HMEC",
+    id = .$name,
+    stacking = "dense",
+    feature = .$name,
+    group = .$name,
+    col = "transparent",
+    `1_TssA` = "#FF0000", `10_TxEnh5'` = "#C2E105", `11_TxEnh3'` = "#C2E105",
+    `12_TxEnhW` = "#C2E105", `13_EnhA1` = "#FFC34D", `14_EnhA2` = "#FFC34D",
+    `15_EnhAF` = "#FFC34D", `16_EnhW1` = "#FFFF00", `17_EnhW2` = "#FFFF00",
+    `18_EnhAc` = "#FFFF00", `19_DNase` = "#FFFF66", `2_PromU` = "#FF4500",
+    `20_ZNF/Rpts` = "#66CDAA", `21_Het` = "#8A91D0", `22_PromP` = "#E6B8B7",
+    `23_PromBiv` = "#7030A0", `24_ReprPC` = "#808080", `25_Quies` = "#FFFFFF",
+    `3_PromD1` = "#FF4500", `4_PromD2` = "#FF4500", `5_Tx5'` = "#008000",
+    `6_Tx` = "#008000", `7_Tx3'` = "#008000", `8_TxWk` = "#009600",
+    `9_TxReg` = "#C2E105"
+    )
+hmmcTrack <- hmmcHMM %>%
+  subsetByOverlaps(plotRange) %>%
+  AnnotationTrack(
+    name = "HMMC",
+    id = .$name,
+    stacking = "dense",
+    feature = .$name,
+    group = .$name,
+    col = "transparent",
+    `1_TssA` = "#FF0000", `10_TxEnh5'` = "#C2E105", `11_TxEnh3'` = "#C2E105",
+    `12_TxEnhW` = "#C2E105", `13_EnhA1` = "#FFC34D", `14_EnhA2` = "#FFC34D",
+    `15_EnhAF` = "#FFC34D", `16_EnhW1` = "#FFFF00", `17_EnhW2` = "#FFFF00",
+    `18_EnhAc` = "#FFFF00", `19_DNase` = "#FFFF66", `2_PromU` = "#FF4500",
+    `20_ZNF/Rpts` = "#66CDAA", `21_Het` = "#8A91D0", `22_PromP` = "#E6B8B7",
+    `23_PromBiv` = "#7030A0", `24_ReprPC` = "#808080", `25_Quies` = "#FFFFFF",
+    `3_PromD1` = "#FF4500", `4_PromD2` = "#FF4500", `5_Tx5'` = "#008000",
+    `6_Tx` = "#008000", `7_Tx3'` = "#008000", `8_TxWk` = "#009600",
+    `9_TxReg` = "#C2E105"
+  )
+```
+
+```{r gt_elf5}
+gt <- geneModels %>%
+  subsetByOverlaps(plotRange) %>%
+  GeneRegionTrack(
+    name = "Genes",
+    transcriptAnnotation = "symbol"
+  )
+```
+
+
+
+```{r pt_elf5}
+pt <- list(
+  e2 = e2Peaks, dht = dhtPeaks
+) %>%
+  lapply(subsetByOverlaps, ranges = plotRange)
+```
+
+
+
+```{r plotTracks_elf5}
+plotTracks(
+  list(
+    ideo,
+    ax, 
+    it,
+    hmecTrack,
+    hmmcTrack,
+    AnnotationTrack(pt$e2, name = "E2 Peaks", col = "blue", stacking = "dense", chromosome = chr),
+    AnnotationTrack(pt$dht,  name = "DHT Peaks", col = "red", stacking = "dense", chromosome = chr),
+    gt
+    ),
+  from = start(plotRange),
+  to = start(plotRange) + width(plotRange) / 10
+)
+```
+
+## AQP3
+
+
+```{r goi_aqp3}
+goi <- "AQP3"
+goiGR <- subset(allGR$gene, gene_name == goi) %>%
+  resize(
+    width = width(.) + 10000,
+    fix = "center"
+  )
+```
+
+```{r peaksOfInterest_aqp3}
+poi <-list(
+  e2  = e2Peaks,
+  dht = dhtPeaks
+) %>%
+  lapply(
+    subsetByOverlaps,
+    ranges = goiGR
+  ) %>%
+  as("GRangesList")
+```
+
+```{r ideo_aqp3}
+chr <- seqnames(goiGR) %>%
+  as.character()
+ideo <- IdeogramTrack(genome = gen, chromosome = chr)
+```
+
+```{r interactionsForPeaks_aqp3}
+goiInteractions <- gi %>%
+  subsetByOverlaps(
+    unlist(poi)
+  ) %>%
+  # subset(distance < 1e7) %>%
+  as("GenomicInteractions")
+plotRange <- goiInteractions %>%
+  anchors() %>%
+  c(goiGR) %>%
+  as("GRangesList") %>%
+  unlist() %>%
+  range(ignore.strand = TRUE)
+it <- goiInteractions %>%
+  InteractionTrack(
+    chromosome = chr,
+    name = glue("{as.numeric(sz)/1000}KB Interactions")
+  )
+```
+
+```{r chromHMMTracks_aqp3}
+hmecTrack <- hmecHMM %>%
+  subsetByOverlaps(plotRange) %>%
+  AnnotationTrack(
+    name = "HMEC",
+    id = .$name,
+    stacking = "dense",
+    feature = .$name,
+    group = .$name,
+    col = "transparent",
+    `1_TssA` = "#FF0000", `10_TxEnh5'` = "#C2E105", `11_TxEnh3'` = "#C2E105",
+    `12_TxEnhW` = "#C2E105", `13_EnhA1` = "#FFC34D", `14_EnhA2` = "#FFC34D",
+    `15_EnhAF` = "#FFC34D", `16_EnhW1` = "#FFFF00", `17_EnhW2` = "#FFFF00",
+    `18_EnhAc` = "#FFFF00", `19_DNase` = "#FFFF66", `2_PromU` = "#FF4500",
+    `20_ZNF/Rpts` = "#66CDAA", `21_Het` = "#8A91D0", `22_PromP` = "#E6B8B7",
+    `23_PromBiv` = "#7030A0", `24_ReprPC` = "#808080", `25_Quies` = "#FFFFFF",
+    `3_PromD1` = "#FF4500", `4_PromD2` = "#FF4500", `5_Tx5'` = "#008000",
+    `6_Tx` = "#008000", `7_Tx3'` = "#008000", `8_TxWk` = "#009600",
+    `9_TxReg` = "#C2E105"
+    )
+hmmcTrack <- hmmcHMM %>%
+  subsetByOverlaps(plotRange) %>%
+  AnnotationTrack(
+    name = "HMMC",
+    id = .$name,
+    stacking = "dense",
+    feature = .$name,
+    group = .$name,
+    col = "transparent",
+    `1_TssA` = "#FF0000", `10_TxEnh5'` = "#C2E105", `11_TxEnh3'` = "#C2E105",
+    `12_TxEnhW` = "#C2E105", `13_EnhA1` = "#FFC34D", `14_EnhA2` = "#FFC34D",
+    `15_EnhAF` = "#FFC34D", `16_EnhW1` = "#FFFF00", `17_EnhW2` = "#FFFF00",
+    `18_EnhAc` = "#FFFF00", `19_DNase` = "#FFFF66", `2_PromU` = "#FF4500",
+    `20_ZNF/Rpts` = "#66CDAA", `21_Het` = "#8A91D0", `22_PromP` = "#E6B8B7",
+    `23_PromBiv` = "#7030A0", `24_ReprPC` = "#808080", `25_Quies` = "#FFFFFF",
+    `3_PromD1` = "#FF4500", `4_PromD2` = "#FF4500", `5_Tx5'` = "#008000",
+    `6_Tx` = "#008000", `7_Tx3'` = "#008000", `8_TxWk` = "#009600",
+    `9_TxReg` = "#C2E105"
+  )
+```
+
+```{r gt_aqp3}
+gt <- geneModels %>%
+  subsetByOverlaps(plotRange) %>%
+  GeneRegionTrack(
+    name = "Genes",
+    transcriptAnnotation = "symbol"
+  )
+```
+
+
+
+```{r pt_aqp3}
+pt <- list(
+  e2 = e2Peaks, dht = dhtPeaks
+) %>%
+  lapply(subsetByOverlaps, ranges = plotRange)
+```
+
+
+
+```{r plotTracks_aqp3}
+plotTracks(
+  list(
+    ideo,
+    ax, 
+    it,
+    hmecTrack,
+    hmmcTrack,
+    AnnotationTrack(pt$e2, name = "E2 Peaks", col = "blue", stacking = "dense", chromosome = chr),
+    AnnotationTrack(pt$dht,  name = "DHT Peaks", col = "red", stacking = "dense", chromosome = chr),
+    gt
+    ),
+  from = start(plotRange),
+  to = start(plotRange) + width(plotRange) 
+)
+```
+
+## SEC14L2
+
+
+```{r goi_sec14l2}
+goi <- "SEC14L2"
+goiGR <- subset(allGR$gene, gene_name == goi) %>%
+  resize(
+    width = width(.) + 10000,
+    fix = "center"
+  )
+```
+
+```{r peaksOfInterest_sec14l2}
+poi <-list(
+  e2  = e2Peaks,
+  dht = dhtPeaks
+) %>%
+  lapply(
+    subsetByOverlaps,
+    ranges = goiGR
+  ) %>%
+  as("GRangesList")
+```
+
+```{r ideo_sec14l2}
+chr <- seqnames(goiGR) %>%
+  as.character()
+ideo <- IdeogramTrack(genome = gen, chromosome = chr)
+```
+
+```{r interactionsForPeaks_sec14l2}
+goiInteractions <- gi %>%
+  subsetByOverlaps(
+    unlist(poi)
+  ) %>%
+  # subset(distance < 1e7) %>%
+  as("GenomicInteractions")
+plotRange <- goiInteractions %>%
+  anchors() %>%
+  c(goiGR) %>%
+  as("GRangesList") %>%
+  unlist() %>%
+  range(ignore.strand = TRUE)
+it <- goiInteractions %>%
+  InteractionTrack(
+    chromosome = chr,
+    name = glue("{as.numeric(sz)/1000}KB Interactions")
+  )
+```
+
+```{r chromHMMTracks_sec14l2}
+hmecTrack <- hmecHMM %>%
+  subsetByOverlaps(plotRange) %>%
+  AnnotationTrack(
+    name = "HMEC",
+    id = .$name,
+    stacking = "dense",
+    feature = .$name,
+    group = .$name,
+    col = "transparent",
+    `1_TssA` = "#FF0000", `10_TxEnh5'` = "#C2E105", `11_TxEnh3'` = "#C2E105",
+    `12_TxEnhW` = "#C2E105", `13_EnhA1` = "#FFC34D", `14_EnhA2` = "#FFC34D",
+    `15_EnhAF` = "#FFC34D", `16_EnhW1` = "#FFFF00", `17_EnhW2` = "#FFFF00",
+    `18_EnhAc` = "#FFFF00", `19_DNase` = "#FFFF66", `2_PromU` = "#FF4500",
+    `20_ZNF/Rpts` = "#66CDAA", `21_Het` = "#8A91D0", `22_PromP` = "#E6B8B7",
+    `23_PromBiv` = "#7030A0", `24_ReprPC` = "#808080", `25_Quies` = "#FFFFFF",
+    `3_PromD1` = "#FF4500", `4_PromD2` = "#FF4500", `5_Tx5'` = "#008000",
+    `6_Tx` = "#008000", `7_Tx3'` = "#008000", `8_TxWk` = "#009600",
+    `9_TxReg` = "#C2E105"
+    )
+hmmcTrack <- hmmcHMM %>%
+  subsetByOverlaps(plotRange) %>%
+  AnnotationTrack(
+    name = "HMMC",
+    id = .$name,
+    stacking = "dense",
+    feature = .$name,
+    group = .$name,
+    col = "transparent",
+    `1_TssA` = "#FF0000", `10_TxEnh5'` = "#C2E105", `11_TxEnh3'` = "#C2E105",
+    `12_TxEnhW` = "#C2E105", `13_EnhA1` = "#FFC34D", `14_EnhA2` = "#FFC34D",
+    `15_EnhAF` = "#FFC34D", `16_EnhW1` = "#FFFF00", `17_EnhW2` = "#FFFF00",
+    `18_EnhAc` = "#FFFF00", `19_DNase` = "#FFFF66", `2_PromU` = "#FF4500",
+    `20_ZNF/Rpts` = "#66CDAA", `21_Het` = "#8A91D0", `22_PromP` = "#E6B8B7",
+    `23_PromBiv` = "#7030A0", `24_ReprPC` = "#808080", `25_Quies` = "#FFFFFF",
+    `3_PromD1` = "#FF4500", `4_PromD2` = "#FF4500", `5_Tx5'` = "#008000",
+    `6_Tx` = "#008000", `7_Tx3'` = "#008000", `8_TxWk` = "#009600",
+    `9_TxReg` = "#C2E105"
+  )
+```
+
+```{r gt_sec14l2}
+gt <- geneModels %>%
+  subsetByOverlaps(plotRange) %>%
+  GeneRegionTrack(
+    name = "Genes",
+    transcriptAnnotation = "symbol"
+  )
+```
+
+
+
+```{r pt_sec14l2}
+pt <- list(
+  e2 = e2Peaks, dht = dhtPeaks
+) %>%
+  lapply(subsetByOverlaps, ranges = plotRange)
+```
+
+
+
+```{r plotTracks_sec14l2}
+plotTracks(
+  list(
+    ideo,
+    ax, 
+    it,
+    hmecTrack,
+    hmmcTrack,
+    AnnotationTrack(pt$e2, name = "E2 Peaks", col = "blue", stacking = "dense", chromosome = chr),
+    AnnotationTrack(pt$dht,  name = "DHT Peaks", col = "red", stacking = "dense", chromosome = chr),
+    gt
+    ),
+  from = start(plotRange),
+  to = start(plotRange) + width(plotRange) 
+)
+```
+
+
+
+
+

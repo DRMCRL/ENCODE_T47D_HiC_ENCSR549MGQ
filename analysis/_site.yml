@@ -5,11 +5,18 @@ navbar:
   left:
   - text: Home
     href: index.html
-  - text: About
-    href: about.html
+  - text: Workflow Description
+    href: description.html
+  - text: Annotations
+    href: annotation_setup.html
+  - text: Interactions
+    menu:
+      - text: Setup
+        href: interactions_setup.html
 output:
   workflowr::wflow_html:
     toc: yes
     toc_float: yes
+    code_folding: hide
     theme: cosmo
     highlight: textmate
