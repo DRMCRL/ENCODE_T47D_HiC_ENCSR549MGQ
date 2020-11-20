@@ -1,0 +1,7 @@
+Tags per tag position (Median = 1, tags per genomic bp = 0.019)	Fraction of Positions
+0	0.000000
+1	0.900862
+2	0.087984
+3	0.011154
+4	0.000000
+5	0.000000

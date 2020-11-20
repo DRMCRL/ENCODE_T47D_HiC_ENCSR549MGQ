@@ -1,0 +1,36 @@
+name	Unique Positions	Total Tags
+genome	37464464	37464498.0
+fragmentLengthEstimate=118		
+peakSizeEstimate=126		
+tagsPerBP=0.012107		
+averageTagsPerPosition=1.000		
+medianTagsPerPosition=1		
+averageTagLength=74.225		
+gsizeEstimate=3094460095		
+averageFragmentGCcontent=-1.000		
+chr1	3029348	3029350.0
+chr2	2280360	2280360.0
+chr3	3355869	3355871.0
+chr4	1919170	1919170.0
+chr5	2779076	2779079.0
+chr6	1980865	1980869.0
+chr7	2201515	2201515.0
+chr8	2329166	2329170.0
+chr9	1378610	1378610.0
+chr10	1964370	1964376.0
+chr11	2353060	2353061.0
+chr12	2165605	2165606.0
+chr13	1022779	1022780.0
+chr14	1530027	1530028.0
+chr15	1071805	1071806.0
+chr16	941483	941483.0
+chr17	1197184	1197185.0
+chr18	717957	717958.0
+chr19	496948	496950.0
+chr20	936134	936137.0
+chr21	547118	547118.0
+chr22	300389	300389.0
+chrX	930389	930389.0
+chrY	8150	8150.0
+chrM	27087	27088.0
+cmd=makeTagDirectory data/external/H3K27AC/T47D_Pooled_input data/external/H3K27AC/bam/T47D_Pooled_input_mapped_reads.bam		

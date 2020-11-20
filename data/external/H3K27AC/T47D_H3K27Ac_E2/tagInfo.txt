@@ -1,0 +1,36 @@
+name	Unique Positions	Total Tags
+genome	52386119	58163939.0
+fragmentLengthEstimate=252		
+peakSizeEstimate=350		
+tagsPerBP=0.018796		
+averageTagsPerPosition=1.110		
+medianTagsPerPosition=1		
+averageTagLength=73.881		
+gsizeEstimate=3094449502		
+averageFragmentGCcontent=-1.000		
+chr1	4979431	5546299.0
+chr2	2790324	2982374.0
+chr3	3864679	4307497.0
+chr4	1889525	2018591.0
+chr5	2907608	3200267.0
+chr6	2676967	2944925.0
+chr7	2460689	2715938.0
+chr8	2515510	2801622.0
+chr9	2267663	2539717.0
+chr10	2676728	2984305.0
+chr11	3418513	3890636.0
+chr12	3031232	3406671.0
+chr13	936325	993948.0
+chr14	2063485	2311428.0
+chr15	1503861	1649599.0
+chr16	2142102	2437067.0
+chr17	3113038	3579034.0
+chr18	705548	750217.0
+chr19	2096505	2307048.0
+chr20	1628464	1851430.0
+chr21	755621	833488.0
+chr22	964292	1056706.0
+chrX	992272	1049110.0
+chrY	3778	3987.0
+chrM	1959	2035.0
+cmd=makeTagDirectory data/external/H3K27AC/T47D_H3K27Ac_E2 data/external/H3K27AC/bam/T47D_H3K27Ac_E2_1_mapped_reads.bam data/external/H3K27AC/bam/T47D_H3K27Ac_E2_2_mapped_reads.bam data/external/H3K27AC/bam/T47D_H3K27Ac_E2_3_mapped_reads.bam		
