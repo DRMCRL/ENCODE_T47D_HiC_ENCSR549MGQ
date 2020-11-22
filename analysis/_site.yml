@@ -13,6 +13,12 @@ navbar:
     menu:
       - text: Setup
         href: interactions_setup.html
+      - text: 40kb Interactions
+        href: interactions_40kb.html
+  - text: Super Enhancers
+    menu:
+      - text: ROSE
+        href: rose.html
 output:
   workflowr::wflow_html:
     toc: yes

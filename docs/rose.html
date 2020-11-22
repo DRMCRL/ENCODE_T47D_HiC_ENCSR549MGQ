@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Stephen Pederson Dame Roma Mitchell Cancer Research Laboratories Adelaide Medical School University of Adelaide" />
+
+
+<title>Dectection of Super-Enhancers Using ROSE</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">ENCODE_T47D_HiC_ENCSR549MGQ</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="description.html">Workflow Description</a>
+</li>
+<li>
+  <a href="annotation_setup.html">Annotations</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Interactions
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="interactions_setup.html">Setup</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Dectection of Super-Enhancers Using ROSE</h1>
+<h4 class="author">Stephen Pederson<br>Dame Roma Mitchell Cancer Research Laboratories<br>Adelaide Medical School<br>University of Adelaide</h4>
+<h4 class="date">22 November, 2020</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2020-11-22
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 1
+</p>
+<p>
+<strong>Knit directory:</strong> <code>ENCODE_T47D_HiC_ENCSR549MGQ/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges"> <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted changes </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguncommittedchanges" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The R Markdown is untracked by Git. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20200918code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20200918)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20200918code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20200918)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtreee20960dc34d0d8307a2cf2de9eff50609a4b5932targetblanke20960da"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/e20960dc34d0d8307a2cf2de9eff50609a4b5932" target="_blank">e20960d</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtreee20960dc34d0d8307a2cf2de9eff50609a4b5932targetblanke20960da" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/e20960dc34d0d8307a2cf2de9eff50609a4b5932" target="_blank">e20960d</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    .snakemake/
+    Ignored:    data/external/H3K27AC/bam/
+    Ignored:    data/external/H3K27AC/bigwig/
+    Ignored:    data/external/gencode.v33lift37.annotation.gtf.gz
+    Ignored:    output/MaxHiC/
+
+Untracked files:
+    Untracked:  analysis/check_superenhancers.Rmd
+    Untracked:  analysis/rose.Rmd
+    Untracked:  rose.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+There are no past versions. Publish this analysis with <code>wflow_publish()</code> to start tracking its development.
+</p>
+<hr>
+</div>
+</div>
+</div>
+<pre class="r"><code>library(rtracklayer)
+library(tidyverse)
+library(Gviz)
+library(glue)
+library(Rsamtools)
+library(pander)
+library(scales)</code></pre>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This is a manual re-implementation of the ROSE algorithm and relies on ChIP peaks from H3K21AC data being previously called. These are assumed to be candidate regions for both promoters and enhancers.</p>
+<div id="required-data" class="section level2">
+<h2>Required Data</h2>
+<p>Before running the ROSE algorithm, the following files must be sourced</p>
+<ol style="list-style-type: decimal">
+<li>Consensus Peaks for each treatment as <code>.bed</code> files</li>
+<li>Merged <code>.bam</code> files for all replicates within each treatment group and the control sample</li>
+<li>BigWig files for each replicate, purely for the purposes of visualisation</li>
+</ol>
+</div>
+<div id="steps-of-the-rose-algorithm" class="section level2">
+<h2>Steps of the ROSE Algorithm</h2>
+<p>The steps are as follows:</p>
+<ol style="list-style-type: decimal">
+<li>Remove any regions which overlap a TSS and set aside as promoters
+<ul>
+<li>TSS regions are extended by 2.5kb in both directions to give a 5kb TSS/promoter region</li>
+</ul></li>
+<li>Join any remaining candidate enhancers within 12.5kb
+<ul>
+<li>Remove any regions shorter than the read length (77bp) as these will not make the cut</li>
+</ul></li>
+<li>Count reads aligned within each region to get the number of reads
+<ul>
+<li>Reads are only counted if they were unique alignments</li>
+<li>Strandedness of aligned reads was not taken into account</li>
+</ul></li>
+<li>Counts are transformed into Reads Per Million (<code>rpm</code>) by dividing by the total number of reads aligned within each bam file, divided by 10<sup>-6</sup></li>
+<li><code>rpm</code> values within each region are divided by the region width to give <code>rpm/bp</code></li>
+<li><code>rpm/bp</code> values are then background corrected by subtracting the values observed in the control sample
+<ul>
+<li>Any <code>rpm/bp</code> &lt; 0 are automatically set to 0 when calculating the cutoff</li>
+</ul></li>
+<li>Candidate enhancers are then ranked and the point found for which the slope of the tangent line drops below 1</li>
+</ol>
+<p>Unlike other implementations of ROSE, standard Bioconductor data structures will be used.</p>
+<p>Additionally, the functions <code>calculate_cutoff()</code> and <code>numPts_below_line()</code> were taken directly from the main <a href="https://github.com/rakarnik/ROSE/blob/master/ROSE_callSuper.R">ROSE github software repository</a></p>
+</div>
+</div>
+<div id="data-setup" class="section level1">
+<h1>Data Setup</h1>
+<div id="gene-and-transcript-models" class="section level2">
+<h2>Gene and Transcript Models</h2>
+<pre class="r"><code>transModels &lt;- here::here(&quot;output/transModels.rds&quot;) %&gt;%
+  read_rds()
+tss &lt;- transModels %&gt;%
+  split(f = .$transcript) %&gt;%
+  as(&quot;GRangesList&quot;) %&gt;%
+  range() %&gt;%
+  unlist() %&gt;%
+  resize(width = 5001, fix = &quot;start&quot;) %&gt;%
+  sort()</code></pre>
+<pre class="r"><code>geneModels &lt;- here::here(&quot;output/geneModels.rds&quot;) %&gt;%
+  read_rds()
+sq &lt;- seqinfo(geneModels)</code></pre>
+<p>Gene and transcript models were loaded for plotting and data integration. These were defined in the <a href="annotation_setup.html">Annotation Setup</a> step of the workflow. Gene models make for simpler plotting, whilst transcript models allow for more accurate identification of each TSS.</p>
+</div>
+<div id="consensus-peaks" class="section level2">
+<h2>Consensus Peaks</h2>
+<pre class="r"><code>chipGR &lt;- here::here(&quot;data/external/BED&quot;) %&gt;%
+  list.files(pattern = &quot;H3K27&quot;, full.names = TRUE) %&gt;%
+  sapply(import.bed, seqinfo = sq) %&gt;%
+  lapply(sort) %&gt;%
+  setNames(
+    str_replace(names(.), &quot;.+(E2.*)_peaks.bed&quot;, &quot;\\1&quot;)
+  ) %&gt;%
+  as(&quot;GRangesList&quot;)</code></pre>
+<pre class="r"><code>consPeaks &lt;- chipGR %&gt;%
+  as(&quot;GRangesList&quot;) %&gt;%
+  unlist() %&gt;%
+  GenomicRanges::reduce() %&gt;%
+  subset(width &gt; 75)</code></pre>
+<p>Consensus peaks were identified for each treatment group (E2 and E2+DHT), however for the purposes of super-enhancer detection, <em>these were merged to ensure the same candidate super-enhancer was being investigated in each cell type</em>. Subtle shifts in ChIP peaks boundaries should remain relatively inconsequential for the relatively extreme criteria required for classification as a super-enhancer.</p>
+<p>Whilst 44,044 and 45,654 consensus peaks were identified for E2 and <a href="mailto:E@+DHT" class="email">E@+DHT</a> respectively, when combining a total of 45,729 regions were defined as the merged consensus peaks of the separate consensus peaks.</p>
+</div>
+<div id="promoters-and-enhancers" class="section level2">
+<h2>Promoters and Enhancers</h2>
+<pre class="r"><code>ol &lt;- findOverlaps(tss, consPeaks)
+promGR &lt;- consPeaks[unique(subjectHits(ol))]
+enhGR &lt;- consPeaks[-unique(subjectHits(ol))]
+stitchGR &lt;- GenomicRanges::reduce(enhGR, min.gapwidth = 12500)</code></pre>
+<p>After comparison with promoters (defined by TSS <span class="math inline">\(\pm\)</span> 2500bp), 22,225 regions were classified as candidate promoters, whilst 23,504 were retained as candidate enhancers. After stitching together peaks within 12.5kb of each other, the final set of 13,361 candidate regions was formed. Notably, these regions were independent of the initial treatment group, but were identification of super-enhancers will be performed separately in eachtreatment group</p>
+</div>
+</div>
+<div id="function-definitions" class="section level1">
+<h1>Function Definitions</h1>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.0.3 (2020-10-10)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 18.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1
+
+locale:
+ [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8    
+ [5] LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
+ [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+ [1] grid      parallel  stats4    stats     graphics  grDevices utils    
+ [8] datasets  methods   base     
+
+other attached packages:
+ [1] scales_1.1.1         pander_0.6.3         Rsamtools_2.6.0     
+ [4] Biostrings_2.58.0    XVector_0.30.0       glue_1.4.2          
+ [7] Gviz_1.34.0          forcats_0.5.0        stringr_1.4.0       
+[10] dplyr_1.0.2          purrr_0.3.4          readr_1.4.0         
+[13] tidyr_1.1.2          tibble_3.0.4         ggplot2_3.3.2       
+[16] tidyverse_1.3.0      rtracklayer_1.50.0   GenomicRanges_1.42.0
+[19] GenomeInfoDb_1.26.0  IRanges_2.24.0       S4Vectors_0.28.0    
+[22] BiocGenerics_0.36.0  workflowr_1.6.2     
+
+loaded via a namespace (and not attached):
+  [1] colorspace_1.4-1            ellipsis_0.3.1             
+  [3] rprojroot_1.3-2             htmlTable_2.1.0            
+  [5] biovizBase_1.38.0           base64enc_0.1-3            
+  [7] fs_1.5.0                    dichromat_2.0-0            
+  [9] rstudioapi_0.11             bit64_4.0.5                
+ [11] AnnotationDbi_1.52.0        fansi_0.4.1                
+ [13] lubridate_1.7.9             xml2_1.3.2                 
+ [15] splines_4.0.3               knitr_1.30                 
+ [17] Formula_1.2-4               jsonlite_1.7.1             
+ [19] broom_0.7.2                 cluster_2.1.0              
+ [21] dbplyr_2.0.0                png_0.1-7                  
+ [23] compiler_4.0.3              httr_1.4.2                 
+ [25] backports_1.2.0             lazyeval_0.2.2             
+ [27] assertthat_0.2.1            Matrix_1.2-18              
+ [29] cli_2.1.0                   later_1.1.0.1              
+ [31] htmltools_0.5.0             prettyunits_1.1.1          
+ [33] tools_4.0.3                 gtable_0.3.0               
+ [35] GenomeInfoDbData_1.2.4      rappdirs_0.3.1             
+ [37] Rcpp_1.0.5                  Biobase_2.50.0             
+ [39] cellranger_1.1.0            vctrs_0.3.4                
+ [41] xfun_0.19                   rvest_0.3.6                
+ [43] lifecycle_0.2.0             ensembldb_2.14.0           
+ [45] XML_3.99-0.5                zlibbioc_1.36.0            
+ [47] BSgenome_1.58.0             VariantAnnotation_1.36.0   
+ [49] ProtGenerics_1.22.0         hms_0.5.3                  
+ [51] promises_1.1.1              MatrixGenerics_1.2.0       
+ [53] SummarizedExperiment_1.20.0 AnnotationFilter_1.14.0    
+ [55] RColorBrewer_1.1-2          yaml_2.2.1                 
+ [57] curl_4.3                    gridExtra_2.3              
+ [59] memoise_1.1.0               rpart_4.1-15               
+ [61] biomaRt_2.46.0              latticeExtra_0.6-29        
+ [63] stringi_1.5.3               RSQLite_2.2.1              
+ [65] checkmate_2.0.0             GenomicFeatures_1.42.0     
+ [67] BiocParallel_1.24.0         rlang_0.4.8                
+ [69] pkgconfig_2.0.3             matrixStats_0.57.0         
+ [71] bitops_1.0-6                evaluate_0.14              
+ [73] lattice_0.20-41             htmlwidgets_1.5.2          
+ [75] GenomicAlignments_1.26.0    bit_4.0.4                  
+ [77] tidyselect_1.1.0            here_0.1                   
+ [79] magrittr_1.5                R6_2.5.0                   
+ [81] generics_0.1.0              Hmisc_4.4-1                
+ [83] DelayedArray_0.16.0         DBI_1.1.0                  
+ [85] foreign_0.8-79              pillar_1.4.6               
+ [87] haven_2.3.1                 withr_2.3.0                
+ [89] nnet_7.3-14                 survival_3.2-7             
+ [91] RCurl_1.98-1.2              modelr_0.1.8               
+ [93] crayon_1.3.4                BiocFileCache_1.14.0       
+ [95] rmarkdown_2.5               jpeg_0.1-8.1               
+ [97] progress_1.2.2              readxl_1.3.1               
+ [99] data.table_1.13.2           blob_1.2.1                 
+[101] git2r_0.27.1                reprex_0.3.0               
+[103] digest_0.6.27               httpuv_1.5.4               
+[105] openssl_1.4.3               munsell_0.5.0              
+[107] askpass_1.1                </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
