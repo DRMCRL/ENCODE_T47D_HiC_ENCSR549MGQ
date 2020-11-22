@@ -27,6 +27,7 @@ library(tidyverse)
 library(Gviz)
 library(glue)
 library(plyranges)
+library(yaml)
 ```
 
 ```{r config}
@@ -76,10 +77,10 @@ dhtPeaks <- import.bed("data/external/BED/Consensus_T47D_AR_E2_DHT_peaks.bed", s
 ```{r}
 stateMap <- read_rds(here::here("output/stateMap.rds"))
 chromCols <- setNames(stateMap$itemRgb, stateMap$name)
-hmecHMM <- import.bed("data/external/E119_25_imputed12marks_dense.bed.gz", seqinfo = sq) %>%
+hmecHMM <- import.bed("data/external/ChromHMM/E119_25_imputed12marks_dense.bed.gz", seqinfo = sq) %>%
   sort()
 hmecHMM$cell <- "HMEC"
-hmmcHMM <- import.bed("data/external/E027_25_imputed12marks_dense.bed.gz", seqinfo = sq) %>%
+hmmcHMM <- import.bed("data/external/ChromHMM/E027_25_imputed12marks_dense.bed.gz", seqinfo = sq) %>%
   sort()
 hmmcHMM$cell <- "HMMC"
 ```
