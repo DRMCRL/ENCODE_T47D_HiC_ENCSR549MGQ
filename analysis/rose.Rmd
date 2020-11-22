@@ -12,7 +12,9 @@ knitr::opts_chunk$set(
   echo = TRUE,
   message = FALSE,
   warning = FALSE,
-  fig.align = "center"
+  fig.align = "center",
+  fig.width = 10,
+  fig.height = 8
 )
 ```
 
@@ -179,7 +181,7 @@ libSizes <- bfl %>%
 
 The `.bam` files were assigned to a `BamFileList` object for simple parsing of each range.
 
-```{r}
+```{r alnSummary}
 pander(enframe(comma(1e6*libSizes), name = "BamFile", value = "Total Alignments"), caption = "Summary of alignments within each treatment group")
 ```
 
@@ -239,7 +241,7 @@ rpmpbp <- countBam(bfl, param = ScanBamParam(which = stitchGR)) %>%
   dplyr::select(-contains("Pooled"))
 ```
 
-```{r plotRpmpbp, fig.cap = "Comparison of H3K27AC signal within each candidate region. The curve of best fit is shown in blue, with y = x shown as the dashed, grey line."}
+```{r plotRpmpbp, fig.width=8, fig.cap = "Comparison of H3K27AC signal within each candidate region. The curve of best fit is shown in blue, with y = x shown as the dashed, grey line."}
 rpmpbp %>%
   ggplot(aes(rpmpbp_E2_DHT, rpmpbp_E2)) + 
   geom_point() + 
@@ -257,7 +259,7 @@ This may represent bias in peak definitions (e.g. wider peaks predominately defi
 
 ## Detection of Super-Enhancers
 
-```{r plotRose, fig.cap="Super-Enhancer Detection Using ROSE"}
+```{r plotRose, fig.height=6, fig.cap="Super-Enhancer Detection Using ROSE"}
 par(mfrow = c(1, 2))
 cuts <- c()
 cuts$E2 <- calculate_cutoff(rpmpbp$rpmpbp_E2, main = "E2", ylab = "H3K27AC Signal (rpm/bp)", xlab = "Rank") %>% 
@@ -302,7 +304,7 @@ Initial analysis revealed that many more super-enhancers were identified in the 
 It was also noted that the median length of the super enhancers identified in both treatment groups was much longer than the tissue-specific SEs.
 A comparison of H3K27Ac signal for each region was then performed.
 
-```{r compareSE, fig.cap = "Comparison of H3K27AC signal in the two treatment groups for each type of super-enhancer. ROSE thresholds for inclusion as a super enhancers are shown as grey dashed lines."}
+```{r compareSE, fig.width=8, fig.cap = "Comparison of H3K27AC signal in the two treatment groups for each type of super-enhancer. ROSE thresholds for inclusion as a super enhancers are shown as grey dashed lines."}
 rpmpbp %>%
   ggplot(aes(rpmpbp_E2_DHT, rpmpbp_E2)) +
   geom_point(aes(colour = class)) +
