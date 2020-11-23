@@ -313,6 +313,21 @@ $(document).ready(function () {
     <li>
       <a href="interactions_setup.html">Setup</a>
     </li>
+    <li>
+      <a href="interactions_40kb.html">40kb Interactions</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Super Enhancers
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="rose.html">ROSE</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -360,7 +375,7 @@ $(document).ready(function () {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-11-13
+<strong>Last updated:</strong> 2020-11-23
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -391,16 +406,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree9bd2e2548ff65b55b1c153232ae0ca4d8dfba094targetblank9bd2e25a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/9bd2e2548ff65b55b1c153232ae0ca4d8dfba094" target="_blank">9bd2e25</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtreef6bbbecd4a508c82ae5c162715a3846157955ec1targetblankf6bbbeca"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/f6bbbecd4a508c82ae5c162715a3846157955ec1" target="_blank">f6bbbec</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree9bd2e2548ff65b55b1c153232ae0ca4d8dfba094targetblank9bd2e25a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtreef6bbbecd4a508c82ae5c162715a3846157955ec1targetblankf6bbbeca" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/9bd2e2548ff65b55b1c153232ae0ca4d8dfba094" target="_blank">9bd2e25</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/f6bbbecd4a508c82ae5c162715a3846157955ec1" target="_blank">f6bbbec</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -410,12 +425,10 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    .snakemake/
-    Ignored:    matrix.tar.gz
-    Ignored:    maxhic.tar.gz
+    Ignored:    data/external/H3K27AC/bam/
+    Ignored:    data/external/H3K27AC/bigwig/
+    Ignored:    data/external/gencode.v33lift37.annotation.gtf.gz
     Ignored:    output/MaxHiC/
-
-Untracked files:
-    Untracked:  data/external/gencode.v33lift37.annotation.gtf.gz
 
 </code></pre>
 <p>
@@ -454,6 +467,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/a2f06928af8365fdefd6dcbe3bbc0c8e6314e099/analysis/index.Rmd" target="_blank">a2f0692</a>
+</td>
+<td>
+Steve Pederson
+</td>
+<td>
+2020-11-19
+</td>
+<td>
+Added more files before merge
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/d7cd5ae9f8116fec7226b6a0af146ee84514b4fa/docs/index.html" target="_blank">d7cd5ae</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
