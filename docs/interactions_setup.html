@@ -12,7 +12,7 @@
 <meta name="author" content="Stephen Pederson Dame Roma Mitchell Cancer Research Laboratories Adelaide Medical School University of Adelaide" />
 
 
-<title>interactions_setup</title>
+<title>Interactions Setup</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -390,6 +390,21 @@ div.tocify {
     <li>
       <a href="interactions_setup.html">Setup</a>
     </li>
+    <li>
+      <a href="interactions_40kb.html">40kb Interactions</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Super Enhancers
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="rose.html">ROSE</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -412,9 +427,9 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">interactions_setup</h1>
+<h1 class="title toc-ignore">Interactions Setup</h1>
 <h4 class="author">Stephen Pederson<br>Dame Roma Mitchell Cancer Research Laboratories<br>Adelaide Medical School<br>University of Adelaide</h4>
-<h4 class="date">13 November, 2020</h4>
+<h4 class="date">23 November, 2020</h4>
 
 </div>
 
@@ -439,7 +454,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-11-13
+<strong>Last updated:</strong> 2020-11-23
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -530,16 +545,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree9bd2e2548ff65b55b1c153232ae0ca4d8dfba094targetblank9bd2e25a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/9bd2e2548ff65b55b1c153232ae0ca4d8dfba094" target="_blank">9bd2e25</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtreec65b1d70f5d56db7daff916c1523c4826dda500ftargetblankc65b1d7a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/c65b1d70f5d56db7daff916c1523c4826dda500f" target="_blank">c65b1d7</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree9bd2e2548ff65b55b1c153232ae0ca4d8dfba094targetblank9bd2e25a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtreec65b1d70f5d56db7daff916c1523c4826dda500ftargetblankc65b1d7a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/9bd2e2548ff65b55b1c153232ae0ca4d8dfba094" target="_blank">9bd2e25</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/c65b1d70f5d56db7daff916c1523c4826dda500f" target="_blank">c65b1d7</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -549,12 +564,14 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    .snakemake/
-    Ignored:    matrix.tar.gz
-    Ignored:    maxhic.tar.gz
+    Ignored:    analysis/figure/
+    Ignored:    data/external/H3K27AC/bam/
+    Ignored:    data/external/H3K27AC/bigwig/
+    Ignored:    data/external/gencode.v33lift37.annotation.gtf.gz
     Ignored:    output/MaxHiC/
 
 Untracked files:
-    Untracked:  data/external/gencode.v33lift37.annotation.gtf.gz
+    Untracked:  output/gi_10000.rds
 
 </code></pre>
 <p>
@@ -593,6 +610,74 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/c65b1d70f5d56db7daff916c1523c4826dda500f/analysis/interactions_setup.Rmd" target="_blank">c65b1d7</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+<td>
+Added 10kb interactions to setup
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/a2f06928af8365fdefd6dcbe3bbc0c8e6314e099/analysis/interactions_setup.Rmd" target="_blank">a2f0692</a>
+</td>
+<td>
+Steve Pederson
+</td>
+<td>
+2020-11-19
+</td>
+<td>
+Added more files before merge
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/c2596c6c8a87dab1fadfaffc3108c9771ccc084b/analysis/interactions_setup.Rmd" target="_blank">c2596c6</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-13
+</td>
+<td>
+Friday knock-off
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/d7cd5ae9f8116fec7226b6a0af146ee84514b4fa/docs/interactions_setup.html" target="_blank">d7cd5ae</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -742,8 +827,81 @@ rm(allGR)</code></pre>
 </div>
 <div id="data-preparation" class="section level1 tabset">
 <h1>Data Preparation</h1>
-<pre class="r"><code>sz &lt;- 20000</code></pre>
 <div id="kb-bins" class="section level2">
+<h2>10kb Bins</h2>
+<pre class="r"><code>sz &lt;- 10000</code></pre>
+<pre class="r"><code>bins &lt;- import.bed(
+  glue(&quot;data/hic/hic_results/matrix/merged/raw/{sz}/merged_{sz}_abs.bed&quot;),
+  seqinfo = sq
+)</code></pre>
+<pre class="r"><code>cis_int &lt;- vroom(
+  glue(&quot;output/MaxHiC/merged/{sz}/cis_interactions.txt.gz&quot;),
+  col_types = &quot;dddd-d--&quot;
+)
+fdr &lt;- p.adjust(exp(-cis_int$neg_ln_p_val), &quot;fdr&quot;)
+keepInt &lt;- fdr &lt; 0.05</code></pre>
+<p>By default, any bin pairs with no observed interactions were excluded from the Max-HiC output. Using 10kb bins, a total of 51,692,192 non-zero interactions were observed between bin pairs. The median observed interaction count was 1, whilst the maximum was 124.</p>
+<p>By default, the FDR provided by Max-HiC is incorrect and was ignored. The MaxHiC output was defined as a <code>GInteractions</code> object, with correct FDR added and interactions filtered for those with an FDR &lt; 0.05.</p>
+<pre class="r"><code>gc()
+gi &lt;- GInteractions(
+  anchor1 = bins[as.integer(cis_int$bin1ID[keepInt])],
+  anchor2 = bins[as.integer(cis_int$bin2ID[keepInt])],
+  counts = as.integer(cis_int$observed_interactions[keepInt]),
+  exp_interactions = cis_int$exp_interactions[keepInt],
+  p = exp(-cis_int$neg_ln_p_val)[keepInt],
+  fdr = fdr[keepInt]
+)
+seqinfo(gi) &lt;- sq</code></pre>
+<pre class="r"><code>write_rds(
+  gi,
+  here::here(
+    &quot;output&quot;,
+    glue(&quot;gi_{sz}.rds&quot;)
+  ),
+  compress = &quot;gz&quot;
+)
+gc()</code></pre>
+<p>After filtering interactions to only those considered significant:</p>
+<ul>
+<li>2,942 bin-pair interactions were retained.</li>
+<li>The observed interactions between bins ranged between <em>6</em> and <em>124</em></li>
+<li>The log<sub>2</sub> ratio of of observed to expected counts ranged between <em>Inf</em> and <em>-Inf</em>. These values represent enrichment for interactions well above that expected by the background model.</li>
+</ul>
+<pre class="r"><code>gi %&gt;%
+  anchors(&quot;first&quot;) %&gt;%
+  seqnames() %&gt;%
+  table() %&gt;%
+  enframe(
+    name = &quot;chr&quot;,
+    value = &quot;count&quot;
+  ) %&gt;%
+  mutate(
+    chr =factor(chr, levels = seqlevels(sq)),
+    count = as.integer(count)
+  ) %&gt;%
+  ggplot(
+    aes(chr, count)
+  ) +
+  geom_col() +
+  labs(
+    x = &quot;Chromosome&quot;,
+    y = glue(&quot;Total Significant Cis Interactions ({sz/1e3}kb bins)&quot;)
+  ) +
+  scale_y_continuous(expand = expansion(c(0, 0.05)))</code></pre>
+<div class="figure" style="text-align: center">
+<img src="figure/interactions_setup.Rmd/plotInt10-1.png" alt="*Distribution of significant interactions using 10kb bins*" width="864" />
+<p class="caption">
+<em>Distribution of significant interactions using 10kb bins</em>
+</p>
+</div>
+<pre class="r"><code>rm(gi)
+rm(cis_int)
+rm(fdr)
+rm(keepInt)
+gc()</code></pre>
+<pre class="r"><code>sz &lt;- 20000</code></pre>
+</div>
+<div id="kb-bins-1" class="section level2">
 <h2>20kb Bins</h2>
 <pre class="r"><code>bins &lt;- import.bed(
   glue(&quot;data/hic/hic_results/matrix/merged/raw/{sz}/merged_{sz}_abs.bed&quot;),
@@ -752,22 +910,22 @@ rm(allGR)</code></pre>
 <pre class="r"><code>cis_int &lt;- vroom(
   glue(&quot;output/MaxHiC/merged/{sz}/cis_interactions.txt.gz&quot;),
   col_types = &quot;dddd-d--&quot;
-)</code></pre>
-<p>By default, any bin pairs with no observed interactions were excluded fro the Max-HiC output. Using 20kb bins, a total of 40,041,031 non-zero interactions were observed between bin pairs. The median observed interaction count was 1, whilst the maximum was 181.</p>
-<p>By default, the FDR provided by Max-HiC is incorrect and was ignored. The MaxHiC output was defined as a <code>GInteractions</code> object, with correct FDR added and interactions filtered for those with an FDR &lt; 0.05</p>
-<pre class="r"><code>gi &lt;- GInteractions(
-  anchor1 = bins[as.integer(cis_int$bin1ID)],
-  anchor2 = bins[as.integer(cis_int$bin2ID)],
-  counts = as.integer(cis_int$observed_interactions),
-  exp_interactions = cis_int$exp_interactions,
-  p = exp(-cis_int$neg_ln_p_val)
 )
-seqinfo(gi) &lt;- sq
-gi$fdr &lt;- p.adjust(gi$p, &quot;fdr&quot;)
-gi$distance &lt;- pairdist(gi)
-gi$logObsExp &lt;- log2(gi$counts / gi$exp_interactions)</code></pre>
-<pre class="r"><code>gi &lt;- subset(gi, fdr &lt; 0.05)
-write_rds(
+fdr &lt;- p.adjust(exp(-cis_int$neg_ln_p_val), &quot;fdr&quot;)
+keepInt &lt;- fdr &lt; 0.05</code></pre>
+<p>By default, any bin pairs with no observed interactions were excluded from the Max-HiC output. Using 20kb bins, a total of 40,041,031 non-zero interactions were observed between bin pairs. The median observed interaction count was 1, whilst the maximum was 181.</p>
+<p>By default, the FDR provided by Max-HiC is incorrect and was ignored. The MaxHiC output was defined as a <code>GInteractions</code> object, with correct FDR added and interactions filtered for those with an FDR &lt; 0.05.</p>
+<pre class="r"><code>gc()
+gi &lt;- GInteractions(
+  anchor1 = bins[as.integer(cis_int$bin1ID[keepInt])],
+  anchor2 = bins[as.integer(cis_int$bin2ID[keepInt])],
+  counts = as.integer(cis_int$observed_interactions[keepInt]),
+  exp_interactions = cis_int$exp_interactions[keepInt],
+  p = exp(-cis_int$neg_ln_p_val)[keepInt],
+  fdr = fdr[keepInt]
+)
+seqinfo(gi) &lt;- sq</code></pre>
+<pre class="r"><code>write_rds(
   gi,
   here::here(
     &quot;output&quot;,
@@ -780,7 +938,7 @@ gc()</code></pre>
 <ul>
 <li>8,469 bin-pair interactions were retained.</li>
 <li>The observed interactions between bins ranged between <em>6</em> and <em>181</em></li>
-<li>The log<sub>2</sub> ratio of of observed to expected counts ranged between <em>1.7</em> and <em>4.23</em>. These values represent enrichment for interactions well above that expected by the background model.</li>
+<li>The log<sub>2</sub> ratio of of observed to expected counts ranged between <em>Inf</em> and <em>-Inf</em>. These values represent enrichment for interactions well above that expected by the background model.</li>
 </ul>
 <pre class="r"><code>gi %&gt;%
   anchors(&quot;first&quot;) %&gt;%
@@ -809,12 +967,51 @@ gc()</code></pre>
 <em>Distribution of significant interactions using 20kb bins</em>
 </p>
 </div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plotInt20-1">
+Past versions of plotInt20-1.png
+</button>
+</p>
+<div id="fig-plotInt20-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/d7cd5ae9f8116fec7226b6a0af146ee84514b4fa/docs/figure/interactions_setup.Rmd/plotInt20-1.png" target="_blank">d7cd5ae</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>rm(gi)
 rm(cis_int)
+rm(fdr)
+rm(keepInt)
 gc()</code></pre>
 <pre class="r"><code>sz &lt;- 40000</code></pre>
 </div>
-<div id="kb-bins-1" class="section level2">
+<div id="kb-bins-2" class="section level2">
 <h2>40kb Bins</h2>
 <pre class="r"><code>bins &lt;- import.bed(
   glue(&quot;data/hic/hic_results/matrix/merged/raw/{sz}/merged_{sz}_abs.bed&quot;),
@@ -823,22 +1020,22 @@ gc()</code></pre>
 <pre class="r"><code>cis_int &lt;- vroom(
   glue(&quot;output/MaxHiC/merged/{sz}/cis_interactions.txt.gz&quot;),
   col_types = &quot;dddd-d--&quot;
-)</code></pre>
-<p>By default, any bin pairs with no observed interactions were excluded fro the Max-HiC output. Using 40kb bins, a total of 27,619,332 non-zero interactions were observed between bin pairs. The median observed interaction count was 1, whilst the maximum was 426.</p>
-<p>By default, the FDR provided by Max-HiC is incorrect and was ignored. The MaxHiC output was defined as a <code>GInteractions</code> object, with correct FDR added and interactions filtered for those with an FDR &lt; 0.05</p>
-<pre class="r"><code>gi &lt;- GInteractions(
-  anchor1 = bins[as.integer(cis_int$bin1ID)],
-  anchor2 = bins[as.integer(cis_int$bin2ID)],
-  counts = as.integer(cis_int$observed_interactions),
-  exp_interactions = cis_int$exp_interactions,
-  p = exp(-cis_int$neg_ln_p_val)
 )
-seqinfo(gi) &lt;- sq
-gi$fdr &lt;- p.adjust(gi$p, &quot;fdr&quot;)
-gi$distance &lt;- pairdist(gi)
-gi$logObsExp &lt;- log2(gi$counts / gi$exp_interactions)</code></pre>
-<pre class="r"><code>gi &lt;- subset(gi, fdr &lt; 0.05)
-write_rds(
+fdr &lt;- p.adjust(exp(-cis_int$neg_ln_p_val), &quot;fdr&quot;)
+keepInt &lt;- fdr &lt; 0.05</code></pre>
+<p>By default, any bin pairs with no observed interactions were excluded from the Max-HiC output. Using 40kb bins, a total of 27,619,332 non-zero interactions were observed between bin pairs. The median observed interaction count was 1, whilst the maximum was 426.</p>
+<p>By default, the FDR provided by Max-HiC is incorrect and was ignored. The MaxHiC output was defined as a <code>GInteractions</code> object, with correct FDR added and interactions filtered for those with an FDR &lt; 0.05.</p>
+<pre class="r"><code>gc()
+gi &lt;- GInteractions(
+  anchor1 = bins[as.integer(cis_int$bin1ID[keepInt])],
+  anchor2 = bins[as.integer(cis_int$bin2ID[keepInt])],
+  counts = as.integer(cis_int$observed_interactions[keepInt]),
+  exp_interactions = cis_int$exp_interactions[keepInt],
+  p = exp(-cis_int$neg_ln_p_val)[keepInt],
+  fdr = fdr[keepInt]
+)
+seqinfo(gi) &lt;- sq</code></pre>
+<pre class="r"><code>write_rds(
   gi,
   here::here(
     &quot;output&quot;,
@@ -851,7 +1048,7 @@ gc()</code></pre>
 <ul>
 <li>18,811 bin-pair interactions were retained.</li>
 <li>The observed interactions between bins ranged between <em>5</em> and <em>426</em></li>
-<li>The log<sub>2</sub> ratio of of observed to expected counts ranged between <em>1.5</em> and <em>5.5</em>. These values represent enrichment for interactions well above that expected by the background model.</li>
+<li>The log<sub>2</sub> ratio of of observed to expected counts ranged between <em>Inf</em> and <em>-Inf</em>. These values represent enrichment for interactions well above that expected by the background model.</li>
 </ul>
 <pre class="r"><code>gi %&gt;%
   anchors(&quot;first&quot;) %&gt;%
@@ -875,17 +1072,19 @@ gc()</code></pre>
   ) +
   scale_y_continuous(expand = expansion(c(0, 0.05)))</code></pre>
 <div class="figure" style="text-align: center">
-<img src="figure/interactions_setup.Rmd/plotIn40-1.png" alt="*Distribution of significant interactions using 40kb bins*" width="864" />
+<img src="figure/interactions_setup.Rmd/plotInt40-1.png" alt="*Distribution of significant interactions using 40kb bins*" width="864" />
 <p class="caption">
 <em>Distribution of significant interactions using 40kb bins</em>
 </p>
 </div>
 <pre class="r"><code>rm(gi)
 rm(cis_int)
+rm(fdr)
+rm(keepInt)
 gc()</code></pre>
 <pre class="r"><code>sz &lt;- &quot;100000&quot;</code></pre>
 </div>
-<div id="kb-bins-2" class="section level2">
+<div id="kb-bins-3" class="section level2">
 <h2>100kb Bins</h2>
 <pre class="r"><code>bins &lt;- import.bed(
   glue(&quot;data/hic/hic_results/matrix/merged/raw/{sz}/merged_{sz}_abs.bed&quot;),
@@ -895,7 +1094,7 @@ gc()</code></pre>
   glue(&quot;output/MaxHiC/merged/{sz}/cis_interactions.txt.gz&quot;),
   col_types = &quot;dddd-d--&quot;
 )</code></pre>
-<p>By default, any bin pairs with no observed interactions were excluded fro the Max-HiC output. Using 100kb bins, a total of 12,144,630 non-zero interactions were observed between bin pairs. The median observed interaction count was 2, whilst the maximum was 1040.</p>
+<p>By default, any bin pairs with no observed interactions were excluded from the Max-HiC output. Using 100kb bins, a total of 12,144,630 non-zero interactions were observed between bin pairs. The median observed interaction count was 2, whilst the maximum was 1040.</p>
 <p>By default, the FDR provided by Max-HiC is incorrect and was ignored. The MaxHiC output was defined as a <code>GInteractions</code> object, with correct FDR added and interactions filtered for those with an FDR &lt; 0.05</p>
 <pre class="r"><code>gi &lt;- GInteractions(
   anchor1 = bins[as.integer(cis_int$bin1ID)],
@@ -950,6 +1149,43 @@ gc()</code></pre>
 <p class="caption">
 <em>Distribution of significant interactions using 100kb bins</em>
 </p>
+</div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plotIn100-1">
+Past versions of plotIn100-1.png
+</button>
+</p>
+<div id="fig-plotIn100-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/d7cd5ae9f8116fec7226b6a0af146ee84514b4fa/docs/figure/interactions_setup.Rmd/plotIn100-1.png" target="_blank">d7cd5ae</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <pre class="r"><code>rm(gi)
 rm(cis_int)
