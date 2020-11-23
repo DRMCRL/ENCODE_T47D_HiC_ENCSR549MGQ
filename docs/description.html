@@ -394,6 +394,21 @@ div.tocify {
     <li>
       <a href="interactions_setup.html">Setup</a>
     </li>
+    <li>
+      <a href="interactions_40kb.html">40kb Interactions</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Super Enhancers
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="rose.html">ROSE</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -418,7 +433,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Description of Workflow</h1>
 <h4 class="author">Stephen Pederson<br>Dame Roma Mitchell Cancer Research Laboratories<br>Adelaide Medical School<br>University of Adelaide</h4>
-<h4 class="date">13 November, 2020</h4>
+<h4 class="date">23 November, 2020</h4>
 
 </div>
 
@@ -443,7 +458,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-11-13
+<strong>Last updated:</strong> 2020-11-23
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -534,16 +549,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree9bd2e2548ff65b55b1c153232ae0ca4d8dfba094targetblank9bd2e25a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/9bd2e2548ff65b55b1c153232ae0ca4d8dfba094" target="_blank">9bd2e25</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtreea4a8fb82df1b33abe2a44a14d38aa11455be4765targetblanka4a8fb8a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/a4a8fb82df1b33abe2a44a14d38aa11455be4765" target="_blank">a4a8fb8</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree9bd2e2548ff65b55b1c153232ae0ca4d8dfba094targetblank9bd2e25a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtreea4a8fb82df1b33abe2a44a14d38aa11455be4765targetblanka4a8fb8a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/9bd2e2548ff65b55b1c153232ae0ca4d8dfba094" target="_blank">9bd2e25</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/a4a8fb82df1b33abe2a44a14d38aa11455be4765" target="_blank">a4a8fb8</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -553,12 +568,10 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    .snakemake/
-    Ignored:    matrix.tar.gz
-    Ignored:    maxhic.tar.gz
+    Ignored:    data/external/H3K27AC/bam/
+    Ignored:    data/external/H3K27AC/bigwig/
+    Ignored:    data/external/gencode.v33lift37.annotation.gtf.gz
     Ignored:    output/MaxHiC/
-
-Untracked files:
-    Untracked:  data/external/gencode.v33lift37.annotation.gtf.gz
 
 </code></pre>
 <p>
@@ -597,6 +610,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/a2f06928af8365fdefd6dcbe3bbc0c8e6314e099/analysis/description.Rmd" target="_blank">a2f0692</a>
+</td>
+<td>
+Steve Pederson
+</td>
+<td>
+2020-11-19
+</td>
+<td>
+Added more files before merge
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/d7cd5ae9f8116fec7226b6a0af146ee84514b4fa/docs/description.html" target="_blank">d7cd5ae</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -745,7 +792,7 @@ library(spBioUtils)</code></pre>
   grViz()</code></pre>
 <div class="figure" style="text-align: center">
 <div id="htmlwidget-4e666953f0fda2f63352" style="width:672px;height:480px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-4e666953f0fda2f63352">{"x":{"diagram":"digraph snakemake_dag {\n    graph[bgcolor=white, margin=0];\n    node[shape=box, style=rounded, fontname=sans,                 fontsize=10, penwidth=2];\n    edge[penwidth=2, color=grey];\n\t1[label = \"build_contact_maps\", color = \"#FF0000\", style=\"rounded\"];\n\t2[label = \"bowtie2_index\", color = \"#0000FF\", style=\"rounded\"];\n\t3[label = \"trim_fastqc\", color = \"#00FF00\", style=\"rounded\"];\n\t4[label = \"hicpro_merge\", color = \"#FF0000\", style=\"rounded\"];\n\t5[label = \"run_maxhic\", color = \"#8066B3\", style=\"rounded\"];\n\t6[label = \"adapter_removal\", color = \"#00FF00\", style=\"rounded\"];\n\t7[label = \"hicpro_qc\", color = \"#FF0000\", style=\"rounded\"];\n\t8[label = \"find_rs_fragments\", color = \"#0000FF\", style=\"rounded\"];\n\t9[label = \"raw_fastqc\", color = \"#00FF00\", style=\"rounded\"];\n\t10[label = \"get_reference\", color = \"#0000FF\", style=\"rounded\"];\n\t11[label = \"merge_interaction_matrices\", color = \"#8066B3\", style=\"rounded\"];\n\t12[label = \"hicpro_proc\", color = \"#FF0000\", style=\"rounded\"];\n\t13[label = \"get_chrom_sizes\", color = \"#0000FF\", style=\"rounded\"];\n\t14[label = \"make_hicpro_config\", color = \"#FF0000\", style=\"rounded\"];\n\t15[label = \"get_maxhic\", color = \"#8066B3\", style=\"rounded\"];\n\t16[label = \"get_raw_data\", color = \"#00FF00\", style=\"rounded\"];\n\t17[label = \"hicpro_mapping\", color = \"#FF0000\", style=\"rounded\"];\n\t14 -> 1\n\t4 -> 1\n\t10 -> 2\n\t6 -> 3\n\t12 -> 4\n\t14 -> 4\n\t11 -> 5\n\t15 -> 5\n\t16 -> 6\n\t14 -> 7\n\t17 -> 7\n\t10 -> 8\n\t16 -> 9\n\t1 -> 11\n\t14 -> 12\n\t17 -> 12\n\t13 -> 14\n\t2 -> 14\n\t8 -> 14\n\t14 -> 17\n\t6 -> 17\n}            ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-4e666953f0fda2f63352">{"x":{"diagram":"digraph snakemake_dag {\n    graph[bgcolor=white, margin=0];\n    node[shape=box, style=rounded, fontname=sans,                 fontsize=10, penwidth=2];\n    edge[penwidth=2, color=grey];\n\t1[label = \"raw_fastqc\", color = \"#00FF00\", style=\"rounded\"];\n\t2[label = \"build_contact_maps\", color = \"#FF0000\", style=\"rounded\"];\n\t3[label = \"merge_interaction_matrices\", color = \"#8066B3\", style=\"rounded\"];\n\t4[label = \"trim_fastqc\", color = \"#00FF00\", style=\"rounded\"];\n\t5[label = \"run_maxhic\", color = \"#8066B3\", style=\"rounded\"];\n\t6[label = \"adapter_removal\", color = \"#00FF00\", style=\"rounded\"];\n\t7[label = \"make_hicpro_config\", color = \"#FF0000\", style=\"rounded\"];\n\t8[label = \"hicpro_qc\", color = \"#FF0000\", style=\"rounded\"];\n\t9[label = \"hicpro_merge\", color = \"#FF0000\", style=\"rounded\"];\n\t10[label = \"bowtie2_index\", color = \"#0000FF\", style=\"rounded\"];\n\t11[label = \"find_rs_fragments\", color = \"#0000FF\", style=\"rounded\"];\n\t12[label = \"hicpro_proc\", color = \"#FF0000\", style=\"rounded\"];\n\t13[label = \"find_super_enhancers\", color = \"0.35 0.6 0.85\", style=\"rounded\"];\n\t14[label = \"get_reference\", color = \"#0000FF\", style=\"rounded\"];\n\t15[label = \"get_chrom_sizes\", color = \"#0000FF\", style=\"rounded\"];\n\t16[label = \"get_raw_data\", color = \"#00FF00\", style=\"rounded\"];\n\t17[label = \"get_maxhic\", color = \"#8066B3\", style=\"rounded\"];\n\t18[label = \"hicpro_mapping\", color = \"#FF0000\", style=\"rounded\"];\n\t19[label = \"make_input_tag_directories\", color = \"0.06 0.6 0.85\", style=\"rounded\"];\n\t20[label = \"make_tag_directories\", color = \"0.03 0.6 0.85\", style=\"rounded\"];\n\t16 -> 1\n\t9 -> 2\n\t7 -> 2\n\t2 -> 3\n\t6 -> 4\n\t17 -> 5\n\t3 -> 5\n\t16 -> 6\n\t10 -> 7\n\t15 -> 7\n\t11 -> 7\n\t7 -> 8\n\t18 -> 8\n\t12 -> 9\n\t7 -> 9\n\t14 -> 10\n\t14 -> 11\n\t7 -> 12\n\t18 -> 12\n\t20 -> 13\n\t19 -> 13\n\t7 -> 18\n\t6 -> 18\n}            ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 <p class="caption">
 <em>Summary of workflow. Node names indicate snakemake rules. Blue nodes indicate preparation of the genomic reference, green nodes indicate preparation of the sequencing data, red nodes indicate the HiC-Pro workflow, whlist the remaining purple nodes indicate the detection of significant interactions</em>
 </p>
