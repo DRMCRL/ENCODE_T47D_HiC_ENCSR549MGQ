@@ -545,16 +545,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtreec65b1d70f5d56db7daff916c1523c4826dda500ftargetblankc65b1d7a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/c65b1d70f5d56db7daff916c1523c4826dda500f" target="_blank">c65b1d7</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtreebb2628415634f3891e42653174483da42150e7aftargetblankbb26284a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/bb2628415634f3891e42653174483da42150e7af" target="_blank">bb26284</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtreec65b1d70f5d56db7daff916c1523c4826dda500ftargetblankc65b1d7a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtreebb2628415634f3891e42653174483da42150e7aftargetblankbb26284a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/c65b1d70f5d56db7daff916c1523c4826dda500f" target="_blank">c65b1d7</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/bb2628415634f3891e42653174483da42150e7af" target="_blank">bb26284</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -564,14 +564,10 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    .snakemake/
-    Ignored:    analysis/figure/
     Ignored:    data/external/H3K27AC/bam/
     Ignored:    data/external/H3K27AC/bigwig/
     Ignored:    data/external/gencode.v33lift37.annotation.gtf.gz
     Ignored:    output/MaxHiC/
-
-Untracked files:
-    Untracked:  output/gi_10000.rds
 
 </code></pre>
 <p>
@@ -610,6 +606,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/357abba02ab49320c116706b9d5f86d1e6449be6/analysis/interactions_setup.Rmd" target="_blank">357abba</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+<td>
+Finished with ROSE
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/5c60b52c24ba068ef84d5caa57da654826ef5430/docs/interactions_setup.html" target="_blank">5c60b52</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -851,6 +881,8 @@ gi &lt;- GInteractions(
   p = exp(-cis_int$neg_ln_p_val)[keepInt],
   fdr = fdr[keepInt]
 )
+gi$distance &lt;- pairdist(gi)
+gi$logObsExp &lt;- log2(gi$counts / gi$exp_interactions)
 seqinfo(gi) &lt;- sq</code></pre>
 <pre class="r"><code>write_rds(
   gi,
@@ -865,7 +897,7 @@ gc()</code></pre>
 <ul>
 <li>2,942 bin-pair interactions were retained.</li>
 <li>The observed interactions between bins ranged between <em>6</em> and <em>124</em></li>
-<li>The log<sub>2</sub> ratio of of observed to expected counts ranged between <em>Inf</em> and <em>-Inf</em>. These values represent enrichment for interactions well above that expected by the background model.</li>
+<li>The log<sub>2</sub> ratio of of observed to expected counts ranged between <em>2.02</em> and <em>4.41</em>. These values represent enrichment for interactions well above that expected by the background model.</li>
 </ul>
 <pre class="r"><code>gi %&gt;%
   anchors(&quot;first&quot;) %&gt;%
@@ -894,6 +926,43 @@ gc()</code></pre>
 <em>Distribution of significant interactions using 10kb bins</em>
 </p>
 </div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plotInt10-1">
+Past versions of plotInt10-1.png
+</button>
+</p>
+<div id="fig-plotInt10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/5c60b52c24ba068ef84d5caa57da654826ef5430/docs/figure/interactions_setup.Rmd/plotInt10-1.png" target="_blank">5c60b52</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>rm(gi)
 rm(cis_int)
 rm(fdr)
@@ -913,7 +982,7 @@ gc()</code></pre>
 )
 fdr &lt;- p.adjust(exp(-cis_int$neg_ln_p_val), &quot;fdr&quot;)
 keepInt &lt;- fdr &lt; 0.05</code></pre>
-<p>By default, any bin pairs with no observed interactions were excluded from the Max-HiC output. Using 20kb bins, a total of 40,041,031 non-zero interactions were observed between bin pairs. The median observed interaction count was 1, whilst the maximum was 181.</p>
+<p>By default, any bin pairs with no observed interactions were excluded from the Max-HiC output. Using 20kb bins, a total of 33,554,431 non-zero interactions were observed between bin pairs. The median observed interaction count was 1, whilst the maximum was 181.</p>
 <p>By default, the FDR provided by Max-HiC is incorrect and was ignored. The MaxHiC output was defined as a <code>GInteractions</code> object, with correct FDR added and interactions filtered for those with an FDR &lt; 0.05.</p>
 <pre class="r"><code>gc()
 gi &lt;- GInteractions(
@@ -924,6 +993,8 @@ gi &lt;- GInteractions(
   p = exp(-cis_int$neg_ln_p_val)[keepInt],
   fdr = fdr[keepInt]
 )
+gi$distance &lt;- pairdist(gi)
+gi$logObsExp &lt;- log2(gi$counts / gi$exp_interactions)
 seqinfo(gi) &lt;- sq</code></pre>
 <pre class="r"><code>write_rds(
   gi,
@@ -936,9 +1007,9 @@ seqinfo(gi) &lt;- sq</code></pre>
 gc()</code></pre>
 <p>After filtering interactions to only those considered significant:</p>
 <ul>
-<li>8,469 bin-pair interactions were retained.</li>
-<li>The observed interactions between bins ranged between <em>6</em> and <em>181</em></li>
-<li>The log<sub>2</sub> ratio of of observed to expected counts ranged between <em>Inf</em> and <em>-Inf</em>. These values represent enrichment for interactions well above that expected by the background model.</li>
+<li>6,866 bin-pair interactions were retained.</li>
+<li>The observed interactions between bins ranged between <em>8</em> and <em>181</em></li>
+<li>The log<sub>2</sub> ratio of of observed to expected counts ranged between <em>1.7</em> and <em>4.23</em>. These values represent enrichment for interactions well above that expected by the background model.</li>
 </ul>
 <pre class="r"><code>gi %&gt;%
   anchors(&quot;first&quot;) %&gt;%
@@ -1034,6 +1105,8 @@ gi &lt;- GInteractions(
   p = exp(-cis_int$neg_ln_p_val)[keepInt],
   fdr = fdr[keepInt]
 )
+gi$distance &lt;- pairdist(gi)
+gi$logObsExp &lt;- log2(gi$counts / gi$exp_interactions)
 seqinfo(gi) &lt;- sq</code></pre>
 <pre class="r"><code>write_rds(
   gi,
@@ -1048,7 +1121,7 @@ gc()</code></pre>
 <ul>
 <li>18,811 bin-pair interactions were retained.</li>
 <li>The observed interactions between bins ranged between <em>5</em> and <em>426</em></li>
-<li>The log<sub>2</sub> ratio of of observed to expected counts ranged between <em>Inf</em> and <em>-Inf</em>. These values represent enrichment for interactions well above that expected by the background model.</li>
+<li>The log<sub>2</sub> ratio of of observed to expected counts ranged between <em>1.5</em> and <em>5.5</em>. These values represent enrichment for interactions well above that expected by the background model.</li>
 </ul>
 <pre class="r"><code>gi %&gt;%
   anchors(&quot;first&quot;) %&gt;%
@@ -1076,6 +1149,43 @@ gc()</code></pre>
 <p class="caption">
 <em>Distribution of significant interactions using 40kb bins</em>
 </p>
+</div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plotInt40-1">
+Past versions of plotInt40-1.png
+</button>
+</p>
+<div id="fig-plotInt40-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/5c60b52c24ba068ef84d5caa57da654826ef5430/docs/figure/interactions_setup.Rmd/plotInt40-1.png" target="_blank">5c60b52</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <pre class="r"><code>rm(gi)
 rm(cis_int)
