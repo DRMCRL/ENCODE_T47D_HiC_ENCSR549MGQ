@@ -545,16 +545,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree55adffb8389021e3c5d5b20aaf573b2db32a414ftargetblank55adffba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/55adffb8389021e3c5d5b20aaf573b2db32a414f" target="_blank">55adffb</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree2bbc2ccf05f809868ae93e49256b8b9b7a2f488etargetblank2bbc2cca"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/2bbc2ccf05f809868ae93e49256b8b9b7a2f488e" target="_blank">2bbc2cc</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree55adffb8389021e3c5d5b20aaf573b2db32a414ftargetblank55adffba" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree2bbc2ccf05f809868ae93e49256b8b9b7a2f488etargetblank2bbc2cca" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/55adffb8389021e3c5d5b20aaf573b2db32a414f" target="_blank">55adffb</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/2bbc2ccf05f809868ae93e49256b8b9b7a2f488e" target="_blank">2bbc2cc</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -570,8 +570,10 @@ Ignored files:
     Ignored:    output/MaxHiC/
 
 Unstaged changes:
-    Deleted:    analysis/check_superenhancers.Rmd
-    Modified:   analysis/interactions_40kb.Rmd
+    Modified:   analysis/interactions_setup.Rmd
+    Modified:   output/SE.gtf
+    Modified:   output/enhancers.bed
+    Modified:   output/promoters.bed
 
 </code></pre>
 <p>
@@ -610,6 +612,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/2bbc2ccf05f809868ae93e49256b8b9b7a2f488e/analysis/rose.Rmd" target="_blank">2bbc2cc</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+<td>
+Finished checking SEs
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/0c4e66a99028ddc7edd459d2c36b16ddaecf05b9/docs/rose.html" target="_blank">0c4e66a</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -697,7 +733,6 @@ library(InteractionSet)
 library(magrittr)</code></pre>
 <pre class="r"><code>theme_set(theme_bw())
 panderOptions(&quot;big.mark&quot;, &quot;,&quot;)</code></pre>
-<pre class="r"><code>minWidth &lt;- 75</code></pre>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>This is a manual re-implementation of the ROSE algorithm and relies on ChIP peaks from H3K21AC data being previously called. These are assumed to be candidate regions for both promoters and enhancers.</p>
@@ -721,7 +756,7 @@ panderOptions(&quot;big.mark&quot;, &quot;,&quot;)</code></pre>
 </ul></li>
 <li>Join any remaining candidate enhancers within 12.5kb
 <ul>
-<li>Remove any regions shorter than the read length (75bp) as these will not make the cut</li>
+<li>Remove any candidate regions shorter than 1kb as these will not make the cut</li>
 </ul></li>
 <li>Count reads aligned within each region to get the number of reads
 <ul>
@@ -768,6 +803,7 @@ geneRanges$gene &lt;- names(geneRanges)
 geneRanges$symbol &lt;- geneModels$symbol[match(geneRanges$gene, geneModels$gene)]
 sq &lt;- seqinfo(geneModels)</code></pre>
 <p>Gene and transcript models were loaded for plotting and data integration. These were defined in the <a href="annotation_setup.html">Annotation Setup</a> step of the workflow. Gene models make for simpler plotting, whilst transcript models allow for more accurate identification of each TSS.</p>
+<p>For this analysis, only the TSS of genes detected as expressed in the RNA-Seq dataset (Stripped Serum) were considered as viable TSS &amp; promoters. Any peaks which overlapped undetectable gene promoters were considered more likely to be functioning as enhancers.</p>
 </div>
 <div id="consensus-peaks" class="section level2">
 <h2>Consensus Peaks</h2>
@@ -782,18 +818,18 @@ sq &lt;- seqinfo(geneModels)</code></pre>
 <pre class="r"><code>consPeaks &lt;- chipGR %&gt;%
   as(&quot;GRangesList&quot;) %&gt;%
   unlist() %&gt;%
-  GenomicRanges::reduce() %&gt;%
-  subset(width &gt; minWidth)</code></pre>
+  GenomicRanges::reduce() </code></pre>
 <p>Consensus peaks were identified for each treatment group (E2 and E2+DHT), however for the purposes of super-enhancer detection, <em>these were merged to ensure the same candidate super-enhancer was being investigated in each cell type</em>. Subtle shifts in ChIP peaks boundaries should remain relatively inconsequential for the relatively extreme criteria required for classification as a super-enhancer.</p>
-<p>Whilst 44,044 and 45,654 consensus peaks were identified for E2 and E2+DHT respectively, when combining a total of 45,729 regions were defined as the merged consensus peaks of the separate sets of consensus peaks.</p>
+<p>Whilst 44,044 and 45,654 consensus peaks were identified for E2 and E2+DHT respectively, when combining a total of 46,946 regions were defined as the merged consensus peaks of the separate sets of consensus peaks.</p>
 </div>
 <div id="promoters-and-enhancers" class="section level2">
 <h2>Promoters and Enhancers</h2>
 <pre class="r"><code>ol &lt;- findOverlaps(tss, consPeaks, ignore.strand = TRUE)
 promGR &lt;- consPeaks[unique(subjectHits(ol))]
 enhGR &lt;- consPeaks[-unique(subjectHits(ol))]
-stitchGR &lt;- GenomicRanges::reduce(enhGR, min.gapwidth = 12500)</code></pre>
-<p>After comparison with promoters (defined as TSS <span class="math inline">\(\pm\)</span> 2500bp), 14,228 regions were classified as candidate promoters, whilst 31,501 were retained as candidate enhancers. After stitching together peaks within 12.5kb of each other, the final set of 16,812 candidate regions was formed. Notably, these regions were independent of the initial treatment group, but were identification of super-enhancers will be performed separately in each treatment group.</p>
+stitchGR &lt;- GenomicRanges::reduce(enhGR, min.gapwidth = 12500) %&gt;%
+  subset(width &gt; 1e3)</code></pre>
+<p>After comparison with promoters (defined as TSS <span class="math inline">\(\pm\)</span> 2500bp), 14,346 regions were classified as candidate promoters, whilst 32,600 were retained as candidate enhancers. After stitching together peaks within 12.5kb of each other and removing peaks shorter than 1kb, the final set of 10,759 candidate regions was formed. Notably, these regions were independent of the initial treatment group, but were identification of super-enhancers will be performed separately in each treatment group.</p>
 </div>
 <div id="alignments" class="section level2">
 <h2>Alignments</h2>
@@ -885,7 +921,11 @@ stitchGR &lt;- GenomicRanges::reduce(enhGR, min.gapwidth = 12500)</code></pre>
   mutate(
     across(contains(&quot;rpm&quot;), function(x){x - .$rpmpbp_Pooled})
   ) %&gt;%
-  dplyr::select(-contains(&quot;Pooled&quot;))</code></pre>
+  dplyr::select(-contains(&quot;Pooled&quot;)) %&gt;%
+  dplyr::filter(
+    rpmpbp_E2_DHT &gt; 0,
+    rpmpbp_E2 &gt; 0
+  )</code></pre>
 <pre class="r"><code>rpmpbp %&gt;%
   ggplot(aes(rpmpbp_E2_DHT, rpmpbp_E2)) + 
   geom_point() + 
@@ -894,11 +934,13 @@ stitchGR &lt;- GenomicRanges::reduce(enhGR, min.gapwidth = 12500)</code></pre>
   labs(
     x = &quot;E2 + DHT (rpm/bp)&quot;,
     y = &quot;E2 (rpm/bp)&quot;
-  )</code></pre>
+  ) +
+  scale_x_sqrt() +
+  scale_y_sqrt()</code></pre>
 <div class="figure" style="text-align: center">
-<img src="figure/rose.Rmd/plotRpmpbp-1.png" alt="Comparison of H3K27AC signal within each candidate region. The curve of best fit is shown in blue, with y = x shown as the dashed, grey line." width="768" />
+<img src="figure/rose.Rmd/plotRpmpbp-1.png" alt="Comparison of H3K27AC signal within each candidate region. The curve of best fit is shown in blue, with y = x shown as the dashed, grey line. Axes are both square-root transformed." width="768" />
 <p class="caption">
-Comparison of H3K27AC signal within each candidate region. The curve of best fit is shown in blue, with y = x shown as the dashed, grey line.
+Comparison of H3K27AC signal within each candidate region. The curve of best fit is shown in blue, with y = x shown as the dashed, grey line. Axes are both square-root transformed.
 </p>
 </div>
 <p>
@@ -925,6 +967,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/0c4e66a99028ddc7edd459d2c36b16ddaecf05b9/docs/figure/rose.Rmd/plotRpmpbp-1.png" target="_blank">0c4e66a</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/2491240e00ca86842fb5105c26622bbe5ba178ee/docs/figure/rose.Rmd/plotRpmpbp-1.png" target="_blank">2491240</a>
 </td>
 <td>
@@ -938,7 +991,7 @@ Steve Ped
 </table>
 </div>
 </div>
-<p>After calculation of <code>rpm/bp</code> within each candidate region, values were compared aross treatments. In the lower regions, signal strongly tracked the line <code>y = x</code>, whilst for the regions with the strongest signal, a trend of higher signal was observed in the merged E2 alignments. This may represent bias in peak definitions (e.g. wider peaks predominately defined by one treatment group), the impact of the larger library size in the E2+DHT sample, or may even be genuine biology.</p>
+<p>Reads per million / base pair (<code>rpm/bp</code>) were calculated as described above for each candidate region, with any receiving a background corrected value &lt; 0 removed. Values were then visually compared across treatments. In the lower regions, signal strongly tracked the line <code>y = x</code>, whilst for the regions with the strongest signal, a trend of higher signal was observed in the merged E2 alignments. This may represent bias in peak definitions (e.g. wider peaks predominately defined by one treatment group), the impact of the larger library size in the E2+DHT sample, or may even be genuine biology.</p>
 </div>
 <div id="detection-of-super-enhancers-1" class="section level2">
 <h2>Detection of Super-Enhancers</h2>
@@ -980,6 +1033,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/0c4e66a99028ddc7edd459d2c36b16ddaecf05b9/docs/figure/rose.Rmd/plotRose-1.png" target="_blank">0c4e66a</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/2491240e00ca86842fb5105c26622bbe5ba178ee/docs/figure/rose.Rmd/plotRose-1.png" target="_blank">2491240</a>
 </td>
 <td>
@@ -1009,46 +1073,60 @@ cuts %&lt;&gt;% bind_rows()</code></pre>
   group_by(class) %&gt;%
   summarise(
     n = n(),
-    `median width` = median(width)
+    Smallest = min(width),
+    `median width` = median(width),
+    Largest = max(width)
   ) %&gt;%
   rename_all(str_to_title) %&gt;%
   pander(
     caption = &quot;Summary of Super-Enhancers detected by treatment. The median width for each class is also given&quot;
   )</code></pre>
-<table style="width:56%;">
+<table style="width:83%;">
 <caption>Summary of Super-Enhancers detected by treatment. The median width for each class is also given</caption>
 <colgroup>
 <col width="22%" />
-<col width="12%" />
+<col width="11%" />
+<col width="15%" />
 <col width="20%" />
+<col width="13%" />
 </colgroup>
 <thead>
 <tr class="header">
 <th align="center">Class</th>
 <th align="center">N</th>
+<th align="center">Smallest</th>
 <th align="center">Median Width</th>
+<th align="center">Largest</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="center">Both</td>
-<td align="center">1,422</td>
-<td align="center">3,179</td>
+<td align="center">934</td>
+<td align="center">1,054</td>
+<td align="center">3,263</td>
+<td align="center">131,297</td>
 </tr>
 <tr class="even">
 <td align="center">E2 + DHT Only</td>
-<td align="center">203</td>
-<td align="center">2,228</td>
+<td align="center">170</td>
+<td align="center">1,033</td>
+<td align="center">2,716</td>
+<td align="center">40,359</td>
 </tr>
 <tr class="odd">
 <td align="center">E2 Only</td>
-<td align="center">71</td>
-<td align="center">3,009</td>
+<td align="center">43</td>
+<td align="center">1,674</td>
+<td align="center">6,276</td>
+<td align="center">51,239</td>
 </tr>
 <tr class="even">
 <td align="center">Not SE</td>
-<td align="center">15,116</td>
-<td align="center">1,291</td>
+<td align="center">9,532</td>
+<td align="center">1,001</td>
+<td align="center">2,988</td>
+<td align="center">221,092</td>
 </tr>
 </tbody>
 </table>
@@ -1104,6 +1182,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/0c4e66a99028ddc7edd459d2c36b16ddaecf05b9/docs/figure/rose.Rmd/compareSE-1.png" target="_blank">0c4e66a</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/2491240e00ca86842fb5105c26622bbe5ba178ee/docs/figure/rose.Rmd/compareSE-1.png" target="_blank">2491240</a>
 </td>
 <td>
@@ -1118,6 +1207,7 @@ Steve Ped
 </div>
 </div>
 <p>After checking the plot above, it appears that an increase in SE activity can be partially attributed to DHT treatment. A series of putative super enhancers detected in the E2 + DHT treatment group fall non-trivially below the cutoff value for the E2 only treatment group, whilst the converse is not observed. Those classified as E2 only clearly appear artefactual, and whilst many specific to the E2 + DHT group also appear so, a select group of super enhancers do not.</p>
+<p>The detected set of super-enhancers were exported, along with the original set of peaks which do not overlap a detected super enhancer. These peaks were additionally divided into promoters and enhancers.</p>
 <pre class="r"><code>seGR &lt;- rpmpbp %&gt;%
   dplyr::filter(class != &quot;Not SE&quot;) %&gt;%
   makeGRangesFromDataFrame(
@@ -1130,6 +1220,24 @@ ol &lt;- findOverlaps(enhGR, seGR)
 enhGR &lt;- enhGR[-unique(queryHits(ol))]
 export.bed(enhGR, &quot;output/enhancers.bed&quot;)
 export.bed(promGR, &quot;output/promoters.bed&quot;)</code></pre>
+<p>A comparison of region widths was then performed and it was noted that some regions annotated as promoters were extremely long. This may be the result of some genes containing multiple TSS, but also the original peak calling may have merged multiple peaks into a larger peak.</p>
+<pre class="r"><code>list(
+  tibble(width = width(promGR), region = &quot;Promoter&quot;),
+   tibble(width = width(enhGR), region = &quot;Enhancer&quot;),
+   tibble(width = width(seGR), region = &quot;Super Enhancer&quot;)
+) %&gt;%
+  bind_rows() %&gt;%
+  mutate(region = fct_inorder(region)) %&gt;%
+  ggplot(aes(region, width)) +
+  geom_boxplot() +
+  labs(x = &quot;Region&quot;, y = &quot;Region Width (bp)&quot;) +
+  scale_y_log10(labels = scales::comma)</code></pre>
+<div class="figure" style="text-align: center">
+<img src="figure/rose.Rmd/compareWidths-1.png" alt="*Comparison of region widths for promoters, enhancers and super-enhancers after running the above processes.*" width="768" />
+<p class="caption">
+<em>Comparison of region widths for promoters, enhancers and super-enhancers after running the above processes.</em>
+</p>
+</div>
 </div>
 </div>
 <div id="inspection-of-results" class="section level1 tabset">
@@ -1166,10 +1274,13 @@ hmecHMM &lt;- import.bed(&quot;data/external/ChromHMM/E119_25_imputed12marks_den
 <pre class="r"><code>gi100 &lt;- here::here(&quot;output/gi_100000.rds&quot;) %&gt;% read_rds()
 gi40 &lt;- here::here(&quot;output/gi_40000.rds&quot;) %&gt;% read_rds()
 gi20 &lt;- here::here(&quot;output/gi_20000.rds&quot;) %&gt;% read_rds()
-gi &lt;- c(gi20, gi40, gi100)</code></pre>
+gi10 &lt;- here::here(&quot;output/gi_10000.rds&quot;) %&gt;% read_rds()
+gi &lt;- c(gi10, gi20, gi40, gi100)
+gi$distance &lt;- pairdist(gi)
+gi$logObsExp &lt;- log2(gi$counts / gi$exp_interactions)</code></pre>
 <pre class="r"><code>gen &lt;- &quot;hg19&quot;
 ax &lt;- GenomeAxisTrack()</code></pre>
-<pre class="r"><code>plotRegion &lt;- function(gr, zoom = 1, hic = gi, hmm = hmecHMM, prom = promGR, enh = enhGR, se = seGR, gm = geneModels, .bw = bw, .bwCols = bwCols, .ax = ax, rna = rnaseq){
+<pre class="r"><code>plotRegion &lt;- function(gr, zoom = 1, hic = gi, hmm = hmecHMM, prom = promGR, enh = enhGR, se = seGR, gm = geneModels, .bw = bw, .bwCols = bwCols, .ax = ax, rna = rnaseq, maxIntDist = 1e6){
   
   stopifnot(is(gr, &quot;GRanges&quot;) | length(gr) &gt; 0)
   
@@ -1180,7 +1291,8 @@ ax &lt;- GenomeAxisTrack()</code></pre>
   ## The HiC Track
   goiInteractions &lt;- hic %&gt;%
     subsetByOverlaps(gr, ignore.strand = TRUE) %&gt;%
-    subset(distance &lt; width(gr)*zoom) %&gt;%
+    # subset(distance &lt; width(gr)*zoom) %&gt;%
+    subset(distance &lt; maxIntDist) %&gt;%
     as(&quot;GenomicInteractions&quot;)
   hicTR &lt;- goiInteractions %&gt;%
     InteractionTrack(
@@ -1271,7 +1383,10 @@ ax &lt;- GenomeAxisTrack()</code></pre>
     c(h3K27acTR) %&gt;%
     c(
       subsetByOverlaps(gm, gr, ignore.strand = TRUE) %&gt;%
-        GeneRegionTrack(name = &quot;Genes&quot;,transcriptAnnotation = &quot;symbol&quot;)
+        GeneRegionTrack(
+          name = &quot;Genes&quot;,
+          transcriptAnnotation = &quot;symbol&quot;
+          )
     ) %&gt;%
     c(dtl) %&gt;%
     plotTracks(
@@ -1287,9 +1402,9 @@ gn &lt;- subsetByOverlaps(geneRanges, gr)</code></pre>
 <p>Whilst no differential expression was found for FGF12, it was expressed at low levels in T47D despite no discernible H3K27AC signal in it’s promoter region. The mid-gene super enhancer also appeared to connect with the genes own promoter.</p>
 <pre class="r"><code>plotRegion(gr, zoom = 130)</code></pre>
 <div class="figure" style="text-align: center">
-<img src="figure/rose.Rmd/pltHighest-1.png" alt="*The most highly ranked super-enhancer in both treatments. HiC Interactions are shown using 20, 40 &amp; 100kb bins. The ChromHMM model was generated using HMEC cells*" width="960" />
+<img src="figure/rose.Rmd/pltHighest-1.png" alt="*The most highly ranked super-enhancer in both treatments. HiC Interactions with the SE are shown using 10, 20, 40 &amp; 100kb bins combined, and are restricted to those within 1Mb. The ChromHMM model was generated using HMEC cells*" width="960" />
 <p class="caption">
-<em>The most highly ranked super-enhancer in both treatments. HiC Interactions are shown using 20, 40 &amp; 100kb bins. The ChromHMM model was generated using HMEC cells</em>
+<em>The most highly ranked super-enhancer in both treatments. HiC Interactions with the SE are shown using 10, 20, 40 &amp; 100kb bins combined, and are restricted to those within 1Mb. The ChromHMM model was generated using HMEC cells</em>
 </p>
 </div>
 <p>
@@ -1316,6 +1431,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/0c4e66a99028ddc7edd459d2c36b16ddaecf05b9/docs/figure/rose.Rmd/pltHighest-1.png" target="_blank">0c4e66a</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/2491240e00ca86842fb5105c26622bbe5ba178ee/docs/figure/rose.Rmd/pltHighest-1.png" target="_blank">2491240</a>
 </td>
 <td>
@@ -1340,9 +1466,9 @@ gn &lt;- subsetByOverlaps(geneRanges, gr)</code></pre>
 <p>Despite the SE being located proximal to <em>CXCR5</em>, this gene was not detected as expressed in the RNA-Seq data.</p>
 <pre class="r"><code>plotRegion(gr, zoom = 70, hic = gi)</code></pre>
 <div class="figure" style="text-align: center">
-<img src="figure/rose.Rmd/plotNext-1.png" alt="*The second most highly ranked super-enhancer. A connection was noted between this SE and DDX6.*" width="960" />
+<img src="figure/rose.Rmd/plotNext-1.png" alt="*The second most highly ranked super-enhancer. Connections were noted between this SE and DDX6.*" width="960" />
 <p class="caption">
-<em>The second most highly ranked super-enhancer. A connection was noted between this SE and DDX6.</em>
+<em>The second most highly ranked super-enhancer. Connections were noted between this SE and DDX6.</em>
 </p>
 </div>
 <p>
@@ -1369,6 +1495,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/0c4e66a99028ddc7edd459d2c36b16ddaecf05b9/docs/figure/rose.Rmd/plotNext-1.png" target="_blank">0c4e66a</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/2491240e00ca86842fb5105c26622bbe5ba178ee/docs/figure/rose.Rmd/plotNext-1.png" target="_blank">2491240</a>
 </td>
 <td>
@@ -1388,101 +1525,20 @@ Steve Ped
 <pre class="r"><code>gr &lt;- seGR %&gt;% 
   subset(class == &quot;E2 + DHT Only&quot;) %&gt;%
   subset(rpmpbp_E2 == min(rpmpbp_E2))
-zm &lt;- 1.5e3
+zm &lt;- 1e3
 gn &lt;- geneRanges %&gt;%
   subsetByOverlaps(
     resize(gr, width = zm*width(gr), fix = &quot;center&quot;), ignore.strand = TRUE
   ) %&gt;%
   subset(gene %in% rnaseq$gene_id)</code></pre>
-<p>The most divergently ranked super enhancer was explored next, with a width of 1777bp. This was again located in an intergenic region, and was clearly lost in E2 samples, as expected. Whilst the signal in E2 + DHT was detectable, it is worth noting that this enhancer was still a relatively low-ranked SE in this treatment group.</p>
-<p>HiC connections were only detected when zooming out considerably. No genes within this expanded window were differentially expressed, despite significant connections to the promoter for <em>AUTS2</em>.</p>
+<p>The most divergently ranked super enhancer was explored next, with a width of 4227bp. This was again located in an intergenic region, and was clearly lost in E2 samples, as expected. Whilst the signal in E2 + DHT was detectable, it is worth noting that this enhancer was still a relatively low-ranked SE in this treatment group.</p>
+<p>No HiC connections were detected.</p>
 <pre class="r"><code>plotRegion(gr, zoom = 100, hic = gi)</code></pre>
 <div class="figure" style="text-align: center">
-<img src="figure/rose.Rmd/plotDHT_Close-1.png" alt="*Close view of the central super enhancer gained in E2 + DHT*" width="960" />
+<img src="figure/rose.Rmd/plotDHT-1.png" alt="*Close view of the central super enhancer gained in E2 + DHT*" width="960" />
 <p class="caption">
 <em>Close view of the central super enhancer gained in E2 + DHT</em>
 </p>
-</div>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plotDHT_Close-1">
-Past versions of plotDHT_Close-1.png
-</button>
-</p>
-<div id="fig-plotDHT_Close-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/2491240e00ca86842fb5105c26622bbe5ba178ee/docs/figure/rose.Rmd/plotDHT_Close-1.png" target="_blank">2491240</a>
-</td>
-<td>
-Steve Ped
-</td>
-<td>
-2020-11-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>plotRegion(gr, zoom = zm, hic = gi, gm = subset(geneModels, gene %in% names(gn)))</code></pre>
-<div class="figure" style="text-align: center">
-<img src="figure/rose.Rmd/pltDHT_Expanded-1.png" alt="*Heavily expanded view of the central super enhancer, gained in E2 + DHT. Only the genes detected as expressed are shown*" width="960" />
-<p class="caption">
-<em>Heavily expanded view of the central super enhancer, gained in E2 + DHT. Only the genes detected as expressed are shown</em>
-</p>
-</div>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-pltDHT_Expanded-1">
-Past versions of pltDHT_Expanded-1.png
-</button>
-</p>
-<div id="fig-pltDHT_Expanded-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/2491240e00ca86842fb5105c26622bbe5ba178ee/docs/figure/rose.Rmd/pltDHT_Expanded-1.png" target="_blank">2491240</a>
-</td>
-<td>
-Steve Ped
-</td>
-<td>
-2020-11-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
 </div>
 </div>
 <div id="the-largest-se" class="section level2">
@@ -1493,11 +1549,31 @@ gn &lt;- geneRanges %&gt;%
   subsetByOverlaps(resize(gr, width = zm*width(gr), fix = &quot;center&quot;), ignore.strand = TRUE) %&gt;%
   subset(gene %in% rnaseq$gene_id)</code></pre>
 <p>The largest SE by size was found to be 131.297kb wide. Several long-range interactions were observed.</p>
-<pre class="r"><code>plotRegion(gr, zoom = zm, hic = gi)#, gm = subset(geneModels, gene %in% names(gn)))</code></pre>
+<pre class="r"><code>plotRegion(
+  gr, zoom = zm, 
+  hic = gi, 
+  # gm = subset(geneModels, gene %in% names(gn)), 
+  maxIntDist = 1e7
+)</code></pre>
 <div class="figure" style="text-align: center">
-<img src="figure/rose.Rmd/unnamed-chunk-3-1.png" alt="**" width="960" />
+<img src="figure/rose.Rmd/plotLargest-1.png" alt="*View of the longest super enhancer detected in this dataset*" width="960" />
 <p class="caption">
-**
+<em>View of the longest super enhancer detected in this dataset</em>
+</p>
+</div>
+</div>
+<div id="the-longest-se-in-the-top-5-ranked-ses" class="section level2">
+<h2>The longest SE in the top 5 ranked SEs</h2>
+<pre class="r"><code>gr &lt;- subset(seGR, width == 19912)
+gn &lt;- geneRanges %&gt;%
+  subsetByOverlaps(resize(gr, width = zm*width(gr), fix = &quot;center&quot;), ignore.strand = TRUE) %&gt;%
+  subset(gene %in% rnaseq$gene_id)</code></pre>
+<p>This specific SE was 19.9kb long.</p>
+<pre class="r"><code>plotRegion(gr, zoom = 100, hic = gi)</code></pre>
+<div class="figure" style="text-align: center">
+<img src="figure/rose.Rmd/plotLargestHigh-1.png" alt="*The longest SE in the top 5 ranked across both conditions*" width="960" />
+<p class="caption">
+<em>The longest SE in the top 5 ranked across both conditions</em>
 </p>
 </div>
 </div>
