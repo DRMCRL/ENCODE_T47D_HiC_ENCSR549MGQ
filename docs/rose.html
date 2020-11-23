@@ -545,16 +545,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree2bbc2ccf05f809868ae93e49256b8b9b7a2f488etargetblank2bbc2cca"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/2bbc2ccf05f809868ae93e49256b8b9b7a2f488e" target="_blank">2bbc2cc</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtreede66e545baaad535e982e2608e9b9b28bda26032targetblankde66e54a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/de66e545baaad535e982e2608e9b9b28bda26032" target="_blank">de66e54</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree2bbc2ccf05f809868ae93e49256b8b9b7a2f488etargetblank2bbc2cca" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtreede66e545baaad535e982e2608e9b9b28bda26032targetblankde66e54a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/2bbc2ccf05f809868ae93e49256b8b9b7a2f488e" target="_blank">2bbc2cc</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/de66e545baaad535e982e2608e9b9b28bda26032" target="_blank">de66e54</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -569,11 +569,13 @@ Ignored files:
     Ignored:    data/external/gencode.v33lift37.annotation.gtf.gz
     Ignored:    output/MaxHiC/
 
+Untracked files:
+    Untracked:  analysis/chip_integration.Rmd
+    Untracked:  data/external/BED/AR_GATA3_Groups/
+
 Unstaged changes:
-    Modified:   analysis/interactions_setup.Rmd
     Modified:   output/SE.gtf
     Modified:   output/enhancers.bed
-    Modified:   output/promoters.bed
 
 </code></pre>
 <p>
@@ -612,6 +614,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/de66e545baaad535e982e2608e9b9b28bda26032/analysis/rose.Rmd" target="_blank">de66e54</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+<td>
+Removed stitched SEs that overlapped a promoter
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/9ce4414c70630e544024bedfbcba90d73c704f92/docs/rose.html" target="_blank">9ce4414</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -830,6 +866,37 @@ enhGR &lt;- consPeaks[-unique(subjectHits(ol))]
 stitchGR &lt;- GenomicRanges::reduce(enhGR, min.gapwidth = 12500) %&gt;%
   subset(width &gt; 1e3)</code></pre>
 <p>After comparison with promoters (defined as TSS <span class="math inline">\(\pm\)</span> 2500bp), 14,346 regions were classified as candidate promoters, whilst 32,600 were retained as candidate enhancers. After stitching together peaks within 12.5kb of each other and removing peaks shorter than 1kb, the final set of 10,759 candidate regions was formed. Notably, these regions were independent of the initial treatment group, but were identification of super-enhancers will be performed separately in each treatment group.</p>
+<pre class="r"><code>cutPromoters &lt;- function(i, x = stitchGR, y = enhGR, p = promGR){
+  
+  ## To correct these ranges, we should first &#39;snip&#39; the promoter peak from the 
+  ## merged range, but just putting a hole in the range
+  ## The first offender is stitchGR[12]
+  x &lt;- x[i]
+  ## This merged 3 enhancers with the promoter being between 2 &amp; 3
+  y &lt;- subsetByOverlaps(y, x)
+  ## The promoter peak is
+  p &lt;- subsetByOverlaps(p, x) %&gt;% range()
+  ## Given we&#39;ll always have a range either side, we can just cut these
+  xl &lt;- range(subset(y, end &lt; start(p)))
+  xr &lt;- range(subset(y, start &gt; end(p)))
+  ## Now we return the new ranges
+  c(xl, xr)
+}</code></pre>
+<pre class="r"><code>ol &lt;- findOverlaps(stitchGR, promGR) %&gt;%
+  queryHits() %&gt;%
+  unique()</code></pre>
+<p>An issue produced by this method, is although peaks overlapping promoters were excluded, peaks straddling either side of the peaks directly overlapping a promoter may still be joined. These were identified and any merged peaks with this characteristic were split either side of the overlapping peak. A total of 535 stitched regions were found to overlap a promoter and required ‘unstitching’ back into two separate regions either side of the promoter.</p>
+<pre class="r"><code>nc &lt;- detectCores() - 1
+unstitched &lt;- ol %&gt;%
+  mclapply(cutPromoters, mc.cores = nc) %&gt;%
+  as(&quot;GRangesList&quot;) %&gt;%
+  unlist()
+stitchGR &lt;- c(
+  stitchGR[-ol],
+  unstitched
+) %&gt;%
+  sort() %&gt;%
+  subset(width &gt; 1e3)</code></pre>
 </div>
 <div id="alignments" class="section level2">
 <h2>Alignments</h2>
@@ -967,6 +1034,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/9ce4414c70630e544024bedfbcba90d73c704f92/docs/figure/rose.Rmd/plotRpmpbp-1.png" target="_blank">9ce4414</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/0c4e66a99028ddc7edd459d2c36b16ddaecf05b9/docs/figure/rose.Rmd/plotRpmpbp-1.png" target="_blank">0c4e66a</a>
 </td>
 <td>
@@ -1031,6 +1109,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/9ce4414c70630e544024bedfbcba90d73c704f92/docs/figure/rose.Rmd/plotRose-1.png" target="_blank">9ce4414</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/0c4e66a99028ddc7edd459d2c36b16ddaecf05b9/docs/figure/rose.Rmd/plotRose-1.png" target="_blank">0c4e66a</a>
@@ -1102,31 +1191,31 @@ cuts %&lt;&gt;% bind_rows()</code></pre>
 <tbody>
 <tr class="odd">
 <td align="center">Both</td>
-<td align="center">934</td>
-<td align="center">1,054</td>
-<td align="center">3,263</td>
+<td align="center">958</td>
+<td align="center">1,033</td>
+<td align="center">3,172</td>
 <td align="center">131,297</td>
 </tr>
 <tr class="even">
 <td align="center">E2 + DHT Only</td>
-<td align="center">170</td>
-<td align="center">1,033</td>
-<td align="center">2,716</td>
+<td align="center">213</td>
+<td align="center">1,069</td>
+<td align="center">2,704</td>
 <td align="center">40,359</td>
 </tr>
 <tr class="odd">
 <td align="center">E2 Only</td>
-<td align="center">43</td>
-<td align="center">1,674</td>
-<td align="center">6,276</td>
+<td align="center">29</td>
+<td align="center">1,442</td>
+<td align="center">5,375</td>
 <td align="center">51,239</td>
 </tr>
 <tr class="even">
 <td align="center">Not SE</td>
-<td align="center">9,532</td>
+<td align="center">9,678</td>
 <td align="center">1,001</td>
-<td align="center">2,988</td>
-<td align="center">221,092</td>
+<td align="center">2,762</td>
+<td align="center">207,654</td>
 </tr>
 </tbody>
 </table>
@@ -1180,6 +1269,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/9ce4414c70630e544024bedfbcba90d73c704f92/docs/figure/rose.Rmd/compareSE-1.png" target="_blank">9ce4414</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/0c4e66a99028ddc7edd459d2c36b16ddaecf05b9/docs/figure/rose.Rmd/compareSE-1.png" target="_blank">0c4e66a</a>
@@ -1237,6 +1337,43 @@ export.bed(promGR, &quot;output/promoters.bed&quot;)</code></pre>
 <p class="caption">
 <em>Comparison of region widths for promoters, enhancers and super-enhancers after running the above processes.</em>
 </p>
+</div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compareWidths-1">
+Past versions of compareWidths-1.png
+</button>
+</p>
+<div id="fig-compareWidths-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/9ce4414c70630e544024bedfbcba90d73c704f92/docs/figure/rose.Rmd/compareWidths-1.png" target="_blank">9ce4414</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </div>
 </div>
@@ -1431,6 +1568,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/9ce4414c70630e544024bedfbcba90d73c704f92/docs/figure/rose.Rmd/pltHighest-1.png" target="_blank">9ce4414</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/0c4e66a99028ddc7edd459d2c36b16ddaecf05b9/docs/figure/rose.Rmd/pltHighest-1.png" target="_blank">0c4e66a</a>
 </td>
 <td>
@@ -1495,6 +1643,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/9ce4414c70630e544024bedfbcba90d73c704f92/docs/figure/rose.Rmd/plotNext-1.png" target="_blank">9ce4414</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/0c4e66a99028ddc7edd459d2c36b16ddaecf05b9/docs/figure/rose.Rmd/plotNext-1.png" target="_blank">0c4e66a</a>
 </td>
 <td>
@@ -1540,6 +1699,43 @@ gn &lt;- geneRanges %&gt;%
 <em>Close view of the central super enhancer gained in E2 + DHT</em>
 </p>
 </div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plotDHT-1">
+Past versions of plotDHT-1.png
+</button>
+</p>
+<div id="fig-plotDHT-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/9ce4414c70630e544024bedfbcba90d73c704f92/docs/figure/rose.Rmd/plotDHT-1.png" target="_blank">9ce4414</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="the-largest-se" class="section level2">
 <h2>The largest SE</h2>
@@ -1561,6 +1757,43 @@ gn &lt;- geneRanges %&gt;%
 <em>View of the longest super enhancer detected in this dataset</em>
 </p>
 </div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plotLargest-1">
+Past versions of plotLargest-1.png
+</button>
+</p>
+<div id="fig-plotLargest-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/9ce4414c70630e544024bedfbcba90d73c704f92/docs/figure/rose.Rmd/plotLargest-1.png" target="_blank">9ce4414</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="the-longest-se-in-the-top-5-ranked-ses" class="section level2">
 <h2>The longest SE in the top 5 ranked SEs</h2>
@@ -1575,6 +1808,43 @@ gn &lt;- geneRanges %&gt;%
 <p class="caption">
 <em>The longest SE in the top 5 ranked across both conditions</em>
 </p>
+</div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plotLargestHigh-1">
+Past versions of plotLargestHigh-1.png
+</button>
+</p>
+<div id="fig-plotLargestHigh-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/9ce4414c70630e544024bedfbcba90d73c704f92/docs/figure/rose.Rmd/plotLargestHigh-1.png" target="_blank">9ce4414</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </div>
 </div>
