@@ -157,6 +157,51 @@ After comparison with promoters (defined as TSS $\pm$ 2500bp), `r comma(length(p
 After stitching together peaks within 12.5kb of each other and removing peaks shorter than 1kb, the final set of `r comma(length(stitchGR))` candidate regions was formed.
 Notably, these regions were independent of the initial treatment group, but were identification of super-enhancers will be performed separately in each treatment group.
 
+
+```{r cutPromoters}
+cutPromoters <- function(i, x = stitchGR, y = enhGR, p = promGR){
+  
+  ## To correct these ranges, we should first 'snip' the promoter peak from the 
+  ## merged range, but just putting a hole in the range
+  ## The first offender is stitchGR[12]
+  x <- x[i]
+  ## This merged 3 enhancers with the promoter being between 2 & 3
+  y <- subsetByOverlaps(y, x)
+  ## The promoter peak is
+  p <- subsetByOverlaps(p, x) %>% range()
+  ## Given we'll always have a range either side, we can just cut these
+  xl <- range(subset(y, end < start(p)))
+  xr <- range(subset(y, start > end(p)))
+  ## Now we return the new ranges
+  c(xl, xr)
+}
+```
+
+```{r findStitchPromOverlap}
+ol <- findOverlaps(stitchGR, promGR) %>%
+  queryHits() %>%
+  unique()
+```
+
+An issue produced by this method, is although peaks overlapping promoters were excluded, peaks straddling either side of the peaks directly overlapping a promoter may still be joined.
+These were identified and any merged peaks with this characteristic were split either side of the overlapping peak.
+A total of `r length(ol)` stitched regions were found to overlap a promoter and required 'unstitching' back into two separate regions either side of the promoter.
+
+```{r unstitch}
+nc <- detectCores() - 1
+unstitched <- ol %>%
+  mclapply(cutPromoters, mc.cores = nc) %>%
+  as("GRangesList") %>%
+  unlist()
+stitchGR <- c(
+  stitchGR[-ol],
+  unstitched
+) %>%
+  sort() %>%
+  subset(width > 1e3)
+```
+
+
 ## Alignments
 
 ```{r bfl}
