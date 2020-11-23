@@ -56,51 +56,49 @@ rm(allGR)
 
 # Data Preparation {.tabset}
 
+## 10kb Bins
 
-```{r sz20}
-sz <- 20000
+```{r sz10}
+sz <- 10000
 ```
 
-## `r sz/1e3`kb Bins
-
-```{r bins20}
+```{r bins10}
 bins <- import.bed(
   glue("data/hic/hic_results/matrix/merged/raw/{sz}/merged_{sz}_abs.bed"),
   seqinfo = sq
 )
 ```
 
-
-```{r cis_int_20}
+```{r cis_int_10}
 cis_int <- vroom(
   glue("output/MaxHiC/merged/{sz}/cis_interactions.txt.gz"),
   col_types = "dddd-d--"
 )
+fdr <- p.adjust(exp(-cis_int$neg_ln_p_val), "fdr")
+keepInt <- fdr < 0.05
 ```
 
-By default, any bin pairs with no observed interactions were excluded fro the Max-HiC output.
+By default, any bin pairs with no observed interactions were excluded from the Max-HiC output.
 Using `r sz/1e3`kb bins, a total of `r comma(nrow(cis_int))` non-zero interactions were observed between bin pairs.
 The median observed interaction count was `r median(cis_int$observed_interactions)`, whilst the maximum was `r max(cis_int$observed_interactions)`.
 
 By default, the FDR provided by Max-HiC is incorrect and was ignored.
-The MaxHiC output was defined as a `GInteractions` object, with correct FDR added and interactions filtered for those with an FDR < 0.05
+The MaxHiC output was defined as a `GInteractions` object, with correct FDR added and interactions filtered for those with an FDR < 0.05.
 
-```{r gi20}
+```{r gi10, results='hide'}
+gc()
 gi <- GInteractions(
-  anchor1 = bins[as.integer(cis_int$bin1ID)],
-  anchor2 = bins[as.integer(cis_int$bin2ID)],
-  counts = as.integer(cis_int$observed_interactions),
-  exp_interactions = cis_int$exp_interactions,
-  p = exp(-cis_int$neg_ln_p_val)
+  anchor1 = bins[as.integer(cis_int$bin1ID[keepInt])],
+  anchor2 = bins[as.integer(cis_int$bin2ID[keepInt])],
+  counts = as.integer(cis_int$observed_interactions[keepInt]),
+  exp_interactions = cis_int$exp_interactions[keepInt],
+  p = exp(-cis_int$neg_ln_p_val)[keepInt],
+  fdr = fdr[keepInt]
 )
 seqinfo(gi) <- sq
-gi$fdr <- p.adjust(gi$p, "fdr")
-gi$distance <- pairdist(gi)
-gi$logObsExp <- log2(gi$counts / gi$exp_interactions)
 ```
 
-```{r subset_gi20, results='hide'}
-gi <- subset(gi, fdr < 0.05)
+```{r export_gi10, results='hide'}
 write_rds(
   gi,
   here::here(
@@ -111,6 +109,103 @@ write_rds(
 )
 gc()
 ```
+
+
+After filtering interactions to only those considered significant:
+
+- `r comma(length(gi))` bin-pair interactions were retained.
+- The observed interactions between bins ranged between `r pander(range(gi$counts))`
+- The log~2~ ratio of of observed to expected counts ranged between `r pander(round(range(gi$logObsExp), 2))`. These values represent enrichment for interactions well above that expected by the background model.
+
+```{r plotInt10, fig.height=6, fig.width = 9, fig.cap = glue("*Distribution of significant interactions using {sz/1e3}kb bins*")}
+gi %>%
+  anchors("first") %>%
+  seqnames() %>%
+  table() %>%
+  enframe(
+    name = "chr",
+    value = "count"
+  ) %>%
+  mutate(
+    chr =factor(chr, levels = seqlevels(sq)),
+    count = as.integer(count)
+  ) %>%
+  ggplot(
+    aes(chr, count)
+  ) +
+  geom_col() +
+  labs(
+    x = "Chromosome",
+    y = glue("Total Significant Cis Interactions ({sz/1e3}kb bins)")
+  ) +
+  scale_y_continuous(expand = expansion(c(0, 0.05)))
+```
+
+
+```{r cleanup10, results='hide'}
+rm(gi)
+rm(cis_int)
+rm(fdr)
+rm(keepInt)
+gc()
+```
+
+
+```{r sz20}
+sz <- 20000
+```
+
+## `r sz/1e3`kb Bins
+
+
+```{r bins20}
+bins <- import.bed(
+  glue("data/hic/hic_results/matrix/merged/raw/{sz}/merged_{sz}_abs.bed"),
+  seqinfo = sq
+)
+```
+
+```{r cis_int_20}
+cis_int <- vroom(
+  glue("output/MaxHiC/merged/{sz}/cis_interactions.txt.gz"),
+  col_types = "dddd-d--"
+)
+fdr <- p.adjust(exp(-cis_int$neg_ln_p_val), "fdr")
+keepInt <- fdr < 0.05
+```
+
+By default, any bin pairs with no observed interactions were excluded from the Max-HiC output.
+Using `r sz/1e3`kb bins, a total of `r comma(nrow(cis_int))` non-zero interactions were observed between bin pairs.
+The median observed interaction count was `r median(cis_int$observed_interactions)`, whilst the maximum was `r max(cis_int$observed_interactions)`.
+
+By default, the FDR provided by Max-HiC is incorrect and was ignored.
+The MaxHiC output was defined as a `GInteractions` object, with correct FDR added and interactions filtered for those with an FDR < 0.05.
+
+```{r gi20, results='hide'}
+gc()
+gi <- GInteractions(
+  anchor1 = bins[as.integer(cis_int$bin1ID[keepInt])],
+  anchor2 = bins[as.integer(cis_int$bin2ID[keepInt])],
+  counts = as.integer(cis_int$observed_interactions[keepInt]),
+  exp_interactions = cis_int$exp_interactions[keepInt],
+  p = exp(-cis_int$neg_ln_p_val)[keepInt],
+  fdr = fdr[keepInt]
+)
+seqinfo(gi) <- sq
+```
+
+```{r export_gi20, results='hide'}
+write_rds(
+  gi,
+  here::here(
+    "output",
+    glue("gi_{sz}.rds")
+  ),
+  compress = "gz"
+)
+gc()
+```
+
 
 After filtering interactions to only those considered significant:
 
@@ -142,17 +237,22 @@ gi %>%
   scale_y_continuous(expand = expansion(c(0, 0.05)))
 ```
 
+
 ```{r cleanup20, results='hide'}
 rm(gi)
 rm(cis_int)
+rm(fdr)
+rm(keepInt)
 gc()
 ```
+
 
 ```{r sz40}
 sz <- 40000
 ```
 
 ## `r sz/1e3`kb Bins
+
 
 ```{r bins40}
 bins <- import.bed(
@@ -161,37 +261,36 @@ bins <- import.bed(
 )
 ```
 
-
 ```{r cis_int_40}
 cis_int <- vroom(
   glue("output/MaxHiC/merged/{sz}/cis_interactions.txt.gz"),
   col_types = "dddd-d--"
 )
+fdr <- p.adjust(exp(-cis_int$neg_ln_p_val), "fdr")
+keepInt <- fdr < 0.05
 ```
 
-By default, any bin pairs with no observed interactions were excluded fro the Max-HiC output.
+By default, any bin pairs with no observed interactions were excluded from the Max-HiC output.
 Using `r sz/1e3`kb bins, a total of `r comma(nrow(cis_int))` non-zero interactions were observed between bin pairs.
 The median observed interaction count was `r median(cis_int$observed_interactions)`, whilst the maximum was `r max(cis_int$observed_interactions)`.
 
 By default, the FDR provided by Max-HiC is incorrect and was ignored.
-The MaxHiC output was defined as a `GInteractions` object, with correct FDR added and interactions filtered for those with an FDR < 0.05
+The MaxHiC output was defined as a `GInteractions` object, with correct FDR added and interactions filtered for those with an FDR < 0.05.
 
-```{r gi40}
+```{r gi40, results='hide'}
+gc()
 gi <- GInteractions(
-  anchor1 = bins[as.integer(cis_int$bin1ID)],
-  anchor2 = bins[as.integer(cis_int$bin2ID)],
-  counts = as.integer(cis_int$observed_interactions),
-  exp_interactions = cis_int$exp_interactions,
-  p = exp(-cis_int$neg_ln_p_val)
+  anchor1 = bins[as.integer(cis_int$bin1ID[keepInt])],
+  anchor2 = bins[as.integer(cis_int$bin2ID[keepInt])],
+  counts = as.integer(cis_int$observed_interactions[keepInt]),
+  exp_interactions = cis_int$exp_interactions[keepInt],
+  p = exp(-cis_int$neg_ln_p_val)[keepInt],
+  fdr = fdr[keepInt]
 )
 seqinfo(gi) <- sq
-gi$fdr <- p.adjust(gi$p, "fdr")
-gi$distance <- pairdist(gi)
-gi$logObsExp <- log2(gi$counts / gi$exp_interactions)
 ```
 
-```{r subset_gi40, results='hide'}
-gi <- subset(gi, fdr < 0.05)
+```{r export_gi40, results='hide'}
 write_rds(
   gi,
   here::here(
@@ -203,13 +302,14 @@ write_rds(
 gc()
 ```
 
+
 After filtering interactions to only those considered significant:
 
 - `r comma(length(gi))` bin-pair interactions were retained.
 - The observed interactions between bins ranged between `r pander(range(gi$counts))`
 - The log~2~ ratio of of observed to expected counts ranged between `r pander(round(range(gi$logObsExp), 2))`. These values represent enrichment for interactions well above that expected by the background model.
 
-```{r plotIn40, fig.height=6, fig.width = 9, fig.cap = glue("*Distribution of significant interactions using {sz/1e3}kb bins*")}
+```{r plotInt40, fig.height=6, fig.width = 9, fig.cap = glue("*Distribution of significant interactions using {sz/1e3}kb bins*")}
 gi %>%
   anchors("first") %>%
   seqnames() %>%
@@ -233,11 +333,15 @@ gi %>%
   scale_y_continuous(expand = expansion(c(0, 0.05)))
 ```
 
+
 ```{r cleanup40, results='hide'}
 rm(gi)
 rm(cis_int)
+rm(fdr)
+rm(keepInt)
 gc()
 ```
+
 
 ```{r sz100}
 sz <- "100000"
@@ -260,7 +364,7 @@ cis_int <- vroom(
 )
 ```
 
-By default, any bin pairs with no observed interactions were excluded fro the Max-HiC output.
+By default, any bin pairs with no observed interactions were excluded from the Max-HiC output.
 Using `r as.numeric(sz)/1e3`kb bins, a total of `r comma(nrow(cis_int))` non-zero interactions were observed between bin pairs.
 The median observed interaction count was `r median(cis_int$observed_interactions)`, whilst the maximum was `r max(cis_int$observed_interactions)`.
 
@@ -281,7 +385,7 @@ gi$distance <- pairdist(gi)
 gi$logObsExp <- log2(gi$counts / gi$exp_interactions)
 ```
 
-```{r subset_gi100, results='hide'}
+```{r export_gi100, results='hide'}
 gi <- subset(gi, fdr < 0.05)
 write_rds(
   gi,
