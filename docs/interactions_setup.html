@@ -545,16 +545,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtreebb2628415634f3891e42653174483da42150e7aftargetblankbb26284a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/bb2628415634f3891e42653174483da42150e7af" target="_blank">bb26284</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree0c56e131cc7b3e3607a5f03d7d78ff4b33a6b7aetargetblank0c56e13a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/0c56e131cc7b3e3607a5f03d7d78ff4b33a6b7ae" target="_blank">0c56e13</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtreebb2628415634f3891e42653174483da42150e7aftargetblankbb26284a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree0c56e131cc7b3e3607a5f03d7d78ff4b33a6b7aetargetblank0c56e13a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/bb2628415634f3891e42653174483da42150e7af" target="_blank">bb26284</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/0c56e131cc7b3e3607a5f03d7d78ff4b33a6b7ae" target="_blank">0c56e13</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -564,6 +564,7 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    .snakemake/
+    Ignored:    analysis/figure/
     Ignored:    data/external/H3K27AC/bam/
     Ignored:    data/external/H3K27AC/bigwig/
     Ignored:    data/external/gencode.v33lift37.annotation.gtf.gz
@@ -606,6 +607,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/0c56e131cc7b3e3607a5f03d7d78ff4b33a6b7ae/analysis/interactions_setup.Rmd" target="_blank">0c56e13</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+<td>
+Rebuilt interactions
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/fd53db7f45f0a19a31fb9e807f5edc95a18410c2/docs/interactions_setup.html" target="_blank">fd53db7</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -842,7 +877,8 @@ library(InteractionSet)
 library(vroom)
 library(glue)
 library(scales)
-library(pander)</code></pre>
+library(pander)
+library(cowplot)</code></pre>
 <pre class="r"><code>theme_set(theme_bw())</code></pre>
 <pre class="r"><code>config &lt;- here::here(&quot;config/config.yml&quot;) %&gt;%
   read_yaml()</code></pre>
@@ -898,6 +934,8 @@ gc()</code></pre>
 <li>2,942 bin-pair interactions were retained.</li>
 <li>The observed interactions between bins ranged between <em>6</em> and <em>124</em></li>
 <li>The log<sub>2</sub> ratio of of observed to expected counts ranged between <em>2.02</em> and <em>4.41</em>. These values represent enrichment for interactions well above that expected by the background model.</li>
+<li>The median interaction distance was 110kb</li>
+<li>The longest interaction was between bins separated by 191Mb</li>
 </ul>
 <pre class="r"><code>gi %&gt;%
   anchors(&quot;first&quot;) %&gt;%
@@ -921,9 +959,9 @@ gc()</code></pre>
   ) +
   scale_y_continuous(expand = expansion(c(0, 0.05)))</code></pre>
 <div class="figure" style="text-align: center">
-<img src="figure/interactions_setup.Rmd/plotInt10-1.png" alt="*Distribution of significant interactions using 10kb bins*" width="864" />
+<img src="figure/interactions_setup.Rmd/plotInt10-1.png" alt="*Genomic Distribution of significant interactions using 10kb bins*" width="864" />
 <p class="caption">
-<em>Distribution of significant interactions using 10kb bins</em>
+<em>Genomic Distribution of significant interactions using 10kb bins</em>
 </p>
 </div>
 <p>
@@ -963,6 +1001,52 @@ Steve Ped
 </table>
 </div>
 </div>
+<pre class="r"><code>a &lt;- mcols(gi) %&gt;% 
+  as.data.frame %&gt;% 
+  ggplot(aes(distance/1e3, counts)) + 
+  geom_point() + 
+  scale_x_log10(labels = comma) +
+  labs(
+    x = &quot;Distance between bins (kb)&quot;,
+    y = &quot;Reads Spanning Bins&quot;
+  )
+b &lt;- mcols(gi) %&gt;%
+  as.data.frame %&gt;% 
+  ggplot(aes(counts, stat(density))) + 
+  geom_density() + 
+  coord_flip() + 
+  labs(x = c(), y = &quot;&quot;) +
+  theme(
+    axis.text = element_blank(), 
+    panel.grid.major.x =  element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.ticks.y = element_blank()
+    )
+c &lt;- mcols(gi) %&gt;%
+  as.data.frame %&gt;% 
+  ggplot(aes(distance/1e3, stat(density))) + 
+  geom_density() + 
+  scale_x_log10() +
+  labs(x = c(), y = &quot;&quot;) +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks.y = element_blank(), 
+    axis.ticks.x = element_blank()
+  )
+plot_grid(
+  plot_grid(ngsReports:::.emptyPlot(&quot;&quot;), c, ngsReports:::.emptyPlot(&quot;&quot;), rel_widths = c(0.02, 0.896, 0.102), nrow = 1),
+  plot_grid(a, b, rel_widths = c(0.9, 0.1), align = &quot;hv&quot;),
+  rel_heights = c(0.1, 0.9), nrow = 2, align = &quot;v&quot;, axis = &quot;r&quot;
+)</code></pre>
+<div class="figure" style="text-align: center">
+<img src="figure/interactions_setup.Rmd/plotIntDist10-1.png" alt="*Relationship between counts and distance using 10kb bins*" width="864" />
+<p class="caption">
+<em>Relationship between counts and distance using 10kb bins</em>
+</p>
+</div>
 <pre class="r"><code>rm(gi)
 rm(cis_int)
 rm(fdr)
@@ -982,7 +1066,7 @@ gc()</code></pre>
 )
 fdr &lt;- p.adjust(exp(-cis_int$neg_ln_p_val), &quot;fdr&quot;)
 keepInt &lt;- fdr &lt; 0.05</code></pre>
-<p>By default, any bin pairs with no observed interactions were excluded from the Max-HiC output. Using 20kb bins, a total of 33,554,431 non-zero interactions were observed between bin pairs. The median observed interaction count was 1, whilst the maximum was 181.</p>
+<p>By default, any bin pairs with no observed interactions were excluded from the Max-HiC output. Using 20kb bins, a total of 40,041,031 non-zero interactions were observed between bin pairs. The median observed interaction count was 1, whilst the maximum was 181.</p>
 <p>By default, the FDR provided by Max-HiC is incorrect and was ignored. The MaxHiC output was defined as a <code>GInteractions</code> object, with correct FDR added and interactions filtered for those with an FDR &lt; 0.05.</p>
 <pre class="r"><code>gc()
 gi &lt;- GInteractions(
@@ -1007,9 +1091,11 @@ seqinfo(gi) &lt;- sq</code></pre>
 gc()</code></pre>
 <p>After filtering interactions to only those considered significant:</p>
 <ul>
-<li>6,866 bin-pair interactions were retained.</li>
-<li>The observed interactions between bins ranged between <em>8</em> and <em>181</em></li>
+<li>8,469 bin-pair interactions were retained.</li>
+<li>The observed interactions between bins ranged between <em>6</em> and <em>181</em></li>
 <li>The log<sub>2</sub> ratio of of observed to expected counts ranged between <em>1.7</em> and <em>4.23</em>. These values represent enrichment for interactions well above that expected by the background model.</li>
+<li>The median interaction distance was 360kb</li>
+<li>The longest interaction was between bins separated by 218Mb</li>
 </ul>
 <pre class="r"><code>gi %&gt;%
   anchors(&quot;first&quot;) %&gt;%
@@ -1033,9 +1119,9 @@ gc()</code></pre>
   ) +
   scale_y_continuous(expand = expansion(c(0, 0.05)))</code></pre>
 <div class="figure" style="text-align: center">
-<img src="figure/interactions_setup.Rmd/plotInt20-1.png" alt="*Distribution of significant interactions using 20kb bins*" width="864" />
+<img src="figure/interactions_setup.Rmd/plotInt20-1.png" alt="*Genomic Distribution of significant interactions using 20kb bins*" width="864" />
 <p class="caption">
-<em>Distribution of significant interactions using 20kb bins</em>
+<em>Genomic Distribution of significant interactions using 20kb bins</em>
 </p>
 </div>
 <p>
@@ -1062,6 +1148,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/fd53db7f45f0a19a31fb9e807f5edc95a18410c2/docs/figure/interactions_setup.Rmd/plotInt20-1.png" target="_blank">fd53db7</a>
+</td>
+<td>
+Steve Ped
+</td>
+<td>
+2020-11-23
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/d7cd5ae9f8116fec7226b6a0af146ee84514b4fa/docs/figure/interactions_setup.Rmd/plotInt20-1.png" target="_blank">d7cd5ae</a>
 </td>
 <td>
@@ -1074,6 +1171,52 @@ Steve Ped
 </tbody>
 </table>
 </div>
+</div>
+<pre class="r"><code>a &lt;- mcols(gi) %&gt;% 
+  as.data.frame %&gt;% 
+  ggplot(aes(distance/1e3, counts)) + 
+  geom_point() + 
+  scale_x_log10(labels = comma) +
+  labs(
+    x = &quot;Distance between bins (kb)&quot;,
+    y = &quot;Reads Spanning Bins&quot;
+  )
+b &lt;- mcols(gi) %&gt;%
+  as.data.frame %&gt;% 
+  ggplot(aes(counts, stat(density))) + 
+  geom_density() + 
+  coord_flip() + 
+  labs(x = c(), y = &quot;&quot;) +
+  theme(
+    axis.text = element_blank(), 
+    panel.grid.major.x =  element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.ticks.y = element_blank()
+    )
+c &lt;- mcols(gi) %&gt;%
+  as.data.frame %&gt;% 
+  ggplot(aes(distance/1e3, stat(density))) + 
+  geom_density() + 
+  scale_x_log10() +
+  labs(x = c(), y = &quot;&quot;) +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks.y = element_blank(), 
+    axis.ticks.x = element_blank()
+  )
+plot_grid(
+  plot_grid(ngsReports:::.emptyPlot(&quot;&quot;), c, ngsReports:::.emptyPlot(&quot;&quot;), rel_widths = c(0.02, 0.896, 0.102), nrow = 1),
+  plot_grid(a, b, rel_widths = c(0.9, 0.1), align = &quot;hv&quot;),
+  rel_heights = c(0.1, 0.9), nrow = 2, align = &quot;v&quot;, axis = &quot;r&quot;
+)</code></pre>
+<div class="figure" style="text-align: center">
+<img src="figure/interactions_setup.Rmd/plotIntDist20-1.png" alt="*Relationship between counts and distance using 20kb bins*" width="864" />
+<p class="caption">
+<em>Relationship between counts and distance using 20kb bins</em>
+</p>
 </div>
 <pre class="r"><code>rm(gi)
 rm(cis_int)
@@ -1122,6 +1265,8 @@ gc()</code></pre>
 <li>18,811 bin-pair interactions were retained.</li>
 <li>The observed interactions between bins ranged between <em>5</em> and <em>426</em></li>
 <li>The log<sub>2</sub> ratio of of observed to expected counts ranged between <em>1.5</em> and <em>5.5</em>. These values represent enrichment for interactions well above that expected by the background model.</li>
+<li>The median interaction distance was 920kb</li>
+<li>The longest interaction was between bins separated by 218.1Mb</li>
 </ul>
 <pre class="r"><code>gi %&gt;%
   anchors(&quot;first&quot;) %&gt;%
@@ -1145,9 +1290,9 @@ gc()</code></pre>
   ) +
   scale_y_continuous(expand = expansion(c(0, 0.05)))</code></pre>
 <div class="figure" style="text-align: center">
-<img src="figure/interactions_setup.Rmd/plotInt40-1.png" alt="*Distribution of significant interactions using 40kb bins*" width="864" />
+<img src="figure/interactions_setup.Rmd/plotInt40-1.png" alt="*Genomic Distribution of significant interactions using 40kb bins*" width="864" />
 <p class="caption">
-<em>Distribution of significant interactions using 40kb bins</em>
+<em>Genomic Distribution of significant interactions using 40kb bins</em>
 </p>
 </div>
 <p>
@@ -1186,6 +1331,52 @@ Steve Ped
 </tbody>
 </table>
 </div>
+</div>
+<pre class="r"><code>a &lt;- mcols(gi) %&gt;% 
+  as.data.frame %&gt;% 
+  ggplot(aes(distance/1e3, counts)) + 
+  geom_point() + 
+  scale_x_log10(labels = comma) +
+  labs(
+    x = &quot;Distance between bins (kb)&quot;,
+    y = &quot;Reads Spanning Bins&quot;
+  )
+b &lt;- mcols(gi) %&gt;%
+  as.data.frame %&gt;% 
+  ggplot(aes(counts, stat(density))) + 
+  geom_density() + 
+  coord_flip() + 
+  labs(x = c(), y = &quot;&quot;) +
+  theme(
+    axis.text = element_blank(), 
+    panel.grid.major.x =  element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.ticks.y = element_blank()
+    )
+c &lt;- mcols(gi) %&gt;%
+  as.data.frame %&gt;% 
+  ggplot(aes(distance/1e3, stat(density))) + 
+  geom_density() + 
+  scale_x_log10() +
+  labs(x = c(), y = &quot;&quot;) +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks.y = element_blank(), 
+    axis.ticks.x = element_blank()
+  )
+plot_grid(
+  plot_grid(ngsReports:::.emptyPlot(&quot;&quot;), c, ngsReports:::.emptyPlot(&quot;&quot;), rel_widths = c(0.02, 0.896, 0.102), nrow = 1),
+  plot_grid(a, b, rel_widths = c(0.9, 0.1), align = &quot;hv&quot;),
+  rel_heights = c(0.1, 0.9), nrow = 2, align = &quot;v&quot;, axis = &quot;r&quot;
+)</code></pre>
+<div class="figure" style="text-align: center">
+<img src="figure/interactions_setup.Rmd/plotIntDist40-1.png" alt="*Relationship between counts and distance using 40kb bins*" width="864" />
+<p class="caption">
+<em>Relationship between counts and distance using 40kb bins</em>
+</p>
 </div>
 <pre class="r"><code>rm(gi)
 rm(cis_int)
@@ -1329,46 +1520,54 @@ attached base packages:
 [8] methods   base     
 
 other attached packages:
- [1] pander_0.6.3                scales_1.1.1               
- [3] glue_1.4.2                  vroom_1.3.2                
- [5] InteractionSet_1.18.0       SummarizedExperiment_1.20.0
- [7] Biobase_2.50.0              MatrixGenerics_1.2.0       
- [9] matrixStats_0.57.0          rtracklayer_1.50.0         
-[11] GenomicRanges_1.42.0        GenomeInfoDb_1.26.0        
-[13] IRanges_2.24.0              S4Vectors_0.28.0           
-[15] BiocGenerics_0.36.0         yaml_2.2.1                 
-[17] magrittr_1.5                forcats_0.5.0              
-[19] stringr_1.4.0               dplyr_1.0.2                
-[21] purrr_0.3.4                 readr_1.4.0                
-[23] tidyr_1.1.2                 tibble_3.0.4               
-[25] ggplot2_3.3.2               tidyverse_1.3.0            
-[27] workflowr_1.6.2            
+ [1] cowplot_1.1.0               pander_0.6.3               
+ [3] scales_1.1.1                glue_1.4.2                 
+ [5] vroom_1.3.2                 InteractionSet_1.18.0      
+ [7] SummarizedExperiment_1.20.0 Biobase_2.50.0             
+ [9] MatrixGenerics_1.2.0        matrixStats_0.57.0         
+[11] rtracklayer_1.50.0          GenomicRanges_1.42.0       
+[13] GenomeInfoDb_1.26.0         IRanges_2.24.0             
+[15] S4Vectors_0.28.0            BiocGenerics_0.36.0        
+[17] yaml_2.2.1                  magrittr_1.5               
+[19] forcats_0.5.0               stringr_1.4.0              
+[21] dplyr_1.0.2                 purrr_0.3.4                
+[23] readr_1.4.0                 tidyr_1.1.2                
+[25] tibble_3.0.4                ggplot2_3.3.2              
+[27] tidyverse_1.3.0             workflowr_1.6.2            
 
 loaded via a namespace (and not attached):
- [1] bitops_1.0-6             fs_1.5.0                 bit64_4.0.5             
- [4] lubridate_1.7.9          httr_1.4.2               rprojroot_1.3-2         
- [7] tools_4.0.3              backports_1.2.0          R6_2.5.0                
-[10] DBI_1.1.0                colorspace_1.4-1         withr_2.3.0             
-[13] tidyselect_1.1.0         bit_4.0.4                compiler_4.0.3          
-[16] git2r_0.27.1             cli_2.1.0                rvest_0.3.6             
-[19] xml2_1.3.2               DelayedArray_0.16.0      labeling_0.4.2          
-[22] digest_0.6.27            Rsamtools_2.6.0          rmarkdown_2.5           
-[25] XVector_0.30.0           pkgconfig_2.0.3          htmltools_0.5.0         
-[28] highr_0.8                dbplyr_2.0.0             rlang_0.4.8             
-[31] readxl_1.3.1             rstudioapi_0.11          farver_2.0.3            
-[34] generics_0.1.0           jsonlite_1.7.1           BiocParallel_1.24.0     
-[37] RCurl_1.98-1.2           GenomeInfoDbData_1.2.4   Matrix_1.2-18           
-[40] Rcpp_1.0.5               munsell_0.5.0            fansi_0.4.1             
-[43] lifecycle_0.2.0          stringi_1.5.3            whisker_0.4             
-[46] zlibbioc_1.36.0          grid_4.0.3               promises_1.1.1          
-[49] crayon_1.3.4             lattice_0.20-41          Biostrings_2.58.0       
-[52] haven_2.3.1              hms_0.5.3                knitr_1.30              
-[55] pillar_1.4.6             reprex_0.3.0             XML_3.99-0.5            
-[58] evaluate_0.14            modelr_0.1.8             vctrs_0.3.4             
-[61] httpuv_1.5.4             cellranger_1.1.0         gtable_0.3.0            
-[64] assertthat_0.2.1         xfun_0.19                broom_0.7.2             
-[67] later_1.1.0.1            GenomicAlignments_1.26.0 ellipsis_0.3.1          
-[70] here_0.1                </code></pre>
+ [1] colorspace_1.4-1         hwriter_1.3.2            ellipsis_0.3.1          
+ [4] rprojroot_1.3-2          XVector_0.30.0           ggdendro_0.1.22         
+ [7] fs_1.5.0                 rstudioapi_0.11          farver_2.0.3            
+[10] ggrepel_0.8.2            DT_0.16                  bit64_4.0.5             
+[13] fansi_0.4.1              lubridate_1.7.9          xml2_1.3.2              
+[16] leaps_3.1                knitr_1.30               jsonlite_1.7.1          
+[19] ngsReports_1.6.1         Rsamtools_2.6.0          broom_0.7.2             
+[22] cluster_2.1.0            dbplyr_2.0.0             png_0.1-7               
+[25] compiler_4.0.3           httr_1.4.2               backports_1.2.0         
+[28] lazyeval_0.2.2           assertthat_0.2.1         Matrix_1.2-18           
+[31] cli_2.1.0                later_1.1.0.1            htmltools_0.5.0         
+[34] tools_4.0.3              gtable_0.3.0             GenomeInfoDbData_1.2.4  
+[37] reshape2_1.4.4           FactoMineR_2.3           ShortRead_1.48.0        
+[40] Rcpp_1.0.5               cellranger_1.1.0         vctrs_0.3.4             
+[43] Biostrings_2.58.0        xfun_0.19                rvest_0.3.6             
+[46] lifecycle_0.2.0          XML_3.99-0.5             zoo_1.8-8               
+[49] zlibbioc_1.36.0          MASS_7.3-53              hms_0.5.3               
+[52] promises_1.1.1           RColorBrewer_1.1-2       latticeExtra_0.6-29     
+[55] stringi_1.5.3            highr_0.8                BiocParallel_1.24.0     
+[58] rlang_0.4.8              pkgconfig_2.0.3          bitops_1.0-6            
+[61] evaluate_0.14            lattice_0.20-41          GenomicAlignments_1.26.0
+[64] htmlwidgets_1.5.2        labeling_0.4.2           bit_4.0.4               
+[67] tidyselect_1.1.0         here_0.1                 plyr_1.8.6              
+[70] R6_2.5.0                 generics_0.1.0           DelayedArray_0.16.0     
+[73] DBI_1.1.0                pillar_1.4.6             haven_2.3.1             
+[76] whisker_0.4              withr_2.3.0              scatterplot3d_0.3-41    
+[79] RCurl_1.98-1.2           modelr_0.1.8             crayon_1.3.4            
+[82] plotly_4.9.2.1           rmarkdown_2.5            jpeg_0.1-8.1            
+[85] grid_4.0.3               readxl_1.3.1             data.table_1.13.2       
+[88] git2r_0.27.1             reprex_0.3.0             digest_0.6.27           
+[91] flashClust_1.01-2        httpuv_1.5.4             munsell_0.5.0           
+[94] viridisLite_0.3.0       </code></pre>
 </div>
 </div>
 </div>
