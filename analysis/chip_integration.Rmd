@@ -1,0 +1,252 @@
+---
+title: "Integration of HiC and Super Enhancer Data"
+author: "Stephen Pederson<br>Dame Roma Mitchell Cancer Research Laboratories<br>Adelaide Medical School<br>University of Adelaide"
+date: "`r format(Sys.Date(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.align = "center",
+  fig.width = 10,
+  fig.height = 8
+)
+```
+
+
+```{r packages}
+library(rtracklayer)
+library(tidyverse)
+library(Gviz)
+library(glue)
+library(Rsamtools)
+library(pander)
+library(scales)
+library(GenomicInteractions)
+library(InteractionSet)
+library(magrittr)
+library(plyranges)
+```
+
+```{r setOpts}
+theme_set(theme_bw())
+panderOptions("big.mark", ",")
+```
+
+
+# Introduction
+
+Given the groups of peaks identified by Leila Hosseinzadeh, using ChIP seq from both GATA3 and the AR, the connection of these peaks to enhancers, promoters and DE genes was explored.
+The groupings were provided as:
+
+1. GATA3 sites detected under DHT treatment only
+2. Shared sites between GATA3 and AR which are gained under DHT treatment
+3. AR sites which were independent of DHT treatment
+4. AR sites detected under DHT treatment only
+...
+
+The bed files associated with these sites were all obtained using Galaxy as part of her PhD candidature.
+
+# Data Import
+
+## Gene-Level Data
+
+```{r rnaseq}
+rnaseq <- here::here("data/external/RNASeq/t47d_DHT_StrippedSerum_RNASeq_topTable.tsv") %>%
+  read_tsv()
+```
+
+```{r geneModels}
+geneModels <- here::here("output/geneModels.rds") %>%
+  read_rds()
+geneRanges <- geneModels %>% 
+  split(f = .$gene) %>% 
+  range() %>% 
+  unlist() %>%
+  sort()
+geneRanges$gene <- names(geneRanges)
+geneRanges$symbol <- geneModels$symbol[match(geneRanges$gene, geneModels$gene)]
+sq <- seqinfo(geneModels)
+```
+
+Genes were parsed as condensed models just containing all relevant exons, and the ranges defined by the start/end points of each gene were also defined for easy comparison.
+
+The RNA-Seq results from Stripped Serum were also loaded.
+This dataset comes with some caveats, in that very few genes were detected as DE in response to DHT treatment.
+This was likely to be an artefact of poor rRNA removal and the biases this leaves within a dataset.
+In total this dataset contained `r comma(nrow(rnaseq))` detectable genes, broken into `r nrow(dplyr::filter(rnaseq, DE & logFC > 0))` up-regulated genes, `r nrow(dplyr::filter(rnaseq, DE & logFC < 0))` down-regulated genes, with the remaining `r comma(nrow(dplyr::filter(rnaseq, !DE)))` genes considered detectable, but not differentially expressed.
+
+Whilst the comparison of AR and GATA3 ChIP peaks with differential expression may yield some insights, the clarification of the potential consequences for each peak should still be able to be extrapolated from the HiC and H3K27Ac data.
+
+## HiC Interactions
+
+Given that the different resolutions enabled by the different bin sizes will yield differing powers to detect interactions, significant (i.e. above background) interactions were loaded at 3 different resolutions: 10kb, 20kb and 40kb.
+
+```{r gi}
+gi40 <- here::here("output/gi_40000.rds") %>% read_rds()
+gi20 <- here::here("output/gi_20000.rds") %>% read_rds()
+gi10 <- here::here("output/gi_10000.rds") %>% read_rds()
+gi <- c(gi10, gi20, gi40)
+gi$distance <- pairdist(gi)
+gi$logObsExp <- log2(gi$counts / gi$exp_interactions)
+```
+
+```{r tabInteractions}
+gi %>%
+  anchorOne() %>%
+  width() %>% 
+  table() %>% 
+  enframe(name = "Bin Size", value = "Number of Interactions") %>% 
+  mutate_all(as.numeric) %>%
+  pander(
+    caption = "Breakdown of cis interactions detected for each bin size in the Encode T47D HiC data."
+  )
+```
+
+## H3K27Ac Data
+
+```{r parseH3K27Ac}
+promGR <- here::here("output/promoters.bed") %>% 
+  import.bed()
+mcols(promGR) <- DataFrame(class = "Promoter")
+enhGR <- here::here("output/enhancers.bed") %>% 
+  import.bed()
+mcols(enhGR) <- DataFrame(class = "Enhancer")
+seGR <- here::here("output/SE.gtf") %>%
+  import.gff()
+mcols(seGR) <- DataFrame(class = rep("Super Enhancer", length(seGR)))
+h3k27ac <- GRangesList(
+  promGR,
+  enhGR,
+  seGR
+) %>%
+  unlist() %>%
+  sort()
+minWidth <- 75
+```
+
+The initial classes of H3K27Ac defined regions were parsed and it was noted that `r comma(sum(width(h3k27ac) <= minWidth))` regions were $\leq$ than `r minWidth`bp (i.e. the read length).
+As these were not considered to be viable peaks, these were removed.
+
+```{r rmShortPeaks}
+h3k27ac <- subset(h3k27ac, width > minWidth)
+```
+
+It should also be noted that in the previous steps, promoters were restricted to H3K27Ac peaks which overlapped the TSS of genes detected as expressed in the RNA-Seq dataset.
+Any peaks which overlapped the TSS/Promoter of an undetectable gene were classed as Enhancers.
+
+```{r tabH3K27Ac}
+h3k27ac %>%
+  with(
+    tibble(
+      width = width,
+      class = class
+    )
+  ) %>%
+  mutate(
+    class = factor(class, levels = c("Promoter", "Enhancer", "Super Enhancer"))
+  ) %>%
+  group_by(class) %>%
+  summarise(
+    Total = dplyr::n(),
+    `Total (bp)` = sum(width),
+    `Median Width` = median(width),
+    Shortest = min(width),
+    Longest = max(width)
+  ) %>%
+  rename_all(str_to_title) %>%
+  pander(
+    caption = "Description of all features defined by the H3K27Ac dataset"
+  )
+```
+
+For the purposes of plotting, all exons from genes detected as expressed were identified and incorporated along with regions of the genome not belonging to an expressed gene, promoter or super enhancer.
+Strand information was removed from this annotation object and these were formed into a crude 5-state classification system for each base.
+This can be overlaid with HiC Interactions and ChIP peaks in a manner somewhat analogous to a ChromHMM model.
+
+```{r allGR}
+allGR <- geneModels %>%
+  subset(gene %in% rnaseq$gene_id) %>%
+  granges() %>%
+  (
+    function(x){
+      strand(x) <- "*"
+      x <- GenomicRanges::reduce(x)
+      mcols(x) <- DataFrame(class = "Expressed")
+      x
+    }
+  ) %>%
+  c(h3k27ac) %>%
+  sort() %>%
+  c(
+    gaps(.)
+  ) %>%
+  sort() %>%
+  subset(strand == "*") 
+allGR$class <- str_replace_na(allGR$class)
+```
+
+# ChIP Groups
+
+## GATA3 Sites Gained With DHT
+
+```{r}
+chipGR <- here::here("data/external/BED/AR_GATA3_Groups/Galaxy280-[T47D-GATA3-DHT-ONLY].bed") %>%
+  import.bed() %>%
+  subset(seqnames %in% seqlevels(sq)) %>%
+  sortSeqlevels() %>%
+  keepSeqlevels(value = seqlevels(sq)) %>%
+  sort() %>%
+  subset(width > minWidth) %>%
+  setNames(paste0(seqnames(.), ":", start(.))) %>%
+  names_to_column()
+seqinfo(chipGR) <- sq
+```
+
+The first group of sites to integrate were the GATA3 ChIP peaks gained under DHT treatment, but where no corresponding increase was seen in the AR ChIP peaks.
+Data was imported for a total of `r comma(length(chipGR))` peaks, excluding peaks $\leq$ `r minWidth`bp.
+
+```{r}
+ol <- findOverlaps(chipGR, h3k27ac)
+```
+
+The first step is to subset and merge these sites with those which overlap a defined promoter or enhancer.
+This step reduced the set of peaks to `r comma(length(GenomicRanges::reduce(chipGR)))` unique peaks,
+however, given that some peaks may partially overlap multiple H3K27Ac-defined regions, this represented a total of `r comma(length(chipGR))` mappings between the two datasets.
+
+```{r}
+chipGR %>%
+  join_overlap_inner(h3k27ac) %>%
+  with(
+    tibble(
+      width = width,
+      class = class
+    )
+  ) %>%
+  group_by(class) %>%
+  summarise(
+    Total = dplyr::n(),
+    `Total (bp)` = sum(width),
+    `Median Width` = median(width),
+    Shortest = min(width),
+    Longest = max(width)
+  ) %>%
+  rename_all(str_to_title) %>%
+  pander(
+    caption = "Summary of mappings from ChIP peaks (DHT-gained GATA3 peaks) to regions defined by the H3K27Ac dataset"
+  )
+```
+
+### Enrichment Testing
+
+The first step is to ascertain whether the peaks where GATA3 is gained under DHT treatment, are associated with any specific feature from the H3K27Ac dataset, such as Promoters, Enhancers of Super Enhancers.
+The size of the peak may bias any mapping and this was used as a sampling offset using the Wallenius approximation for biased sampling in the hypergeometric distribution.
+
+
+
