@@ -26,6 +26,7 @@ library(vroom)
 library(glue)
 library(scales)
 library(pander)
+library(cowplot)
 ```
 
 ```{r setOpts}
@@ -118,8 +119,10 @@ After filtering interactions to only those considered significant:
 - `r comma(length(gi))` bin-pair interactions were retained.
 - The observed interactions between bins ranged between `r pander(range(gi$counts))`
 - The log~2~ ratio of of observed to expected counts ranged between `r pander(round(range(gi$logObsExp), 2))`. These values represent enrichment for interactions well above that expected by the background model.
+- The median interaction distance was `r round(median(gi$distance)/1e3, 1)`kb
+- The longest interaction was between bins separated by `r round(max(gi$distance)/1e6, 1)`Mb
 
-```{r plotInt10, fig.height=6, fig.width = 9, fig.cap = glue("*Distribution of significant interactions using {sz/1e3}kb bins*")}
+```{r plotInt10, fig.height=6, fig.width = 9, fig.cap = glue("*Genomic Distribution of significant interactions using {sz/1e3}kb bins*")}
 gi %>%
   anchors("first") %>%
   seqnames() %>%
@@ -143,6 +146,49 @@ gi %>%
   scale_y_continuous(expand = expansion(c(0, 0.05)))
 ```
 
+```{r plotIntDist10,fig.height=6, fig.width = 9, fig.cap = glue("*Relationship between counts and distance using {sz/1e3}kb bins*")}
+a <- mcols(gi) %>% 
+  as.data.frame %>% 
+  ggplot(aes(distance/1e3, counts)) + 
+  geom_point() + 
+  scale_x_log10(labels = comma) +
+  labs(
+    x = "Distance between bins (kb)",
+    y = "Reads Spanning Bins"
+  )
+b <- mcols(gi) %>%
+  as.data.frame %>% 
+  ggplot(aes(counts, stat(density))) + 
+  geom_density() + 
+  coord_flip() + 
+  labs(x = c(), y = "") +
+  theme(
+    axis.text = element_blank(), 
+    panel.grid.major.x =  element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.ticks.y = element_blank()
+    )
+c <- mcols(gi) %>%
+  as.data.frame %>% 
+  ggplot(aes(distance/1e3, stat(density))) + 
+  geom_density() + 
+  scale_x_log10() +
+  labs(x = c(), y = "") +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks.y = element_blank(), 
+    axis.ticks.x = element_blank()
+  )
+plot_grid(
+  plot_grid(ngsReports:::.emptyPlot(""), c, ngsReports:::.emptyPlot(""), rel_widths = c(0.02, 0.896, 0.102), nrow = 1),
+  plot_grid(a, b, rel_widths = c(0.9, 0.1), align = "hv"),
+  rel_heights = c(0.1, 0.9), nrow = 2, align = "v", axis = "r"
+)
+```
+
 
 ```{r cleanup10, results='hide'}
 rm(gi)
@@ -158,7 +204,6 @@ sz <- 20000
 ```
 
 ## `r sz/1e3`kb Bins
-
 
 ```{r bins20}
 bins <- import.bed(
@@ -216,8 +261,10 @@ After filtering interactions to only those considered significant:
 - `r comma(length(gi))` bin-pair interactions were retained.
 - The observed interactions between bins ranged between `r pander(range(gi$counts))`
 - The log~2~ ratio of of observed to expected counts ranged between `r pander(round(range(gi$logObsExp), 2))`. These values represent enrichment for interactions well above that expected by the background model.
+- The median interaction distance was `r round(median(gi$distance)/1e3, 1)`kb
+- The longest interaction was between bins separated by `r round(max(gi$distance)/1e6, 1)`Mb
 
-```{r plotInt20, fig.height=6, fig.width = 9, fig.cap = glue("*Distribution of significant interactions using {sz/1e3}kb bins*")}
+```{r plotInt20, fig.height=6, fig.width = 9, fig.cap = glue("*Genomic Distribution of significant interactions using {sz/1e3}kb bins*")}
 gi %>%
   anchors("first") %>%
   seqnames() %>%
@@ -241,6 +288,49 @@ gi %>%
   scale_y_continuous(expand = expansion(c(0, 0.05)))
 ```
 
+```{r plotIntDist20,fig.height=6, fig.width = 9, fig.cap = glue("*Relationship between counts and distance using {sz/1e3}kb bins*")}
+a <- mcols(gi) %>% 
+  as.data.frame %>% 
+  ggplot(aes(distance/1e3, counts)) + 
+  geom_point() + 
+  scale_x_log10(labels = comma) +
+  labs(
+    x = "Distance between bins (kb)",
+    y = "Reads Spanning Bins"
+  )
+b <- mcols(gi) %>%
+  as.data.frame %>% 
+  ggplot(aes(counts, stat(density))) + 
+  geom_density() + 
+  coord_flip() + 
+  labs(x = c(), y = "") +
+  theme(
+    axis.text = element_blank(), 
+    panel.grid.major.x =  element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.ticks.y = element_blank()
+    )
+c <- mcols(gi) %>%
+  as.data.frame %>% 
+  ggplot(aes(distance/1e3, stat(density))) + 
+  geom_density() + 
+  scale_x_log10() +
+  labs(x = c(), y = "") +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks.y = element_blank(), 
+    axis.ticks.x = element_blank()
+  )
+plot_grid(
+  plot_grid(ngsReports:::.emptyPlot(""), c, ngsReports:::.emptyPlot(""), rel_widths = c(0.02, 0.896, 0.102), nrow = 1),
+  plot_grid(a, b, rel_widths = c(0.9, 0.1), align = "hv"),
+  rel_heights = c(0.1, 0.9), nrow = 2, align = "v", axis = "r"
+)
+```
+
 
 ```{r cleanup20, results='hide'}
 rm(gi)
@@ -256,7 +346,6 @@ sz <- 40000
 ```
 
 ## `r sz/1e3`kb Bins
-
 
 ```{r bins40}
 bins <- import.bed(
@@ -314,8 +403,10 @@ After filtering interactions to only those considered significant:
 - `r comma(length(gi))` bin-pair interactions were retained.
 - The observed interactions between bins ranged between `r pander(range(gi$counts))`
 - The log~2~ ratio of of observed to expected counts ranged between `r pander(round(range(gi$logObsExp), 2))`. These values represent enrichment for interactions well above that expected by the background model.
+- The median interaction distance was `r round(median(gi$distance)/1e3, 1)`kb
+- The longest interaction was between bins separated by `r round(max(gi$distance)/1e6, 1)`Mb
 
-```{r plotInt40, fig.height=6, fig.width = 9, fig.cap = glue("*Distribution of significant interactions using {sz/1e3}kb bins*")}
+```{r plotInt40, fig.height=6, fig.width = 9, fig.cap = glue("*Genomic Distribution of significant interactions using {sz/1e3}kb bins*")}
 gi %>%
   anchors("first") %>%
   seqnames() %>%
@@ -337,6 +428,49 @@ gi %>%
     y = glue("Total Significant Cis Interactions ({sz/1e3}kb bins)")
   ) +
   scale_y_continuous(expand = expansion(c(0, 0.05)))
+```
+
+```{r plotIntDist40,fig.height=6, fig.width = 9, fig.cap = glue("*Relationship between counts and distance using {sz/1e3}kb bins*")}
+a <- mcols(gi) %>% 
+  as.data.frame %>% 
+  ggplot(aes(distance/1e3, counts)) + 
+  geom_point() + 
+  scale_x_log10(labels = comma) +
+  labs(
+    x = "Distance between bins (kb)",
+    y = "Reads Spanning Bins"
+  )
+b <- mcols(gi) %>%
+  as.data.frame %>% 
+  ggplot(aes(counts, stat(density))) + 
+  geom_density() + 
+  coord_flip() + 
+  labs(x = c(), y = "") +
+  theme(
+    axis.text = element_blank(), 
+    panel.grid.major.x =  element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.ticks.y = element_blank()
+    )
+c <- mcols(gi) %>%
+  as.data.frame %>% 
+  ggplot(aes(distance/1e3, stat(density))) + 
+  geom_density() + 
+  scale_x_log10() +
+  labs(x = c(), y = "") +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks.y = element_blank(), 
+    axis.ticks.x = element_blank()
+  )
+plot_grid(
+  plot_grid(ngsReports:::.emptyPlot(""), c, ngsReports:::.emptyPlot(""), rel_widths = c(0.02, 0.896, 0.102), nrow = 1),
+  plot_grid(a, b, rel_widths = c(0.9, 0.1), align = "hv"),
+  rel_heights = c(0.1, 0.9), nrow = 2, align = "v", axis = "r"
+)
 ```
 
 
