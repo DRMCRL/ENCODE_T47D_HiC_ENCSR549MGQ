@@ -522,7 +522,7 @@ The median observed interaction count was `r median(cis_int$observed_interaction
 By default, the FDR provided by Max-HiC is incorrect and was ignored.
 The MaxHiC output was defined as a `GInteractions` object, with correct FDR added and interactions filtered for those with an FDR < 0.05
 
-```{r gi100}
+```{r gi100, results='hide'}
 gc()
 gi <- GInteractions(
   anchor1 = bins[as.integer(cis_int$bin1ID[keepInt])],
