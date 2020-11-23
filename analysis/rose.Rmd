@@ -37,10 +37,6 @@ theme_set(theme_bw())
 panderOptions("big.mark", ",")
 ```
 
-```{r}
-minWidth <- 75
-```
-
 
 # Introduction
 
@@ -63,7 +59,7 @@ The steps are as follows:
     + *Promoters were restricted to genes detected as expressed in the associated RNA-Seq dataset*
     + TSS regions are extended by 1.5kb upstream and 500bp downstream to give a broader 2kb TSS/promoter region, however the size of the peaks effectively defines the promoter
 2. Join any remaining candidate enhancers within 12.5kb
-    + Remove any regions shorter than the read length (`r minWidth`bp) as these will not make the cut
+    + Remove any candidate regions shorter than 1kb as these will not make the cut
 3. Count reads aligned within each region to get the number of reads
     + Alignments were pre-filtered such that only reads with a `MAPQ` score > 10 were retained
     + Strandedness of aligned reads was not taken into account
@@ -118,6 +114,9 @@ Gene and transcript models were loaded for plotting and data integration.
 These were defined in the [Annotation Setup](annotation_setup.html) step of the workflow.
 Gene models make for simpler plotting, whilst transcript models allow for more accurate identification of each TSS.
 
+For this analysis, only the TSS of genes detected as expressed in the RNA-Seq dataset (Stripped Serum) were considered as viable TSS & promoters. 
+Any peaks which overlapped undetectable gene promoters were considered more likely to be functioning as enhancers.
+
 ## Consensus Peaks
 
 ```{r chipGR}
@@ -135,8 +134,7 @@ chipGR <- here::here("data/external/BED") %>%
 consPeaks <- chipGR %>%
   as("GRangesList") %>%
   unlist() %>%
-  GenomicRanges::reduce() %>%
-  subset(width > minWidth)
+  GenomicRanges::reduce() 
 ```
 
 Consensus peaks were identified for each treatment group (E2 and E2+DHT), however for the purposes of super-enhancer detection, *these were merged to ensure the same candidate super-enhancer was being investigated in each cell type*.
@@ -144,17 +142,19 @@ Subtle shifts in ChIP peaks boundaries should remain relatively inconsequential 
 
 Whilst `r comma(length(chipGR$E2))` and `r comma(length(chipGR$E2_DHT))` consensus peaks were identified for E2 and E2+DHT respectively, when combining a total of `r comma(length(consPeaks))` regions were defined as the merged consensus peaks of the separate sets of consensus peaks.
 
+
 ## Promoters and Enhancers
 
 ```{r prom}
 ol <- findOverlaps(tss, consPeaks, ignore.strand = TRUE)
 promGR <- consPeaks[unique(subjectHits(ol))]
 enhGR <- consPeaks[-unique(subjectHits(ol))]
-stitchGR <- GenomicRanges::reduce(enhGR, min.gapwidth = 12500)
+stitchGR <- GenomicRanges::reduce(enhGR, min.gapwidth = 12500) %>%
+  subset(width > 1e3)
 ```
 
 After comparison with promoters (defined as TSS $\pm$ 2500bp), `r comma(length(promGR))` regions were classified as candidate promoters, whilst `r comma(length(enhGR))` were retained as candidate enhancers.
-After stitching together peaks within 12.5kb of each other, the final set of `r comma(length(stitchGR))` candidate regions was formed.
+After stitching together peaks within 12.5kb of each other and removing peaks shorter than 1kb, the final set of `r comma(length(stitchGR))` candidate regions was formed.
 Notably, these regions were independent of the initial treatment group, but were identification of super-enhancers will be performed separately in each treatment group.
 
 ## Alignments
@@ -238,10 +238,14 @@ rpmpbp <- countBam(bfl, param = ScanBamParam(which = stitchGR)) %>%
   mutate(
     across(contains("rpm"), function(x){x - .$rpmpbp_Pooled})
   ) %>%
-  dplyr::select(-contains("Pooled"))
+  dplyr::select(-contains("Pooled")) %>%
+  dplyr::filter(
+    rpmpbp_E2_DHT > 0,
+    rpmpbp_E2 > 0
+  )
 ```
 
-```{r plotRpmpbp, fig.width=8, fig.cap = "Comparison of H3K27AC signal within each candidate region. The curve of best fit is shown in blue, with y = x shown as the dashed, grey line."}
+```{r plotRpmpbp, fig.width=8, fig.cap = "Comparison of H3K27AC signal within each candidate region. The curve of best fit is shown in blue, with y = x shown as the dashed, grey line. Axes are both square-root transformed."}
 rpmpbp %>%
   ggplot(aes(rpmpbp_E2_DHT, rpmpbp_E2)) + 
   geom_point() + 
@@ -250,10 +254,13 @@ rpmpbp %>%
   labs(
     x = "E2 + DHT (rpm/bp)",
     y = "E2 (rpm/bp)"
-  )
+  ) +
+  scale_x_sqrt() +
+  scale_y_sqrt()
 ```
 
-After calculation of `rpm/bp` within each candidate region, values were compared aross treatments.
+Reads per million / base pair (`rpm/bp`) were calculated as described above for each candidate region, with any receiving a background corrected value < 0 removed.
+Values were then visually compared across treatments.
 In the lower regions, signal strongly tracked the line `y = x`, whilst for the regions with the strongest signal, a trend of higher signal was observed in the merged E2 alignments.
 This may represent bias in peak definitions (e.g. wider peaks predominately defined by one treatment group), the impact of the larger library size in the E2+DHT sample, or may even be genuine biology.
 
@@ -292,7 +299,9 @@ rpmpbp %>%
   group_by(class) %>%
   summarise(
     n = n(),
-    `median width` = median(width)
+    Smallest = min(width),
+    `median width` = median(width),
+    Largest = max(width)
   ) %>%
   rename_all(str_to_title) %>%
   pander(
@@ -332,6 +341,9 @@ After checking the plot above, it appears that an increase in SE activity can be
 A series of putative super enhancers detected in the E2 + DHT treatment group fall non-trivially below the cutoff value for the E2 only treatment group, whilst the converse is not observed.
 Those classified as E2 only clearly appear artefactual, and whilst many specific to the E2 + DHT group also appear so, a select group of super enhancers do not.
 
+The detected set of super-enhancers were exported, along with the original set of peaks which do not overlap a detected super enhancer.
+These peaks were additionally divided into promoters and enhancers.
+
 ```{r export}
 seGR <- rpmpbp %>%
   dplyr::filter(class != "Not SE") %>%
@@ -345,6 +357,23 @@ ol <- findOverlaps(enhGR, seGR)
 enhGR <- enhGR[-unique(queryHits(ol))]
 export.bed(enhGR, "output/enhancers.bed")
 export.bed(promGR, "output/promoters.bed")
+```
+
+A comparison of region widths was then performed and it was noted that some regions annotated as promoters were extremely long.
+This may be the result of some genes containing multiple TSS, but also the original peak calling may have merged multiple peaks into a larger peak.
+
+```{r compareWidths, fig.width=8, fig.height=6, fig.cap="*Comparison of region widths for promoters, enhancers and super-enhancers after running the above processes.*"}
+list(
+  tibble(width = width(promGR), region = "Promoter"),
+   tibble(width = width(enhGR), region = "Enhancer"),
+   tibble(width = width(seGR), region = "Super Enhancer")
+) %>%
+  bind_rows() %>%
+  mutate(region = fct_inorder(region)) %>%
+  ggplot(aes(region, width)) +
+  geom_boxplot() +
+  labs(x = "Region", y = "Region Width (bp)") +
+  scale_y_log10(labels = scales::comma)
 ```
 
 
@@ -390,7 +419,10 @@ hmecHMM <- import.bed("data/external/ChromHMM/E119_25_imputed12marks_dense.bed.g
 gi100 <- here::here("output/gi_100000.rds") %>% read_rds()
 gi40 <- here::here("output/gi_40000.rds") %>% read_rds()
 gi20 <- here::here("output/gi_20000.rds") %>% read_rds()
-gi <- c(gi20, gi40, gi100)
+gi10 <- here::here("output/gi_10000.rds") %>% read_rds()
+gi <- c(gi10, gi20, gi40, gi100)
+gi$distance <- pairdist(gi)
+gi$logObsExp <- log2(gi$counts / gi$exp_interactions)
 ```
 
 
@@ -401,7 +433,7 @@ ax <- GenomeAxisTrack()
 
 
 ```{r plotRegion}
-plotRegion <- function(gr, zoom = 1, hic = gi, hmm = hmecHMM, prom = promGR, enh = enhGR, se = seGR, gm = geneModels, .bw = bw, .bwCols = bwCols, .ax = ax, rna = rnaseq){
+plotRegion <- function(gr, zoom = 1, hic = gi, hmm = hmecHMM, prom = promGR, enh = enhGR, se = seGR, gm = geneModels, .bw = bw, .bwCols = bwCols, .ax = ax, rna = rnaseq, maxIntDist = 1e6){
   
   stopifnot(is(gr, "GRanges") | length(gr) > 0)
   
@@ -412,7 +444,8 @@ plotRegion <- function(gr, zoom = 1, hic = gi, hmm = hmecHMM, prom = promGR, enh
   ## The HiC Track
   goiInteractions <- hic %>%
     subsetByOverlaps(gr, ignore.strand = TRUE) %>%
-    subset(distance < width(gr)*zoom) %>%
+    # subset(distance < width(gr)*zoom) %>%
+    subset(distance < maxIntDist) %>%
     as("GenomicInteractions")
   hicTR <- goiInteractions %>%
     InteractionTrack(
@@ -503,7 +536,10 @@ plotRegion <- function(gr, zoom = 1, hic = gi, hmm = hmecHMM, prom = promGR, enh
     c(h3K27acTR) %>%
     c(
       subsetByOverlaps(gm, gr, ignore.strand = TRUE) %>%
-        GeneRegionTrack(name = "Genes",transcriptAnnotation = "symbol")
+        GeneRegionTrack(
+          name = "Genes",
+          transcriptAnnotation = "symbol"
+          )
     ) %>%
     c(dtl) %>%
     plotTracks(
@@ -529,7 +565,7 @@ Whilst no differential expression was found for `r pander(as.character(gn$symbol
 The mid-gene super enhancer also appeared to connect with the genes own promoter.
 
 
-```{r pltHighest, fig.cap = "*The most highly ranked super-enhancer in both treatments. HiC Interactions are shown using 20, 40 & 100kb bins. The ChromHMM model was generated using HMEC cells*"}
+```{r pltHighest, fig.cap = "*The most highly ranked super-enhancer in both treatments. HiC Interactions with the SE are shown using 10, 20, 40 & 100kb bins combined, and are restricted to those within 1Mb. The ChromHMM model was generated using HMEC cells*"}
 plotRegion(gr, zoom = 130)
 ```
 
@@ -548,7 +584,7 @@ As this was a conserved super-enhancer, no logFC was observed at *DDX6* although
 
 Despite the SE being located proximal to *CXCR5*, this gene was not detected as expressed in the RNA-Seq data.
 
-```{r plotNext, fig.cap = "*The second most highly ranked super-enhancer. A connection was noted between this SE and DDX6.*"}
+```{r plotNext, fig.cap = "*The second most highly ranked super-enhancer. Connections were noted between this SE and DDX6.*"}
 plotRegion(gr, zoom = 70, hic = gi)
 ```
 
@@ -558,7 +594,7 @@ plotRegion(gr, zoom = 70, hic = gi)
 gr <- seGR %>% 
   subset(class == "E2 + DHT Only") %>%
   subset(rpmpbp_E2 == min(rpmpbp_E2))
-zm <- 1.5e3
+zm <- 1e3
 gn <- geneRanges %>%
   subsetByOverlaps(
     resize(gr, width = zm*width(gr), fix = "center"), ignore.strand = TRUE
@@ -571,20 +607,16 @@ The most divergently ranked super enhancer was explored next, with a width of `r
 This was again located in an intergenic region, and was clearly lost in E2 samples, as expected.
 Whilst the signal in E2 + DHT was detectable, it is worth noting that this enhancer was still a relatively low-ranked SE in this treatment group.
 
-HiC connections were only detected when zooming out considerably.
-No genes within this expanded window were differentially expressed, despite significant connections to the promoter for *AUTS2*.
+No HiC connections were detected.
 
-```{r plotDHT_Close, fig.cap = "*Close view of the central super enhancer gained in E2 + DHT*"}
+```{r plotDHT, fig.cap = "*Close view of the central super enhancer gained in E2 + DHT*"}
 plotRegion(gr, zoom = 100, hic = gi)
 ```
 
-```{r pltDHT_Expanded, fig.cap = "*Heavily expanded view of the central super enhancer, gained in E2 + DHT. Only the genes detected as expressed are shown*"}
-plotRegion(gr, zoom = zm, hic = gi, gm = subset(geneModels, gene %in% names(gn)))
-```
 
 ## The largest SE
 
-```{r}
+```{r largestSE}
 gr <- seGR %>% subset(width == max(width))
 zm <- 8
 gn <- geneRanges %>%
@@ -595,9 +627,30 @@ gn <- geneRanges %>%
 The largest SE by size was found to be `r width(gr)/1e3`kb wide.
 Several long-range interactions were observed.
 
-```{r, fig.cap = "**"}
-plotRegion(gr, zoom = zm, hic = gi)#, gm = subset(geneModels, gene %in% names(gn)))
+```{r plotLargest, fig.cap = "*View of the longest super enhancer detected in this dataset*"}
+plotRegion(
+  gr, zoom = zm, 
+  hic = gi, 
+  # gm = subset(geneModels, gene %in% names(gn)), 
+  maxIntDist = 1e7
+)
 ```
+
+## The longest SE in the top 5 ranked SEs
+
+```{r largest_high}
+gr <- subset(seGR, width == 19912)
+gn <- geneRanges %>%
+  subsetByOverlaps(resize(gr, width = zm*width(gr), fix = "center"), ignore.strand = TRUE) %>%
+  subset(gene %in% rnaseq$gene_id)
+```
+
+This specific SE was `r round(width(gr)/1e3, 1)`kb long.
+
+```{r plotLargestHigh, fig.cap = "*The longest SE in the top 5 ranked across both conditions*"}
+plotRegion(gr, zoom = 100, hic = gi)
+```
+
 
 # Conclusion
 
