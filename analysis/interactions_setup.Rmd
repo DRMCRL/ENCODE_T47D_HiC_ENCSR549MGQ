@@ -95,6 +95,8 @@ gi <- GInteractions(
   p = exp(-cis_int$neg_ln_p_val)[keepInt],
   fdr = fdr[keepInt]
 )
+gi$distance <- pairdist(gi)
+gi$logObsExp <- log2(gi$counts / gi$exp_interactions)
 seqinfo(gi) <- sq
 ```
 
@@ -191,6 +193,8 @@ gi <- GInteractions(
   p = exp(-cis_int$neg_ln_p_val)[keepInt],
   fdr = fdr[keepInt]
 )
+gi$distance <- pairdist(gi)
+gi$logObsExp <- log2(gi$counts / gi$exp_interactions)
 seqinfo(gi) <- sq
 ```
 
@@ -287,6 +291,8 @@ gi <- GInteractions(
   p = exp(-cis_int$neg_ln_p_val)[keepInt],
   fdr = fdr[keepInt]
 )
+gi$distance <- pairdist(gi)
+gi$logObsExp <- log2(gi$counts / gi$exp_interactions)
 seqinfo(gi) <- sq
 ```
 
