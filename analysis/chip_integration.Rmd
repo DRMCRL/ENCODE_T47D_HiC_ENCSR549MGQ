@@ -32,11 +32,13 @@ library(GenomicInteractions)
 library(InteractionSet)
 library(magrittr)
 library(plyranges)
+library(goseq)
 ```
 
 ```{r setOpts}
 theme_set(theme_bw())
 panderOptions("big.mark", ",")
+panderOptions("table.split.table", Inf)
 ```
 
 
@@ -73,6 +75,8 @@ geneRanges <- geneModels %>%
 geneRanges$gene <- names(geneRanges)
 geneRanges$symbol <- geneModels$symbol[match(geneRanges$gene, geneModels$gene)]
 sq <- seqinfo(geneModels)
+transModels <- here::here("output/transModels.rds") %>%
+  read_rds()
 ```
 
 Genes were parsed as condensed models just containing all relevant exons, and the ranges defined by the start/end points of each gene were also defined for easy comparison.
@@ -92,9 +96,11 @@ Given that the different resolutions enabled by the different bin sizes will yie
 gi40 <- here::here("output/gi_40000.rds") %>% read_rds()
 gi20 <- here::here("output/gi_20000.rds") %>% read_rds()
 gi10 <- here::here("output/gi_10000.rds") %>% read_rds()
-gi <- c(gi10, gi20, gi40)
+gi <- c(gi10, gi20, gi40) %>%
+  sort()
 gi$distance <- pairdist(gi)
 gi$logObsExp <- log2(gi$counts / gi$exp_interactions)
+gi$binSize <- width(gi)$first
 ```
 
 ```{r tabInteractions}
@@ -113,21 +119,31 @@ gi %>%
 
 ```{r parseH3K27Ac}
 promGR <- here::here("output/promoters.bed") %>% 
-  import.bed()
-mcols(promGR) <- DataFrame(class = "Promoter")
+  import.bed() %>%
+  `seqinfo<-`(value = sq) %>%
+  granges()
+promGR$class <- "Promoter"
 enhGR <- here::here("output/enhancers.bed") %>% 
-  import.bed()
-mcols(enhGR) <- DataFrame(class = "Enhancer")
+  import.bed() %>%
+  `seqinfo<-`(value = sq) %>%
+  granges()
+enhGR$class <- "Enhancer"
 seGR <- here::here("output/SE.gtf") %>%
-  import.gff()
-mcols(seGR) <- DataFrame(class = rep("Super Enhancer", length(seGR)))
+  import.gff() %>%
+  `seqinfo<-`(value = sq) %>%
+  granges()
+seGR$class <- "Super Enhancer"
 h3k27ac <- GRangesList(
   promGR,
   enhGR,
   seGR
 ) %>%
   unlist() %>%
-  sort()
+  sort() %>% 
+  setNames(paste(seqnames(.), start(.), sep = "_")) %>% 
+  names_to_column("peak_id") %>%
+  setNames(paste(.$class, .$peak_id, sep = "_")) %>% 
+  names_to_column("feature_id")
 minWidth <- 75
 ```
 
@@ -135,11 +151,18 @@ The initial classes of H3K27Ac defined regions were parsed and it was noted that
 As these were not considered to be viable peaks, these were removed.
 
 ```{r rmShortPeaks}
-h3k27ac <- subset(h3k27ac, width > minWidth)
+h3k27ac <- subset(h3k27ac, width > minWidth) 
 ```
 
 It should also be noted that in the previous steps, promoters were restricted to H3K27Ac peaks which overlapped the TSS of genes detected as expressed in the RNA-Seq dataset.
 Any peaks which overlapped the TSS/Promoter of an undetectable gene were classed as Enhancers.
+
+```{r featureTotals}
+featureTotals <- table(h3k27ac$class) %>%
+  enframe(name = "class", value = "total") %>%
+  mutate(total = as.numeric(total))
+```
+
 
 ```{r tabH3K27Ac}
 h3k27ac %>%
@@ -166,37 +189,276 @@ h3k27ac %>%
   )
 ```
 
+
 For the purposes of plotting, all exons from genes detected as expressed were identified and incorporated along with regions of the genome not belonging to an expressed gene, promoter or super enhancer.
 Strand information was removed from this annotation object and these were formed into a crude 5-state classification system for each base.
 This can be overlaid with HiC Interactions and ChIP peaks in a manner somewhat analogous to a ChromHMM model.
 
-```{r allGR}
-allGR <- geneModels %>%
-  subset(gene %in% rnaseq$gene_id) %>%
-  granges() %>%
-  (
-    function(x){
-      strand(x) <- "*"
-      x <- GenomicRanges::reduce(x)
-      mcols(x) <- DataFrame(class = "Expressed")
-      x
-    }
-  ) %>%
-  c(h3k27ac) %>%
-  sort() %>%
-  c(
-    gaps(.)
-  ) %>%
-  sort() %>%
-  subset(strand == "*") 
-allGR$class <- str_replace_na(allGR$class)
+
+```{r}
+h3k27ByGroup <- list(
+  # These are the peaks seen in DHT
+  E2_DHT = here::here("data/external/BED/Consensus_T47D_H3K27Ac_E2_DHT_peaks.bed") %>%
+    import.bed() %>%
+    subset(seqnames %in% seqlevels(sq)) %>%
+    sortSeqlevels() %>%
+    keepSeqlevels(value = seqlevels(sq)) %>%
+    subset(width > minWidth) %>%
+    c(
+      subsetByOverlaps(h3k27ac, .)
+    ) %>%
+    sort() %>%
+    GenomicRanges::reduce() %>%
+    setNames(paste(seqnames(.), start(.), sep = "_")) %>%
+    names_to_column("peak_id"),
+  # Load the peaks seen in E2 & separate out into those gained & lost in each group
+  E2 = here::here("data/external/BED/Consensus_T47D_H3K27Ac_E2_peaks.bed") %>%
+    import.bed() %>%
+    subset(seqnames %in% seqlevels(sq)) %>%
+    sortSeqlevels() %>%
+    keepSeqlevels(value = seqlevels(sq)) %>%
+    subset(width > minWidth) %>%
+    c(
+      subsetByOverlaps(h3k27ac, .)
+    ) %>%
+    sort() %>%
+    GenomicRanges::reduce() %>%
+    setNames(paste(seqnames(.), start(.), sep = "_")) %>%
+    names_to_column("peak_id")
+) %>%
+  lapply(`seqinfo<-`, value = sq)
 ```
+
+```{r}
+h3k27ac$E2_DHT <- h3k27ac$peak_id %in% h3k27ByGroup$E2_DHT$peak_id
+h3k27ac$E2 <- h3k27ac$peak_id %in% h3k27ByGroup$E2$peak_id
+h3k27ac$group <- mcols(h3k27ac) %>%
+  with(
+    case_when(
+      E2_DHT & E2 ~ "Common",
+      !E2_DHT & E2 ~ "E2 Only",
+      E2_DHT & !E2 ~ "DHT Only",
+      !E2_DHT & !E2 ~ NA_character_
+    )
+  )
+```
+
+Information regarding which dataset contained an overlap with each consensus peak was then added to each H3K27Ac site.
+
+```{r}
+h3k27ac %>%
+  subset(E2_DHT | E2) %>%
+  mcols() %>%
+  as.data.frame() %>%
+  group_by(class, E2_DHT, E2) %>%
+  tally() %>%
+  ungroup() %>%
+  pivot_wider(names_from = class, values_from = n, values_fill = 0) %>%
+  mutate(
+    `Treatment Group` = case_when(
+      E2 & E2_DHT ~ "Both",
+      !E2 & E2_DHT ~ "DHT Only",
+      E2 & !E2_DHT ~ "E2 Only"
+    )
+    ) %>%
+  arrange(`Treatment Group`) %>%
+  dplyr::select(`Treatment Group`, Promoter, contains("Enhancer")) %>%
+  pander(
+    caption = "
+    Summary of consensus H3K27Ac features by treatment group.
+    Notably, all Super Enhancers contained peaks which overlapped them in each group, however this does not ensure that all Super Enhancers were defined as Super Ehancers in both treatment groups.
+    The ROSE workflow did detect a small number of SEs which were unique to DHT treatment.
+    "
+  )
+```
+
 
 # ChIP Groups
 
+```{r plotRegion}
+gen <- "hg19"
+ax <- GenomeAxisTrack()
+plotRegion <- function(gr, zoom = 1, hic = gi, h3k27 = h3k27ac, gata3 = gata3ConsGR, gm = geneModels, .ax = ax, rna = rnaseq, shift = 0){
+  
+  stopifnot(is(gr, "GRanges") | length(gr) > 0)
+  
+  ## Form the Ideogram track
+  chr <- unique(as.character(seqnames(gr)))
+  ideo <- IdeogramTrack(genome = gen, chromosome = chr)
+  
+  ## The HiC Track
+  goiInteractions <- hic %>%
+    subsetByOverlaps(gr, ignore.strand = TRUE) %>%
+    # subset(distance < width(gr)*zoom) %>%
+    # subset(distance < maxIntDist) %>%
+    as("GenomicInteractions")
+  hicTR <- goiInteractions %>%
+    InteractionTrack(
+      chromosome = chr,
+      name = "HiC"
+    )
+  
+  ## Expand the range after looking for interactions within the initial range
+  ## This keeps the range of interest in the centre
+  gr <- resize(gr, width = zoom*width(gr), fix = "center")
+  gr <- shift(gr, shift)
+  
+  # # Setup the promoters, enhancers and super-enhancers like a 3-state ChromHMM track.
+  # # Maybe include the detected genes as 'Transcription'
+  # h3K27acTR <- h3k27 %>%
+  #   subsetByOverlaps(gr, ignore.strand = TRUE) %>%
+  #   GeneRegionTrack(
+  #     name = "H3K27",
+  #     stacking = "dense",
+  #     id = .$class,
+  #     feature = .$class,
+  #     # group = .$class,
+  #     col = "transparent",
+  #     fontsize = 12,
+  #     size = 1,
+  #     `Promoter` = "#FF4500",
+  #     `Enhancer` = "#FFC34D",
+  #     `Super Enhancer` = "#0000FF" # This is blue, not used by ChromHMM!
+  #   )
+  promTR <- h3k27 %>%
+    subsetByOverlaps(gr, ignore.strand = TRUE) %>%
+    subset(class == "Promoter") %>%
+    GeneRegionTrack(
+      name = "Promoter",
+      stacking = "dense",
+      col = "transparent",
+      feature = .$group,
+      `Common` = "grey",
+      `DHT Only` = "red",
+      `E2 Only` = "blue"
+    )
+  if (length(promTR) == 0) promTR <- c()
+  enhTR <- h3k27 %>%
+    subsetByOverlaps(gr, ignore.strand = TRUE) %>%
+    subset(class == "Enhancer") %>%
+    GeneRegionTrack(
+      name = "Enhancer",
+      stacking = "dense",
+      col = "transparent",
+      feature = .$group,
+      `Common` = "grey",
+      `DHT Only` = "red",
+      `E2 Only` = "blue"
+    )
+  if (length(enhTR) == 0) enhTR <- c()
+  seTR <- h3k27 %>%
+    subsetByOverlaps(gr, ignore.strand = TRUE) %>%
+    subset(class == "Super Enhancer") %>%
+    GeneRegionTrack(
+      name = "Super Enh.",
+      stacking = "dense",
+      col = "transparent",
+      feature = .$group,
+      `Common` = "grey",
+      `DHT Only` = "red",
+      `E2 Only` = "blue"
+    )
+  if (length(seTR) == 0) seTR <- c()
+  
+  gata3TR <- gata3 %>%
+    subsetByOverlaps(gr, ignore.strand = TRUE) %>%
+    GeneRegionTrack(
+      name = "GATA3",
+      stacking = "dense",
+      feature = .$group,
+      size = 1,
+      col = "transparent",
+      `Common` = "grey",
+      `DHT Only` = "red",
+      `Vehicle Only` = "blue"
+    )
+  
+  expTR <- subsetByOverlaps(gm, gr, ignore.strand = TRUE) %>%
+    subset(gene %in% rna$gene_id) %>%
+    GeneRegionTrack(
+      name = "Expressed",
+      transcriptAnnotation = "symbol",
+      fill = "#008000",
+      col = "transparent"
+    )
+  notExpTR <- subsetByOverlaps(gm, gr, ignore.strand = TRUE) %>%
+    subset(!gene %in% rna$gene_id) %>%
+    GeneRegionTrack(
+      name = "Not Expressed",
+      transcriptAnnotation = "symbol",
+      fill = rgb(0.5, 0.5, 0.5, 0.5),
+      size = 0.8,
+      collapseTranscripts = "meta"
+    )
+
+  # Now form the plot
+  list(
+    ideo, .ax, hicTR
+  ) %>%
+    c(gata3TR) %>%
+    c(promTR, enhTR, seTR) %>%
+    c(
+      expTR, notExpTR
+    ) %>%
+    plotTracks(
+      from = start(gr),
+      to = end(gr)
+    )
+}
+```
+
+
+## All GATA3 Sites
+
+```{r gata3ConsGR}
+gata3GR <- here::here("data/external/BED") %>%
+  list.files(pattern = "GATA3.+bed", full.names = TRUE) %>%
+  sapply(function(x){
+    import.bed(x) %>%
+      subset(seqnames %in% seqlevels(sq)) %>%
+      sortSeqlevels() %>%
+      keepSeqlevels(value = seqlevels(sq)) %>%
+      `seqinfo<-`(value = sq) %>%
+      sort
+  }, simplify = FALSE) %>%
+  setNames(str_extract(names(.), "Vehicle|DHT")) 
+gata3ConsGR <- gata3GR %>%
+  as("GRangesList") %>%
+  unlist() %>%
+  GenomicRanges::reduce() %>%
+  setNames(paste0(seqnames(.), "_", start(.))) %>%
+  names_to_column("peak_id") %>%
+  subset(width > minWidth)
+gata3ConsGR$Vehicle <- seq_along(gata3ConsGR) %in% queryHits(findOverlaps(gata3ConsGR, gata3GR$Vehicle))
+gata3ConsGR$DHT <- seq_along(gata3ConsGR) %in% queryHits(findOverlaps(gata3ConsGR, gata3GR$DHT))
+gata3ConsGR$group <- mcols(gata3ConsGR) %>%
+  with(
+    case_when(
+      Vehicle & DHT ~ "Common",
+      !Vehicle & DHT ~ "DHT Only",
+      Vehicle & !DHT ~ "Vehicle Only",
+      !Vehicle & !DHT ~ NA_character_
+    )
+  )
+```
+
+In order to characterise the behaviours of the defined groups, the consensus set of `r comma(length(gata3ConsGR))` GATA3 peaks was defined as those detected in either Vehicle or DHT.
+In keeping with all steps of this analysis, any peaks $\leq `r minWidth`$bp were excluded.
+
+```{r gata3Cons2Feature}
+gata3Cons2Feature <- gata3ConsGR %>% 
+  join_overlap_inner(h3k27ac) %>% 
+  mcols() %>% 
+  split(f = .$peak_id.x) %>% 
+  lapply(function(x){unique(x$class)})
+```
+
+Each consensus peak was then mapped to the features which overlapped the peak.
+A total of `r comma(length(gata3Cons2Feature))` peaks were mapped to `r comma(sum(vapply(gata3Cons2Feature, length, integer(1))))` features.
+
 ## GATA3 Sites Gained With DHT
 
-```{r}
+```{r chipGR}
 chipGR <- here::here("data/external/BED/AR_GATA3_Groups/Galaxy280-[T47D-GATA3-DHT-ONLY].bed") %>%
   import.bed() %>%
   subset(seqnames %in% seqlevels(sq)) %>%
@@ -204,15 +466,21 @@ chipGR <- here::here("data/external/BED/AR_GATA3_Groups/Galaxy280-[T47D-GATA3-DH
   keepSeqlevels(value = seqlevels(sq)) %>%
   sort() %>%
   subset(width > minWidth) %>%
-  setNames(paste0(seqnames(.), ":", start(.))) %>%
-  names_to_column()
-seqinfo(chipGR) <- sq
+  c(
+    subsetByOverlaps(gata3ConsGR, .)
+  ) %>%
+  GenomicRanges::reduce() %>%
+  setNames(paste0(seqnames(.), "_", start(.))) %>%
+  names_to_column("peak_id") %>%
+  `seqinfo<-`(value = sq)
 ```
 
 The first group of sites to integrate were the GATA3 ChIP peaks gained under DHT treatment, but where no corresponding increase was seen in the AR ChIP peaks.
 Data was imported for a total of `r comma(length(chipGR))` peaks, excluding peaks $\leq$ `r minWidth`bp.
+This peaks were merged with the consensus GATA3 peaks defined previously to ensure direct comparability between groups.
+This set of peaks captured `r percent(length(chipGR) / length(gata3ConsGR))` of consensus GATA3 peaks.
 
-```{r}
+```{r GATA3_ol_H3K27}
 ol <- findOverlaps(chipGR, h3k27ac)
 ```
 
@@ -226,12 +494,13 @@ chipGR %>%
   with(
     tibble(
       width = width,
-      class = class
+      class = class,
+      feature_id = feature_id
     )
   ) %>%
   group_by(class) %>%
   summarise(
-    Total = dplyr::n(),
+    `Total Mapped Peaks` = dplyr::n(),
     `Total (bp)` = sum(width),
     `Median Width` = median(width),
     Shortest = min(width),
@@ -243,10 +512,150 @@ chipGR %>%
   )
 ```
 
+
+
 ### Enrichment Testing
 
 The first step is to ascertain whether the peaks where GATA3 is gained under DHT treatment, are associated with any specific feature from the H3K27Ac dataset, such as Promoters, Enhancers of Super Enhancers.
 The size of the peak may bias any mapping and this was used as a sampling offset using the Wallenius approximation for biased sampling in the hypergeometric distribution.
 
+For enrichment testing, each feature was considered as analogous to a gene, with a peak being mapped to it being considered as 'success'.
+All 3 feature types were assessed by considering that feature type, and grouping the other feature types.
+In this manner, only the peaks which overlapped a defined feature were considered for enrichment testing.
 
+```{r goseqGata3}
+mapped <- (gata3ConsGR$peak_id %in% chipGR$peak_id) %>%
+  setNames(gata3ConsGR$peak_id)
+pwf <- nullp(mapped, bias.data = width(gata3ConsGR), plot.fit = FALSE)
+enrichRes <- goseq(pwf, gene2cat = gata3Cons2Feature)
+enrichRes %>%
+  mutate(
+    Percentage = percent(numDEInCat / numInCat),
+    over_represented_pvalue = sprintf("%.3e", p.adjust(over_represented_pvalue, "bonf"))
+  ) %>%
+  dplyr::select(
+    Feature = category,
+    adjP = over_represented_pvalue,
+    `Number Mapped in Group Peaks` = numDEInCat,
+    `Consensus Peaks Mapped` = numInCat,
+    `Percentage Mapped` = Percentage
+  ) %>%
+  pander(
+    caption = "Assessment of enrichment for mappings of DHT-responsive GATA3 peaks to genomic features defined by H3K27Ac data"
+  )
+```
+
+
+## Comparison between Promoters and Gene Expression
+
+### Differentially Expressed Genes
+
+Of the `r comma(nrow(rnaseq))` genes which were detectable in the corresponding RNA-Seq analysis, peaks corresponding to a gain of GATA3 under DHT treatment were found in the promoters of `r chipGR %>% join_overlap_intersect(h3k27ac) %>% subset(class == "Promoter") %>% join_overlap_intersect(geneRanges) %>% subset(gene %in% rnaseq$gene_id) %>% mcols() %>% .[["gene"]] %>% unique() %>% length()` genes.
+
+```{r tabDEWithGATA3inPromoter}
+chipGR %>%
+  join_overlap_intersect(h3k27ac) %>%
+  subset(class == "Promoter") %>%
+  join_overlap_intersect(geneRanges) %>%
+  mcols() %>%
+  as.data.frame() %>%
+  as_tibble() %>%
+  dplyr::select(-peak_id.y) %>%
+  chop(c(peak_id.x, feature_id)) %>%
+  mutate(
+    `H3K27Ac Treatment Group` = case_when(
+      E2_DHT & E2 ~ "Both",
+      !E2_DHT & E2 ~ "E2 Only",
+      E2_DHT & !E2 ~ "DHT Only"
+    )
+  ) %>%
+  inner_join(rnaseq, by = c("gene" = "gene_id", "symbol" = "gene_name")) %>%
+  arrange(PValue) %>%
+  dplyr::filter(DE) %>%
+  dplyr::mutate(
+    `Peaks In Promoter` = vapply(peak_id.x, length, integer(1)),
+    PValue = sprintf("%.2e", PValue),
+    FDR = case_when(
+      FDR > 0.001 ~ sprintf("%.3f", FDR),
+      FDR <= 0.001 ~ sprintf("%.3e", FDR)
+    )
+  ) %>%
+  dplyr::select(ID = gene, Name = symbol, `Peaks In Promoter`, `H3K27Ac Treatment Group`,  logFC, logCPM, PValue, FDR) %>%
+  pander(
+    justify = "llrlrrrr",
+    caption = "
+    RNA-Seq results for DHT-responsive GATA3 peaks which map to promoters. 
+    Only Differentially expressed genes are shown, to an FDR of 5%. 
+    All but one of these genes was up-regulated, however, given that most DE genes wer up-regulated this was not statistically significant.
+    ",
+    emphasize.strong.rows = which(str_detect(.$`H3K27Ac Treatment Group`, "DHT"))
+  )
+```
+
+```{r fetEnrichedPromoters}
+rnaseq %>%
+  mutate(
+    gata3PeakInProm = gene_id %in% (
+      chipGR %>%
+        join_overlap_intersect(h3k27ac) %>%
+        subset(class == "Promoter") %>%
+        join_overlap_intersect(geneRanges) %>%
+        mcols() %>%
+        as.data.frame() %>% 
+        pull("gene")
+    ),
+    DE = FDR < 0.05
+  ) %>%
+  group_by(DE, gata3PeakInProm) %>%
+  tally() %>%
+  pivot_wider(names_from = DE, values_from = n) %>%
+  with(
+    cbind(`FALSE`, `TRUE`)
+  ) %>%
+  fisher.test() %>%
+  pander(
+    caption = "Fisher's Exact Test providing moderate supprt for enrichment of GATA3 peaks within the promoters of DE genes, using an FDR of 0.05 to consider a gene as DE"
+  )
+```
+
+```{r fetForUpVsDown_GATA3, eval=FALSE, echo=FALSE}
+# Check to see if there is enrichment for up-regulated genes in those with GATA3 peaks in the promoter. There isn't
+rnaseq %>%
+  mutate(
+    gata3PeakInProm = gene_id %in% (
+      chipGR %>%
+        join_overlap_intersect(h3k27ac) %>%
+        subset(class == "Promoter") %>%
+        join_overlap_intersect(geneRanges) %>%
+        mcols() %>%
+        as.data.frame() %>% 
+        pull("gene")
+    ),
+    DE = FDR < 0.05,
+    Direction = case_when(logFC > 0 ~ "Up", logFC < 0 ~ "Down")
+  ) %>%
+  dplyr::filter(DE) %>%
+  group_by(Direction, gata3PeakInProm) %>%
+  tally() %>%
+  with(
+    matrix(n, nrow = 2, byrow = TRUE, dimnames = list(c("Down", "Up"), c("No GATA3","GATA3")))
+  ) #%>%
+  # fisher.test()
+```
+
+#### ZBTB16
+
+The gene ZBTB16 has a gain of GATA3 in it's promoter under DHT treatment, as well as the gain of an H3K27Ac peak under DHT treatment.
+It is also one of the most significantly up regulated genes in response to DHT.
+Whilst an interaction between the ZBTB16 promoter and a downstream region was detected, this region did not interact with any other GATA peaks.
+
+```{r plotZBTB16, fig.cap = "*Overlay of HiC Interactions, GATA3 binding sites and H3K27Ac marks. For GATA3 peaks, Promoters, Enhancers and Super Ehancers, red indicates a gain under DHT, grey represents common sites across treatments and blue indicates a loss under DHT. Expressed genes are displayed in green with all transcripts showing. Undetectable genes from the RNA Seq dataset are condensed into a single representative transcript in the bottom panel.*"}
+gr <- chipGR %>%
+  join_overlap_intersect(h3k27ac) %>%
+  subset(class == "Promoter") %>%
+  join_overlap_intersect(geneRanges) %>%
+  subset(symbol == "ZBTB16")
+plotRegion(gr, zoom = 1000, gm = transModels, shift = 1e5)
+# We should also add & colour the AR peaks by their DHT response
+```
 
