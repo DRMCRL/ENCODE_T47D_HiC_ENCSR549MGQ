@@ -386,8 +386,7 @@ After checking the plot above, it appears that an increase in SE activity can be
 A series of putative super enhancers detected in the E2 + DHT treatment group fall non-trivially below the cutoff value for the E2 only treatment group, whilst the converse is not observed.
 Those classified as E2 only clearly appear artefactual, and whilst many specific to the E2 + DHT group also appear so, a select group of super enhancers do not.
 
-The detected set of super-enhancers were exported, along with the original set of peaks which do not overlap a detected super enhancer.
-These peaks were additionally divided into promoters and enhancers.
+The detected set of super-enhancers were exported, along with the original set of peaks divided into promoters and enhancers.
 
 ```{r export}
 seGR <- rpmpbp %>%
@@ -398,10 +397,10 @@ seGR <- rpmpbp %>%
     seqinfo = sq
   )
 export.gff(seGR, "output/SE.gtf")
-ol <- findOverlaps(enhGR, seGR)
-enhGR <- enhGR[-unique(queryHits(ol))]
 export.bed(enhGR, "output/enhancers.bed")
 export.bed(promGR, "output/promoters.bed")
+ol <- findOverlaps(enhGR, seGR)
+enhGR <- enhGR[-unique(queryHits(ol))]
 ```
 
 A comparison of region widths was then performed and it was noted that some regions annotated as promoters were extremely long.
