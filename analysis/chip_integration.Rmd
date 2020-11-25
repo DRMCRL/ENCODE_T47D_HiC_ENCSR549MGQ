@@ -779,7 +779,7 @@ gr <- chipGR %>%
   subset(class == "Promoter") %>%
   join_overlap_intersect(geneRanges) %>%
   subset(symbol == "RANBP3L")
-plotRegion(gr, zoom = 1000, gm = transModels)
+plotRegion(gr, zoom = 240, gm = transModels, shift = -2.5e4)
 ```
 
 #### EHF
