@@ -1,6 +1,6 @@
 ##gff-version 2
 ##source-version rtracklayer 1.50.0
-##date 2020-11-23
+##date 2020-11-26
 ##genome-build .	GRCh37
 chr1	rtracklayer	sequence_feature	1014283	1017234	.	.	.	rpmpbp_E2_DHT 0.0115504232267123; rpmpbp_E2 0.0114701534790796; class "Both"
 chr1	rtracklayer	sequence_feature	1088983	1102007	.	.	.	rpmpbp_E2_DHT 0.00635818493743872; rpmpbp_E2 0.0065919130735859; class "E2 + DHT Only"
