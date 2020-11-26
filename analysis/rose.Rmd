@@ -37,6 +37,10 @@ theme_set(theme_bw())
 panderOptions("big.mark", ",")
 ```
 
+```{r}
+minWidth <- 150
+```
+
 
 # Introduction
 
@@ -134,11 +138,13 @@ chipGR <- here::here("data/external/BED") %>%
 consPeaks <- chipGR %>%
   as("GRangesList") %>%
   unlist() %>%
-  GenomicRanges::reduce() 
+  GenomicRanges::reduce() %>%
+  subset(width > minWidth)
 ```
 
 Consensus peaks were identified for each treatment group (E2 and E2+DHT), however for the purposes of super-enhancer detection, *these were merged to ensure the same candidate super-enhancer was being investigated in each cell type*.
-Subtle shifts in ChIP peaks boundaries should remain relatively inconsequential for the relatively extreme criteria required for classification as a super-enhancer.
+Subtle shifts in ChIP peak boundaries should remain relatively inconsequential for the relatively extreme criteria required for classification as a super-enhancer.
+After merging, any peaks $\leq$`r minWidth`bp were excluded.
 
 Whilst `r comma(length(chipGR$E2))` and `r comma(length(chipGR$E2_DHT))` consensus peaks were identified for E2 and E2+DHT respectively, when combining a total of `r comma(length(consPeaks))` regions were defined as the merged consensus peaks of the separate sets of consensus peaks.
 
@@ -154,8 +160,8 @@ stitchGR <- GenomicRanges::reduce(enhGR, min.gapwidth = 12500) %>%
 ```
 
 After comparison with promoters (defined as TSS $\pm$ 2500bp), `r comma(length(promGR))` regions were classified as candidate promoters, whilst `r comma(length(enhGR))` were retained as candidate enhancers.
-After stitching together peaks within 12.5kb of each other and removing peaks shorter than 1kb, the final set of `r comma(length(stitchGR))` candidate regions was formed.
-Notably, these regions were independent of the initial treatment group, but were identification of super-enhancers will be performed separately in each treatment group.
+After stitching together peaks within 12.5kb of each other and removing enhancer peaks shorter than 1kb, the final set of `r comma(length(stitchGR))` candidate regions was formed.
+Notably, these regions were effectively defined as independent of the initial treatment group, whilst identification of super-enhancers will be performed separately within in each treatment group.
 
 
 ```{r cutPromoters}
@@ -183,8 +189,8 @@ ol <- findOverlaps(stitchGR, promGR) %>%
   unique()
 ```
 
-An issue produced by this method, is although peaks overlapping promoters were excluded, peaks straddling either side of the peaks directly overlapping a promoter may still be joined.
-These were identified and any merged peaks with this characteristic were split either side of the overlapping peak.
+An issue produced by this initial step, is although peaks overlapping promoters were excluded, peaks straddling either side of any peaks directly overlapping a promoter may still be joined.
+These were identified and any merged peaks with this characteristic were split either side of the peak defined as a promoter.
 A total of `r length(ol)` stitched regions were found to overlap a promoter and required 'unstitching' back into two separate regions either side of the promoter.
 
 ```{r unstitch}
@@ -651,12 +657,13 @@ The most divergently ranked super enhancer was explored next, with a width of `r
 This was again located in an intergenic region, and was clearly lost in E2 samples, as expected.
 Whilst the signal in E2 + DHT was detectable, it is worth noting that this enhancer was still a relatively low-ranked SE in this treatment group.
 
-No HiC connections were detected.
-
-```{r plotDHT, fig.cap = "*Close view of the central super enhancer gained in E2 + DHT*"}
-plotRegion(gr, zoom = 100, hic = gi)
+```{r plotDHT_zoom, fig.cap = "*Close view of a super enhancer gained in E2 + DHT*"}
+plotRegion(gr, zoom = 2, hic = gi)
 ```
 
+```{r plotDHT, fig.cap = "*Zoomed out view of the central super enhancer gained in E2 + DHT*"}
+plotRegion(gr, zoom = 50, hic = gi)
+```
 
 ## The largest SE
 
