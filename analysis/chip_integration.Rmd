@@ -54,7 +54,7 @@ The groupings were provided as:
 2. Shared sites between GATA3 and AR which are gained under DHT treatment
 3. AR sites which were independent of DHT treatment
 4. AR sites detected under DHT treatment only
-...
+5. ... (I'll finish later)
 
 Groups defining the relationship between AR and GATA3 at each peak were specified in the following files.
 
@@ -209,7 +209,7 @@ In addition, it was noticed that:
 - GATA3 peak widths bore a close resemblance to each other and to Ar peak widths in E2 alone.
 
 
-```{r plotWidths, fig.cap=glue("*Assessment of peak width for each set of consensus peaks. H3K27Ac peaks were noticeably wider than GATA3 or AR peaks, with AR peaks also appearing wider in the presence of DHT. The suggested peak size of {minWidth}bp is shown as a vertical line.*")}
+```{r plotWidths, fig.width = 7, fig.height=7, fig.cap=glue("*Assessment of peak width for each set of consensus peaks. H3K27Ac peaks were noticeably wider than GATA3 or AR peaks, with AR peaks also appearing wider in the presence of DHT. The suggested peak size of {minWidth}bp is shown as a vertical line.*")}
 allWidths %>%
   ggplot(aes(width, n, colour = sample)) +
   geom_line() +
@@ -403,7 +403,7 @@ h3k27ac %>%
 
 Both GATA3 and AR ChIP datasets were loaded and consensus peaks identified based on the total size of any overlapping regions.
 These were then annotated simply based on gain or loss in DHT treatment, noting that GATA3 data contains two conditions (*Vehicle* and *DHT*) whilst AR data contained the conditions *E2* and *E2+DHT*.
-BigWig files contain the more subtle information regarding coverage, whilst this classification can indicate copmlete loss or gain of binding.
+BigWig files contain the more subtle information regarding coverage, whilst this classification can indicate complete loss or gain of binding.
 
 ## All GATA3 Sites
 
@@ -536,8 +536,6 @@ plotRegion <- function(gr, zoom = 1, hic = gi, h3k27 = h3k27ac, gata3 = gata3Con
   ## The HiC Track
   goiInteractions <- hic %>%
     subsetByOverlaps(gr, ignore.strand = TRUE) %>%
-    # subset(distance < width(gr)*zoom) %>%
-    # subset(distance < maxIntDist) %>%
     as("GenomicInteractions")
   hicTR <- InteractionTrack(
     goiInteractions,
