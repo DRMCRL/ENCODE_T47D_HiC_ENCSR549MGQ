@@ -124,8 +124,8 @@ Any peaks which overlapped undetectable gene promoters were considered more like
 ## Consensus Peaks
 
 ```{r chipGR}
-chipGR <- here::here("data/external/BED") %>%
-  list.files(pattern = "H3K27", full.names = TRUE) %>%
+chipGR <- here::here("data/external/H3K27AC/bed") %>%
+  list.files(pattern = "bed", full.names = TRUE) %>%
   sapply(import.bed, seqinfo = sq) %>%
   lapply(sort) %>%
   setNames(
