@@ -66,9 +66,9 @@ sq <- seqinfo(allGR)
 The bed files provided with the ChIP Peaks were also loaded
 
 ```{r loadPeaks}
-e2Peaks <- import.bed("data/external/BED/Consensus_T47D_AR_E2_peaks_only.bed", seqinfo = sq) %>%
+e2Peaks <- import.bed("data/external/AR/bed/Consensus_T47D_AR_E2_peaks_only.bed", seqinfo = sq) %>%
   sort()
-dhtPeaks <- import.bed("data/external/BED/Consensus_T47D_AR_E2_DHT_peaks.bed", seqinfo = sq) %>%
+dhtPeaks <- import.bed("data/external/AR/bed/Consensus_T47D_AR_E2_DHT_peaks.bed", seqinfo = sq) %>%
   sort()
 ```
 
@@ -216,7 +216,7 @@ plotTracks(
     gt
     ),
   from = start(plotRange),
-  to = start(plotRange) + width(plotRange) / 10
+  to = start(plotRange) + width(plotRange) #/ 10
 )
 ```
 
@@ -344,7 +344,7 @@ plotTracks(
     gt
     ),
   from = start(plotRange),
-  to = start(plotRange) + width(plotRange) / 10
+  to = start(plotRange) + width(plotRange) #/ 10
 )
 ```
 
