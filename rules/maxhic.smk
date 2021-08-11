@@ -1,45 +1,51 @@
-rule get_maxhic:
+rule install_maxhic:
     output:
-        dir = temp(directory("scripts/MaxHiC"))
+        exe = temp("scripts/MaxHiC/Main.py"),
+        md = temp("scripts/MaxHiC/README.md"),
+        general = temp(directory("scripts/MaxHiC/General")),
+        capture = temp(directory("scripts/MaxHiC/Capture"))
+    log: "logs/MaxHiC/install.log"
     threads: 1
     shell:
         """
-        wget https://github.com/Rassa-Gvm/MaxHiC/archive/master.zip
-        unzip master.zip -d MaxHiC
-        mv MaxHiC/MaxHiC-master scripts/MaxHiC
-        rm master.zip
-        rmdir MaxHiC
+        git clone https://github.com/Rassa-Gvm/MaxHiC.git scripts/MaxHiC
+        rm -rf scripts/MaxHiC/Sample_Inputs
         """
 
 rule run_maxhic:
     input:
-        maxhic_dir = rules.get_maxhic.output.dir,
-        mat = rules.merge_interaction_matrices.output.mat,
-        bed = rules.merge_interaction_matrices.output.bed
+        maxhic_exe = ancient(rules.install_maxhic.output.exe),
+        mat = os.path.join(
+            hic_output_path, "matrix", "raw", "{bin}", "merged_{bin}.matrix"
+        ),
+        bed = os.path.join(
+            hic_output_path, "matrix", "raw", "{bin}", "merged_{bin}_abs.bed"
+        )
     output:
-        cis = "output/MaxHiC/merged/{bin}/cis_interactions.txt.gz",
-        trans = "output/MaxHiC/merged/{bin}/trans_interactions.txt.gz"
+        cis = "output/MaxHiC/{bin}/cis_interactions.txt.gz",
+        trans = "output/MaxHiC/{bin}/trans_interactions.txt.gz",
+        model_params = directory("output/MaxHiC/{bin}/ModelParameters")
+    params:
+        input_path = os.path.join(hic_output_path, "matrix", "raw", "{bin}"),
+        output_path = os.path.join("output", "MaxHiC", "{bin}")
     conda: "../envs/maxhic.yml"
     log: "logs/MaxHiC/merged_{bin}_MaxHiC.log"
     threads: 16
     shell:
         """
         ## Given the problems with the raw output from HiC-Pro, we should
-        ## delete the *ord.bed* file
-        HICDIR=$(dirname {input.mat})
-        OUTDIR=$(dirname {output.cis})
-
-        if compgen -G "$HICDIR/*ord.bed" > /dev/null; then
+        ## delete any *ord.bed* files that exist. They seem to have been 
+        ## excluded from HiC-Pro v3
+        if compgen -G "{params.input_path}/*ord.bed" > /dev/null; then
           echo -e "Deleting unnecessary symlink"
-          rm $HICDIR/*ord.bed
+          rm {params.input_path}/*ord.bed
         fi
 
-        python scripts/MaxHiC/Main.py \
+        python {input.maxhic_exe} \
           -t {threads} \
-          $HICDIR \
-          $OUTDIR &> {log}
+          {params.input_path} \
+          {params.output_path} &> {log}
 
         ## Compress the output files
-        gzip $OUTDIR/*txt
+        pigz -p {threads} {params.output_path}/*txt
         """
-

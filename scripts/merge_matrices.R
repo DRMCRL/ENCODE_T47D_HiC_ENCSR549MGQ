@@ -1,97 +1,72 @@
 library(readr)
 library(dplyr)
-library(rtracklayer)
 
-## These cannot be named but should simply be all matrix files as a tsv,
-## Followed by the bed files and the names of the output
 args <- commandArgs(TRUE)
+## Accept args in the following order
+## 1 - The current bin size
+## 2 - The input path
+## 3 - The output path
+## 4+ - All samples
+## The last arg can thus be of variable length with the number of samples
+## able to be calculatated from these arguments
 # args <- c(
-#   ## Matrices
-#   "data/hic/hic_results/matrix/ENCLB183QHG/raw/10000/ENCLB183QHG_10000.matrix",
-#   "data/hic/hic_results/matrix/ENCLB758KFU/raw/10000/ENCLB758KFU_10000.matrix",
-#   ## Bed Files
-#   "data/hic/hic_results/matrix/ENCLB183QHG/raw/10000/ENCLB183QHG_10000_abs.bed",
-#   "data/hic/hic_results/matrix/ENCLB758KFU/raw/10000/ENCLB758KFU_10000_abs.bed",
-#   ## Names of merged outputs
-#   "data/hic/hic_results/matrix/merged/raw/10000/merged_10000.matrix",
-#   "data/hic/hic_results/matrix/merged/raw/10000/merged_10000_abs.bed"
+#     "5000",
+#     "data/hic/hic_results/matrix/",
+#     "data/hic/hic_results/matrix/merged/raw/",
+#     "Veh1_S1",
+#     "Veh2_S2",
+#     "Veh4_S3"
 # )
-message("Supplied arguments are: ", args)
+message("Supplied arguments are:\n", paste(args, collapse = "\n"))
 
+## Construct the list of input matrices
+bin <- args[[1]]
+in_path <- args[[2]]
+out_path <- file.path(args[[3]], bin)
+stopifnot(length(args) > 3)
+samples <- args[seq(4, length(args))]
+mat_path <- file.path(
+    in_path, samples, "raw", bin,
+    paste0(samples, "_", bin, ".matrix")
+)
+stopifnot(all(file.exists(mat_path)))
+## And the output file
+if (!dir.exists(out_path)) dir.create(out_path, recursive = TRUE)
+mat_out <- file.path(
+    out_path, paste0("merged_", bin, ".matrix")
+)
 
-## Check the two bed files are identical, then just choose one
-md5 <- vapply(args[3:4] , tools::md5sum, character(1))
-stopifnot(md5[[1]] == md5[[2]])
-grl <- args[[3]] %>%
-  import.bed %>%
-  split(f = seqnames(.))
+## Construct the list of input bed files
+bed_path <- file.path(
+    in_path, samples, "raw", bin,
+    paste0(samples, "_", bin, "_abs.bed")
+)
+stopifnot(all(file.exists(bed_path)))
 
-## Load in both matrix files. This is very RAM intensive as they are big
-DF1 <- read_tsv(args[[1]], col_names = c("bin1", "bin2", "count")) %>%
-  with(
-    DataFrame(
-      bin1 = Rle(bin1),
-      bin2 = bin2,
-      count = count
-    )
-  )
-DF2 <- read_tsv(args[[2]], col_names = c("bin1", "bin2", "count")) %>%
-  with(
-    DataFrame(
-      bin1 = Rle(bin1),
-      bin2 = bin2,
-      count = count
-    )
-  )
-gc()
+## Check all bed files are identical
+md5 <- vapply(bed_path, tools::md5sum, character(1))
+data.frame(md5 = md5)
+stopifnot(length(unique(md5)) == 1)
 
-## Whilst this could be done using lapply, I can't see any performance gains
-## Similarly memory allocation may be a problem, so use a simple for loop
-for (i in seq_along(grl)) {
+## Copy the bed file
+bed_out <- file.path(
+    out_path, paste0("merged_", bin, "_abs.bed")
+)
+file.copy(bed_path[[1]], bed_out, overwrite = TRUE)
 
-  ## Define the current chromosome & the bin ranges
-  x <- grl[[i]]
-  message(
-    "Merging values for ", as.character(seqnames(x)[1])
-  )
-  mn <- min(as.numeric(x$name))
-  mx <- max(as.numeric(x$name))
+## The matrix files may be >100 million lines long
+## Try being lazy, but this may need to be chunked, or else we can try vroom
+df <- lapply(
+    mat_path,
+    read_tsv,
+    col_names = c("bin1", "bin2", "count"),
+    col_types = "iii"
+)
+df <- bind_rows(df)
+df <- arrange(df, bin1, bin2)
+df <- group_by(df, bin1, bin2) # This blows the RAM out. Chunk from here
+df <- summarise(df, count = sum(count), .groups = "drop")
 
-  ## Merge the DFs, then collect garbage
-  mg <- rbind(
-    subset(DF1, bin1 >= mn & bin1 <= mx),
-    subset(DF2, bin1 >= mn & bin1 <= mx)
-  ) %>%
-    sort()
-  gc()
-
-  ## Merge the bins & collect garbage
-  out <- mg %>%
-    as.data.frame() %>%
-    group_by(bin1, bin2) %>%
-    summarise(count = sum(count), .groups = "drop") %>%
-    as("DataFrame")
-  gc()
-
-  ## Export the file & collect garbage
-  ## Only append for the second chromosome & beyond
-  message("Exporting merged data")
-  append <- i > 1
-  write.table(
-    x = out,
-    file = args[[5]],
-    sep = "\t",
-    append = append,
-    col.names = FALSE,
-    row.names = FALSE
-  )
-
-  ## Make sure we have a clean workspace again
-  rm(list = c("mg", "out", "x"))
-  gc()
-
-}
-
-## Now export the bed file
-file.copy(args[[3]], args[[6]], overwrite = TRUE)
+## Export
+write_tsv(df, mat_out, col_names = FALSE)
 

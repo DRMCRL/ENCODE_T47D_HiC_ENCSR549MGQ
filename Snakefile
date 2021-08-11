@@ -1,13 +1,35 @@
 import pandas as pd
 import os
 import re
+import subprocess
 
 configfile: "config/config.yml"
 
-# Samples
+#####################################
+## Check that HiC-Pro is installed ##
+#####################################
+# Get the path if installed
+hic_check = subprocess.run(
+    ['which', 'HiC-Pro'],
+    universal_newlines=True,
+    check=True,
+    stdout=subprocess.PIPE
+)
+hic_path = hic_check.stdout
+rc = hic_check.returncode
+if not rc == 0:
+    print("HiC-Pro not installed")
+    sys.exit(1)
+
+##################
+# Define Samples #
+##################
 df = pd.read_table(config["samples"])
 samples = list(set(df['sample']))
+cols = list(df.columns)
+df['path'] = df[cols].apply(lambda row: '/'.join(row.values.astype(str)), axis=1)
 suffix = config['suffix']
+# Can this be done better?
 read_ext = [config['hicpro']['pair1_ext'], config['hicpro']['pair2_ext']]
 
 #################################
@@ -15,89 +37,137 @@ read_ext = [config['hicpro']['pair1_ext'], config['hicpro']['pair2_ext']]
 #################################
 
 build = config['ref']['build']
-ref_root = os.path.join(config['ref']['root'], "gencode-release-" + str(config['ref']['gencode']),
-                        build, "dna")
+genbank = config['ref']['genbank']
+gencode = str(config['ref']['gencode'])
+ref_path = os.path.abspath(
+    os.path.join(
+        config['ref']['root'],
+        "gencode-release-" + gencode,
+        build,
+        "dna"
+    )
+)
 # Key output files
 assembly = config['ref']['assembly'] + ".genome"
 ref_fa = build + "." + assembly + ".fa"
-ref_fagz = ref_fa + ".gz"
-chr_sizes = os.path.join(os.getcwd(), "config", build + ".chr_sizes.tsv")
-rs_frags = os.path.join(os.getcwd(), "config", build + "_" + config['hicpro']['enzyme'] + "_fragment.bed")
+ref_fagz = build + "." + assembly + ".fa.gz"
 
 ##########################################################
 ## Define all the required outputs from the setup steps ##
 ##########################################################
 
-## Directories
+## Directories for data
 raw_path = "data/raw/fastq"
 trim_path = "data/trimmed/fastq"
-hic_path = "data/hic"
-
-REFS = [chr_sizes, rs_frags]
-FAGZ = [os.path.join(ref_root, ref_fagz)]
-BOWTIEIDX = expand([ref_root + "/bt2/{prefix}.{sub}.bt2"],
-               prefix = config['ref']['build'] + "." + assembly,
-               sub = ['1', '2', '3', '4', 'rev.1', 'rev.2'] )
-FQC_OUTS = expand(["data/{step}/FastQC/{sample}_{reads}_fastqc.{suffix}"],
-                 suffix = ['zip', 'html'],
-                 reads = ['R1', 'R2'],
-                 sample = samples,
-                 step = ['raw', 'trimmed'])
-TRIM_OUTS = expand([trim_path + "/{sample}/{sample}_{reads}{suffix}"],
-                  sample = samples, suffix = suffix,
-                  reads = ['R1', 'R2'])
-
 ALL_OUTPUTS = []
-ALL_OUTPUTS.extend(REFS)
-ALL_OUTPUTS.extend([BOWTIEIDX])
-ALL_OUTPUTS.extend(FAGZ)
-ALL_OUTPUTS.extend(FQC_OUTS)
-ALL_OUTPUTS.extend(TRIM_OUTS)
 
 #####################
 ## HiC-Pro outputs ##
 #####################
+hic_data_path = "data/hic"
+hic_output_path = os.path.join("output", "hic_pro")
+bowtie_data_path = os.path.join(hic_data_path, "bowtie_results")
+
+# Required annotations during setup for HiC-Pro
+chr_sizes = os.path.abspath(
+    os.path.join("output", build, build + ".chr_sizes.tsv")
+)
+rs_frags = os.path.abspath(
+    os.path.join(
+        "output",
+        build,
+        build + "_" + config['hicpro']['enzyme'] + "_fragment.bed"
+        )
+)
+fragment_lengths = os.path.join("output", build, "fragment_length.counts")
+## We can exclude them from the required output as they're only
+## needed as input for other rules.
+ALL_OUTPUTS.extend([rs_frags + ".gz"])
+
+# Update the config file
 bins = re.split(r" ", config['hicpro']['bin_size'])
 hicpro_config = "config/hicpro-config.txt"
-digest_script = "scripts/digest_genome.py"
-PROC_PAIRS = expand([hic_path + "/hic_results/data/{sample}/{sample}_" + build + "." + assembly + ".bwt2pairs.validPairs"],
-                    sample = samples)
-HIC_QC = expand([hic_path + "/hic_results/pic/{sample}"], sample = samples)
-VALID_PAIRS = expand([hic_path + "/hic_results/data/{sample}/{sample}_allValidPairs"],
-                       sample = samples)
-HIC_MAT = expand([hic_path + "/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}.matrix"],
-                  sample = samples, bin = bins)
-HIC_BED = expand([hic_path + "/hic_results/matrix/{sample}/raw/{bin}/{sample}_{bin}_abs.bed"],
-                  sample = samples, bin = bins)
-MERGED_INT = expand([hic_path + "/hic_results/matrix/merged/raw/{bin}/merged_{bin}{suffix}"],
-                    bin = bins, suffix = ['.matrix', '_abs.bed'])
 
-ALL_OUTPUTS.extend([hicpro_config, digest_script])
-ALL_OUTPUTS.extend(PROC_PAIRS)
-ALL_OUTPUTS.extend(HIC_QC)
-ALL_OUTPUTS.extend(VALID_PAIRS)
-ALL_OUTPUTS.extend(HIC_MAT)
-ALL_OUTPUTS.extend(HIC_BED)
+## Merge the interaction matrices
+MERGED_INT = expand(
+    [
+        os.path.join(
+            hic_output_path, "matrix", "merged_{bin}{suffix}.gz"
+        )
+    ],
+    bin = bins,
+    suffix = ['.matrix', '_abs.bed']
+    )
 ALL_OUTPUTS.extend(MERGED_INT)
+
+## Collect the final required outputs
+HIC_VALID_PAIRS = expand(
+    [
+        os.path.join(
+            hic_output_path, "allValidPairs", "{sample}.allValidPairs.gz"
+        )
+    ],
+    sample = samples
+    )
+HIC_MATRICES = expand(
+    [
+        os.path.join(
+            hic_output_path, "matrix", "raw", "{bin}",
+            "{sample}_{bin}.matrix.gz"
+        )
+    ],
+    sample = samples,
+    bin = bins
+)
+HIC_STATS = expand(
+    [os.path.join(hic_output_path, "stats", "{sample}", "{sample}{suffix}")],
+    sample = samples,
+    suffix = [
+        '.mRSstat', read_ext[0] + ".mmapstat", read_ext[1] + ".mmapstat",
+        "_allValidPairs.mergestat", ".mpairstat"
+    ]
+)
+HIC_QC_PDF = expand(
+    [
+        os.path.join(
+            hic_data_path, "hic_results", "pic", "{sample}",
+            "plot{file}_{sample}.pdf"
+        )
+    ],
+    sample = samples,
+    file = ['HiCFragment', 'MappingPairing', 'Mapping']
+)
+ALL_OUTPUTS.extend(
+    [HIC_VALID_PAIRS, HIC_MATRICES, HIC_STATS, HIC_QC_PDF]
+)
 
 
 #####################
 ## Max HiC Outputs ##
 #####################
-MAXHIC_INTERACTIONS = expand(["output/MaxHiC/merged/{bin}/{type}_interactions.txt.gz"],
-                             bin = bins, type = ['cis', 'trans'])
-ALL_OUTPUTS.extend(MAXHIC_INTERACTIONS)
+MAXHIC_INTERACTIONS = expand(
+    ["output/MaxHiC/{bin}/{type}_interactions.txt.gz"],
+    bin = bins, type = ['cis', 'trans']
+    )
+SIG_INTERACTIONS = expand(
+    ["output/MaxHiC/gi_{bin}_{type}.rds"],
+    type = ['cis', 'trans'],
+    bin = bins
+)
+ALL_OUTPUTS.extend([MAXHIC_INTERACTIONS, SIG_INTERACTIONS])
 
-#################################
-## Detection of SuperEnhancers ##
-#################################
-# Additional Data for super-enhancers shold be in data/external/H3K27AC/bam
-h3k27ac_dir = 'data/external/H3K27AC'
-enh = ['T47D_H3K27Ac_E2', 'T47D_H3K27Ac_E2_DHT']
-SE_OUT =  expand(["output/HOMER/{sample}/{file}.tsv"],
-                 sample = enh, file = ['enhancers', 'superEnhancers'])
-ALL_OUTPUTS.extend(SE_OUT)
 
+##########################
+## QC Workflowr Reports ##
+##########################
+wd = os.getcwd()
+rproj = os.path.basename(wd) + ".Rproj"
+WFLOW_OUT = expand(
+    ["docs/{file}.html"],
+    file = ['index', 'qc_raw', 'qc_trimmed', 'qc_hic', 'define_interactions']
+)
+ALL_OUTPUTS.extend([rproj])
+ALL_OUTPUTS.extend(WFLOW_OUT)
 
 #####################
 ## Rules & Outputs ##
@@ -107,12 +177,11 @@ rule all:
     input:
         ALL_OUTPUTS
 
-include: "rules/download.smk"
 include: "rules/reference.smk"
 include: "rules/qc.smk"
 include: "rules/trimming.smk"
 include: "rules/hicpro.smk"
 include: "rules/merge_matrices.smk"
 include: "rules/maxhic.smk"
-include: "rules/super_enhancers.smk"
-
+include: "rules/collect_output.smk"
+include: "rules/workflowr.smk"
