@@ -1,20 +1,16 @@
-name: "ENCODE_T47D_HiC_ENCSR549MGQ"
+name: "HiC Processing"
 output_dir: ../docs
 navbar:
-  title: "ENCODE_T47D_HiC_ENCSR549MGQ"
+  title: "HiC Data Preparation"
   left:
-  - text: Home
-    href: index.html
-  - text: Workflow Description
-    href: description.html
-  - text: Annotations
-    href: annotation_setup.html
-  - text: Interactions
-    menu:
-      - text: Setup
-        href: interactions_setup.html
-      - text: 40kb Interactions
-        href: interactions_40kb.html
+  - text: Raw Data
+    href: qc_raw.html
+  - text: Trimmed Data
+    href: qc_trimmed.html
+  - text: HiC Data
+    href: qc_hic.html
+  - text: MaxHiC Output
+    href: define_interactions.html
 output:
   workflowr::wflow_html:
     toc: yes

@@ -1,0 +1,356 @@
+---
+title: "Define HiC Interactions"
+author: |
+    | Stephen Pederson
+    | Dame Roma Mitchell Cancer Research Laboratories
+    | Adelaide Medical School
+    | University of Adelaide
+date: "`r format(Sys.Date(), '%d %B, %Y')`"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: true
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.align = "center"
+)
+```
+
+```{r packages}
+library(tidyverse)
+library(magrittr)
+library(yaml)
+library(rtracklayer)
+library(InteractionSet)
+library(vroom)
+library(glue)
+library(scales)
+library(pander)
+library(cowplot)
+library(ngsReports)
+```
+
+
+```{r setOpts}
+theme_set(theme_bw())
+alpha <- 0.05
+```
+
+
+```{r config}
+config <- here::here("config/config.yml") %>%
+  read_yaml()
+```
+
+# Introduction
+
+The output from MaxHiC is extremely large and for some bin-sizes, near impossible to wrangle on a standard laptop.
+In this workflow, each set of outputs containing the **cis** interactions will be loaded and reduced to only the *significant* interactions using the simple criteria of an FDR < `r alpha`.
+These far smaller sets of interactions are more easily managed in a standard compute environment.
+The set of **trans** interactions satisfying the same FDR were also prepared.
+
+Analyses were run for genomic bins of `r pander(paste0(as.numeric(str_split(config$hicpro$bin_size, pattern = " ")[[1]])/1e3, "kb"))` .
+
+# Cis Interactions {.tabset}
+
+```{r bin_sizes}
+bin_sizes <- config$hicpro$bin_size %>% 
+  str_split(pattern = " ") %>% 
+  unlist() %>% 
+  as.integer()
+```
+
+```{r generate_cis_output, results='asis'}
+for (sz in bin_sizes) {
+
+  ## Section Headers
+  cat(glue("## {sz/1e3}kb Bins"), "{.tabset}\n\n")
+  ## Key info
+  fl <- here::here("output", "MaxHiC", sz, "cis_interactions.txt.gz")
+  n <- system2("zcat", glue("{fl} | wc -l"), stdout = TRUE) %>% 
+    as.integer()
+  gi <- glue("output/MaxHiC/gi_{sz}_cis.rds") %>% 
+    here::here() %>% 
+    read_rds()
+  cat(
+    glue(
+      "- {comma(length(gi))} bin-pair interactions were retained.",
+      "This represented {percent(length(gi)/n, accuracy = 0.01)}",
+      "of all interactions detected in the dataset.",
+      .sep = " "
+    ),
+    "\n"
+  )
+  ## Describe the counts
+  if (length(gi) > 0) {
+    
+    cat(
+      glue(
+        "- The observed interactions between retained bin-pairs ranged between",
+        glue_collapse(range(gi$counts), last = ' & '),
+        .sep = " "
+      ),
+      "\n"
+    )
+
+    cat(
+      glue(
+        "- The log~2~ ratio of of observed to expected counts ranged between",
+        glue_collapse(round(range(gi$logObsExp), 2), last = ' & '),
+        .sep = " "
+      ),
+      "\n"
+    )
+
+    cat(
+      glue(
+        "- The median interaction distance was",
+        "{round(median(gi$distance)/1e3, 1)}kb",
+        .sep = " "
+      ),
+      "\n"
+    )
+
+    cat(
+      glue(
+        "- The largest interaction distance was",
+        "{round(max(gi$distance)/1e6, 1)}Mb",
+        .sep = " "
+      ),
+      "\n\n"
+    )
+    
+  }
+
+  ## Some plots
+  cat("\n### Interaction Summary\n\n")
+  a <- gi %>%
+    anchors("first") %>%
+    seqnames() %>%
+    table() %>%
+    enframe(
+      name = "chr",
+      value = "count"
+    ) %>%
+    mutate(
+      chr = str_remove_all(chr, "chr"),
+      chr = fct_inorder(chr),
+      count = as.integer(count)
+    ) %>%
+    ggplot(aes(chr, count)) +
+    geom_col() +
+    labs(
+      x = "Chromosome",
+      y = glue("Total Significant Cis Interactions ({sz/1e3}kb bins)")
+    ) +
+    scale_y_continuous(expand = expansion(c(0, 0.05)), labels = comma)
+  b <- gi %>%
+    anchors("first") %>%
+    seqnames() %>%
+    table() %>%
+    enframe(
+      name = "seqnames",
+      value = "count"
+    ) %>%
+    mutate(
+      seqnames = factor(seqnames, levels = seqlevels(gi)),
+      count = as.integer(count)
+    ) %>% 
+    left_join(
+      tibble(
+        seqnames = seqlevels(gi),
+        seqlengths = seqlengths(gi)
+      )
+    ) %>% 
+    mutate(
+      count_per_mb = count / (seqlengths / 1e6),
+      chr = str_remove_all(seqnames, "chr"),
+      chr = fct_inorder(chr)
+    ) %>%
+    ggplot(
+      aes(chr, count_per_mb)
+    ) +
+    geom_col() +
+    labs(
+      x = "Chromosome",
+      y = glue("Significant Cis Interactions per Mb ({sz/1e3}kb bins)")
+    ) +
+    scale_y_continuous(expand = expansion(c(0, 0.05)))
+  plot_grid(a, b, labels = c("A", "B"))
+  ggsave(
+    here::here("docs/assets", glue("interaction_summary_{sz}.png")),
+    width = 8, height = 5
+  )
+  cat(
+    glue("![*Interactions by chromosome using {sz/1e3}kb bins*](assets/interaction_summary_{sz}.png)"),
+    "\n"
+  )
+  cat("\n\n")
+
+  cat("\n### Interactions By Distance\n\n")
+  a <- mcols(gi) %>% 
+    as.data.frame %>% 
+    ggplot(aes(distance/1e3, counts)) + 
+    geom_point(alpha = 0.4) + 
+    geom_smooth(se = FALSE, method = "gam", formula = y ~ s(x, bs = "cs")) +
+    scale_x_log10(labels = comma) +
+    scale_y_log10() +
+    labs(
+      x = "Distance between bins (kb)",
+      y = "Reads Spanning Bins"
+    )
+  b <- mcols(gi) %>%
+    as.data.frame %>% 
+    ggplot(aes(counts, stat(density))) + 
+    geom_density() + 
+    coord_flip() + 
+    labs(x = c(), y = "") +
+    scale_x_log10() +
+    theme(
+      axis.text = element_blank(), 
+      panel.grid.major.x =  element_blank(),
+      panel.grid.minor.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      axis.ticks.y = element_blank()
+      )
+  c <- mcols(gi) %>%
+    as.data.frame %>% 
+    ggplot(aes(distance/1e3, stat(density))) + 
+    geom_density() + 
+    scale_x_log10() +
+    labs(x = c(), y = "") +
+    theme(
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      axis.text = element_blank(),
+      axis.ticks.y = element_blank(), 
+      axis.ticks.x = element_blank()
+    )
+  plot_grid(
+    plot_grid(
+      ngsReports:::.emptyPlot(""), c, ngsReports:::.emptyPlot(""),
+      rel_widths = c(0.04, 0.86, 0.1), 
+      nrow = 1
+    ),
+    plot_grid(a, b, rel_widths = c(0.9, 0.1), align = "h"),
+    rel_heights = c(0.1, 0.9), nrow = 2, align = "v", axis = "r"
+  )
+  ggsave(
+    here::here("docs/assets", glue("interaction_by_distance_{sz}.png")),
+    width = 8, height = 5
+  )
+  cat(
+    glue("![*Interactions by distance using {sz/1e3}kb bins*](assets/interaction_by_distance_{sz}.png)"),
+    "\n\n"
+  )
+
+}
+```
+
+# Trans Interactions {.tabset}
+
+
+```{r generate_trans_output, results='asis'}
+for (sz in bin_sizes) {
+
+  ## Section Headers
+  cat(glue("## {sz/1e3}kb Bins"), "{.tabset}\n\n")
+  ## Key info
+  fl <- here::here("output", "MaxHiC", sz, "trans_interactions.txt.gz")
+  n <- system2("zcat", glue("{fl} | wc -l"), stdout = TRUE) %>% 
+    as.integer()
+  gi <- glue("output/MaxHiC/gi_{sz}_trans.rds") %>% 
+    here::here() %>% 
+    read_rds()
+  cat(
+    glue(
+      "- {comma(length(gi))} bin-pair interactions were retained.",
+      "This represented {percent(length(gi)/n, accuracy = 0.01)}",
+      "of all interactions detected in the dataset.",
+      .sep = " "
+    ),
+    "\n"
+  )
+  ## Describe the counts
+  if (length(gi) > 0) {
+    
+    cat(
+      glue(
+        "- The observed interactions between retained bin-pairs ranged between",
+        glue_collapse(range(gi$counts), last = ' & '),
+        .sep = " "
+      ),
+      "\n\n"
+    )
+    
+  }
+
+  ## Some plots
+  # cat("\n### Interaction Summary\n\n")
+  gi %>% 
+    as.data.frame() %>% 
+    as_tibble() %>% 
+    group_by(seqnames1, seqnames2) %>% 
+    tally() %>% 
+    ungroup() %>%
+    bind_rows(
+      setNames(., c("seqnames2", "seqnames1", "n"))
+    ) %>% 
+    complete(seqnames1, seqnames2, fill = list(n = 0)) %>% 
+    ggplot(
+      aes(seqnames1, seqnames2, fill = n)
+    ) +
+    geom_tile(
+      data = . %>% 
+        dplyr::filter(
+          as.integer(seqnames1) > as.integer(seqnames2)
+        ),
+      na.rm = FALSE) +
+    geom_text(
+      aes(
+        x = as.integer(seqnames2), 
+        y = as.integer(seqnames1), 
+        label = n,
+        alpha = n
+      ),
+      data = . %>% 
+        dplyr::filter(
+          as.integer(seqnames1) > as.integer(seqnames2),
+          n > 0.01*length(gi)
+        ),
+      show.legend = FALSE
+    ) +
+    guides(alpha = NULL) +
+    scale_x_discrete(drop = FALSE) +
+    scale_y_discrete(drop = FALSE) +
+    scale_fill_viridis_c() +
+    scale_alpha(trans = "log") +
+    labs(
+      x = "Chromosome",
+      y = "Chromosome",
+      fill = "Bin\nPairs"
+    ) +
+    theme(
+      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+      panel.grid = element_blank()
+    )
+  ggsave(
+    here::here("docs/assets", glue("interaction_summary_{sz}_trans.png")),
+    width = 8, height = 6
+  )
+  cat(
+    glue("![*Trans interactions by chromosome using {sz/1e3}kb bins. Numeric values in the upper section are only shown for chromosome pairs with > 1% of the retained trans interactions*](assets/interaction_summary_{sz}_trans.png)"),
+    "\n"
+  )
+  cat("\n\n")
+
+}
+```
+
