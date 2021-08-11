@@ -1,5 +1,61 @@
 # ENCODE_T47D_HiC_ENCSR549MGQ
 
-- Analysis of ENCODE HiC Data from T47D cells
-- Integrated with locally generated data from H3K27ac ChIP to call super-enhancers
-- Additionally incorporated with BED files containing peak locations for AR & ER in response to DHT
+This is based on a template repository for running HiC-Pro under snakemake.
+The steps currently implemented are:
+
+1. Download and index the genome
+2. Trim raw data using `AdapterRemoval`
+3. Run `FastQC` on raw and trimmed data
+4. Prepare Files for HiC-Pro
+    + Organise genome annotations 
+    + Define restriction fragments 
+    + Update `hicpro-config.txt` based on `config.yml`
+
+## Setup
+
+HiC-Pro must be installed and visible to this workflow.
+Please ensure you have a working installation on your system.
+This workflow is built around v3.0.0
+
+- Data must be placed in `data/raw/fastq`
+    + Each sample/replicate needs to go in a separate folder. Use the test dataset as a guide.
+    + Delete the test data once you have placed yours in the correct folder
+- Edit `config/samples.tsv` to reflect the sample names and file names. 
+    + Data is assumed to be paired, so only one file needs to be listed per directory
+- Edit `config/config.yml`
+
+## Testing
+
+Once all edits are performed and data is uploaded, run:
+
+```
+snakemake -n
+``` 
+
+This is a dry run to check everything should work as expected.
+If the dry run is successful, create the conda environments:
+
+```
+snakemake --use-conda --conda-create-envs-only --cores 1
+```
+
+This may take a while.
+Snakemake creates these in series so only one core is required.
+
+Once complete, create the rulegraph to check everything is as expected.
+
+```
+snakemake --rulegraph > rules/rulegraph.dot
+dot -Tpdf rules/rulegraph.dot > rules/rulegraph.pdf
+```
+
+## Execution
+
+The following will set the workflow running using `12` cores
+
+```
+snakemake \
+    --use-conda \
+    --notemp \
+    --cores 12
+```

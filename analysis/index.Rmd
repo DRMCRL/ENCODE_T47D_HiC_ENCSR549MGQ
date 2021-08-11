@@ -63,8 +63,8 @@ This workflow simply aims to identify *significant interactions* (above backgrou
 here::here("rules/rulegraph.dot") %>%
   readLines() %>%
   rm_dot_node(node = "\"all\"") %>%
-  add_input_node(node = "RAW DATA", col = "red", ignore = "(get|build|make|install|initialise)") %>%
-  change_node_colour("(hicpro|contact|adapter|merge|run)_", "red") %>% 
+  # add_input_node(node = "RAW DATA", col = "red", ignore = "(get|build|make|install|initialise)") %>%
+  change_node_colour("(get|hicpro|contact|adapter|merge|run)_", "red") %>% 
   change_node_colour("collect|compress|zip|define|extract", "forestgreen") %>% 
   change_node_colour("(reference|index|chrom_sizes|install_maxhic|find|config|initialise)", "blue") %>% 
   change_node_colour("qc|stats|lengths|rulegraph|site|pics|convert|summarise", "orange") %>% 
