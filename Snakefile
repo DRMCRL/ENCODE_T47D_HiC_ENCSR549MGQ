@@ -177,6 +177,7 @@ rule all:
     input:
         ALL_OUTPUTS
 
+include: "rules/download.smk"
 include: "rules/reference.smk"
 include: "rules/qc.smk"
 include: "rules/trimming.smk"
