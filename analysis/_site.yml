@@ -1,4 +1,4 @@
-name: "HiC Processing"
+name: "T47-D: HiC Processing"
 output_dir: ../docs
 navbar:
   title: "HiC Data Preparation"
