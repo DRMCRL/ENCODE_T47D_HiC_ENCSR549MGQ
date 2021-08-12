@@ -1,0 +1,98 @@
+AdapterRemoval ver. 2.3.2
+Trimming of paired-end reads
+
+
+[Adapter sequences]
+Adapter1[1]: AGATCGGAAGAGCACACGTCTGAACTCCAGTCACNNNNNNATCTCGTATGCCGTCTTCTGCTTG
+Adapter2[1]: AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT
+
+
+[Adapter trimming]
+RNG seed: NA
+Alignment shift value: 2
+Global mismatch threshold: 0.333333
+Quality format (input): Phred+33
+Quality score max (input): 41
+Quality format (output): Phred+33
+Quality score max (output): 41
+Mate-number separator (input): '/'
+Trimming 5p: 0
+Trimming 3p: 0
+Trimming Ns: No
+Trimming Phred scores <= 30: Yes
+Trimming using sliding windows: No
+Minimum genomic length: 50
+Maximum genomic length: 4294967295
+Collapse overlapping reads: No
+Deterministic collapse: No
+Conservative collapse: No
+Minimum overlap (in case of collapse): 11
+
+
+[Trimming statistics]
+Total number of read pairs: 130347693
+Number of unaligned read pairs: 103833009
+Number of well aligned read pairs: 26514684
+Number of discarded mate 1 reads: 15187918
+Number of singleton mate 1 reads: 11414985
+Number of discarded mate 2 reads: 17029103
+Number of singleton mate 2 reads: 9573800
+Number of reads with adapters[1]: 240276
+Number of retained reads: 228478365
+Number of retained nucleotides: 11423918250
+Average length of retained reads: 50
+
+
+[Length distribution]
+Length	Mate1	Mate2	Singleton	Discarded	All
+0	0	0	0	1399980	1399980
+1	0	0	0	207670	207670
+2	0	0	0	180363	180363
+3	0	0	0	164714	164714
+4	0	0	0	204217	204217
+5	0	0	0	334043	334043
+6	0	0	0	199137	199137
+7	0	0	0	156771	156771
+8	0	0	0	126704	126704
+9	0	0	0	120850	120850
+10	0	0	0	114597	114597
+11	0	0	0	117148	117148
+12	0	0	0	129425	129425
+13	0	0	0	117725	117725
+14	0	0	0	113344	113344
+15	0	0	0	115704	115704
+16	0	0	0	124331	124331
+17	0	0	0	120185	120185
+18	0	0	0	120114	120114
+19	0	0	0	118210	118210
+20	0	0	0	108265	108265
+21	0	0	0	114416	114416
+22	0	0	0	108745	108745
+23	0	0	0	116175	116175
+24	0	0	0	112108	112108
+25	0	0	0	107724	107724
+26	0	0	0	109085	109085
+27	0	0	0	111179	111179
+28	0	0	0	107422	107422
+29	0	0	0	112674	112674
+30	0	0	0	117725	117725
+31	0	0	0	125197	125197
+32	0	0	0	126444	126444
+33	0	0	0	131957	131957
+34	0	0	0	139479	139479
+35	0	0	0	151356	151356
+36	0	0	0	166080	166080
+37	0	0	0	187894	187894
+38	0	0	0	200862	200862
+39	0	0	0	228650	228650
+40	0	0	0	264007	264007
+41	0	0	0	316280	316280
+42	0	0	0	391936	391936
+43	0	0	0	516708	516708
+44	0	0	0	723636	723636
+45	0	0	0	1093619	1093619
+46	0	0	0	1507829	1507829
+47	0	0	0	3256144	3256144
+48	0	0	0	4809532	4809532
+49	0	0	0	12301864	12301864
+50	103744790	103744790	20988785	66797	228545162
