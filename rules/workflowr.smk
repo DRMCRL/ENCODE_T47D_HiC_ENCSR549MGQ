@@ -103,6 +103,22 @@ rule build_hic_qc_report:
                 ],
                 sample = samples
             ),
+        bed = expand(
+            [
+                os.path.join(
+                    "output", "hic_pro", "matrix", "merged_{bin}_abs.bed.gz"
+                )
+            ],
+            bin = bins
+        ),
+        mat = expand(
+            [
+                os.path.join(
+                    "output", "hic_pro", "matrix", "merged_{bin}.matrix.gz"
+                )
+            ],
+            bin = bins
+        ),
         config_yml = "config/config.yml",
         site_yml = "analysis/_site.yml",            
         rmd = "analysis/qc_hic.Rmd"
