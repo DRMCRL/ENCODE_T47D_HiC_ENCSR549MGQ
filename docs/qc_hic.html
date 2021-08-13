@@ -327,7 +327,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">HiC Data Preparation</a>
+      <a class="navbar-brand" href="index.html">T-47D: HiC Data Preparation</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -368,7 +368,7 @@ div.tocify {
 Dame Roma Mitchell Cancer Research Laboratories<br />
 Adelaide Medical School<br />
 University of Adelaide</div></h4>
-<h4 class="date">12 August, 2021</h4>
+<h4 class="date">13 August, 2021</h4>
 
 </div>
 
@@ -393,7 +393,7 @@ University of Adelaide</div></h4>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-08-12
+<strong>Last updated:</strong> 2021-08-13
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -484,16 +484,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree80688082c0f7acaa9d417db28962e6f265f36fadtargetblank8068808a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/80688082c0f7acaa9d417db28962e6f265f36fad" target="_blank">8068808</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree0291131cc5d2df7c91aa1668fd0abc0c8ff32b36targetblank0291131a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/0291131cc5d2df7c91aa1668fd0abc0c8ff32b36" target="_blank">0291131</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree80688082c0f7acaa9d417db28962e6f265f36fadtargetblank8068808a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomDRMCRLENCODET47DHiCENCSR549MGQtree0291131cc5d2df7c91aa1668fd0abc0c8ff32b36targetblank0291131a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/80688082c0f7acaa9d417db28962e6f265f36fad" target="_blank">8068808</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/tree/0291131cc5d2df7c91aa1668fd0abc0c8ff32b36" target="_blank">0291131</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -508,12 +508,24 @@ Ignored files:
     Ignored:    logs/
     Ignored:    output/GRCh37/GRCh37_HindIII_fragment.bed
     Ignored:    output/GRCh37/GRCh37_HindIII_fragment.bed.gz
+    Ignored:    output/MaxHiC/10000/cis_interactions.txt.gz
+    Ignored:    output/MaxHiC/10000/trans_interactions.txt.gz
+    Ignored:    output/MaxHiC/100000/cis_interactions.txt.gz
+    Ignored:    output/MaxHiC/100000/trans_interactions.txt.gz
+    Ignored:    output/MaxHiC/20000/cis_interactions.txt.gz
+    Ignored:    output/MaxHiC/20000/trans_interactions.txt.gz
+    Ignored:    output/MaxHiC/40000/cis_interactions.txt.gz
+    Ignored:    output/MaxHiC/40000/trans_interactions.txt.gz
+    Ignored:    output/MaxHiC/5000/cis_interactions.txt.gz
+    Ignored:    output/MaxHiC/5000/trans_interactions.txt.gz
+    Ignored:    output/hic_pro/allValidPairs/
+    Ignored:    output/hic_pro/matrix/merged_10000.matrix.gz
+    Ignored:    output/hic_pro/matrix/merged_100000.matrix.gz
+    Ignored:    output/hic_pro/matrix/merged_20000.matrix.gz
+    Ignored:    output/hic_pro/matrix/merged_40000.matrix.gz
+    Ignored:    output/hic_pro/matrix/merged_5000.matrix.gz
+    Ignored:    output/hic_pro/matrix/raw/
     Ignored:    scripts/MaxHiC/
-
-Untracked files:
-    Untracked:  analysis/figure/
-    Untracked:  output/MaxHiC/
-    Untracked:  output/hic_pro/
 
 </code></pre>
 <p>
@@ -552,6 +564,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/578adcd65d0299a2b3af006b29f539466b3114f5/analysis/qc_hic.Rmd" target="_blank">578adcd</a>
+</td>
+<td>
+Steve Pederson
+</td>
+<td>
+2021-08-13
+</td>
+<td>
+ModRotated interaction plots
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/2f77e77e105cb5a86d1c39fa5f8fe8e40da46694/docs/qc_hic.html" target="_blank">2f77e77</a>
+</td>
+<td>
+Steve Pederson
+</td>
+<td>
+2021-08-13
+</td>
+<td>
+Updated all
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -649,6 +695,43 @@ theme_set(theme_bw())</code></pre>
 <em>Distribution of fragment sizes from the restriction digest.</em>
 </p>
 </div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_frag_sizes-1">
+Past versions of plot_frag_sizes-1.png
+</button>
+</p>
+<div id="fig-plot_frag_sizes-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/2f77e77e105cb5a86d1c39fa5f8fe8e40da46694/docs/figure/qc_hic.Rmd/plot_frag_sizes-1.png" target="_blank">2f77e77</a>
+</td>
+<td>
+Steve Pederson
+</td>
+<td>
+2021-08-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="mapping-statistics" class="section level2 tabset">
 <h2 class="tabset">Mapping Statistics</h2>
@@ -739,6 +822,43 @@ theme_set(theme_bw())</code></pre>
 <em>Summary of mapping rates by sample and read.</em>
 </p>
 </div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_mapping_unpaired-1">
+Past versions of plot_mapping_unpaired-1.png
+</button>
+</p>
+<div id="fig-plot_mapping_unpaired-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/2f77e77e105cb5a86d1c39fa5f8fe8e40da46694/docs/figure/qc_hic.Rmd/plot_mapping_unpaired-1.png" target="_blank">2f77e77</a>
+</td>
+<td>
+Steve Pederson
+</td>
+<td>
+2021-08-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="paired-mapping" class="section level3">
 <h3>Paired Mapping</h3>
@@ -814,6 +934,43 @@ paired_df %&gt;%
 <p class="caption">
 <em>Summary of paired mapping rates by sample.</em>
 </p>
+</div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_mapping_paired-1">
+Past versions of plot_mapping_paired-1.png
+</button>
+</p>
+<div id="fig-plot_mapping_paired-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/2f77e77e105cb5a86d1c39fa5f8fe8e40da46694/docs/figure/qc_hic.Rmd/plot_mapping_paired-1.png" target="_blank">2f77e77</a>
+</td>
+<td>
+Steve Pederson
+</td>
+<td>
+2021-08-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </div>
 <div id="mapping-to-restriction-fragments" class="section level3">
@@ -901,6 +1058,43 @@ here::here(&quot;output&quot;, &quot;hic_pro&quot;) %&gt;%
 <p class="caption">
 <em>Valid mappings to restriction fragments by read orientation.</em>
 </p>
+</div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_mapping_to_rf-1">
+Past versions of plot_mapping_to_rf-1.png
+</button>
+</p>
+<div id="fig-plot_mapping_to_rf-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/2f77e77e105cb5a86d1c39fa5f8fe8e40da46694/docs/figure/qc_hic.Rmd/plot_mapping_to_rf-1.png" target="_blank">2f77e77</a>
+</td>
+<td>
+Steve Pederson
+</td>
+<td>
+2021-08-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </div>
 <div id="contact-ranges" class="section level3">
@@ -1008,6 +1202,43 @@ here::here(&quot;output&quot;, &quot;hic_pro&quot;) %&gt;%
 <em>Plot showing contact ranges. Interactions corresponding to PCR duplicates were excluded and are shown in yellow. Cis Interactions are considered the most reliable and combined totals are shown as percentages.</em>
 </p>
 </div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_contact_ranges-1">
+Past versions of plot_contact_ranges-1.png
+</button>
+</p>
+<div id="fig-plot_contact_ranges-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/DRMCRL/ENCODE_T47D_HiC_ENCSR549MGQ/blob/2f77e77e105cb5a86d1c39fa5f8fe8e40da46694/docs/figure/qc_hic.Rmd/plot_contact_ranges-1.png" target="_blank">2f77e77</a>
+</td>
+<td>
+Steve Pederson
+</td>
+<td>
+2021-08-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="hic-fragment-sizes" class="section level2 tabset">
@@ -1041,7 +1272,7 @@ here::here(&quot;output&quot;, &quot;hic_pro&quot;) %&gt;%
 <div id="all-cis-interactions" class="section level1 tabset">
 <h1 class="tabset">All Cis Interactions</h1>
 <pre class="r"><code>bs &lt;- str_split(config$hicpro$bin_size, pattern = &quot; &quot;)[[1]] %&gt;% 
-  as.integer() %&gt;% 
+  as.integer() %&gt;%
   max()</code></pre>
 <p>The sets of interactions were visualised for all chromosomes using the largest bin size (100kb) to provide a ‘zoomed-out’ view of each chromosome.</p>
 <pre class="r"><code>grl &lt;- here::here(
@@ -1057,7 +1288,7 @@ df &lt;- here::here(
     col_names = c(&quot;bin1&quot;, &quot;bin2&quot;, &quot;counts&quot;),
     col_types = &quot;cci&quot;
   )
-count_lim &lt;- range(log2(df$counts + 1))
+count_lim &lt;- c(0, max(log2(df$counts + 1)))
 for (chr in setdiff(names(grl), &quot;chrY&quot;)) {
   message(glue(&quot;Plotting {chr}...&quot;))
   df %&gt;%  
@@ -1073,37 +1304,56 @@ for (chr in setdiff(names(grl), &quot;chrY&quot;)) {
       ),
       counts = log2(counts + 1)
     ) %&gt;% 
-    bind_rows(
-      setNames(., c(&quot;bin2&quot;, &quot;bin1&quot;, &quot;counts&quot;))
-    ) %&gt;%
     full_join(
       tidyr::expand(., bin1, bin2),
       by = c(&quot;bin1&quot;, &quot;bin2&quot;)
     ) %&gt;% 
-    arrange(bin1, bin2) %&gt;% 
+    mutate(
+      counts = ifelse(is.na(counts), 0, counts),
+      x = as.integer(bin1)*bs/1e6,
+      y = as.integer(bin2)*bs/1e6,
+      rotx = x*cos(-pi/4) - y*sin(-pi/4),
+      rotx = max(x)*rotx/max(rotx),
+      roty = x*sin(-pi/4) + y*cos(-pi/4)
+    ) %&gt;% 
+    dplyr::filter(roty &gt;= 0) %&gt;% 
+    arrange(desc(roty)) %&gt;% 
     ggplot(
       aes(
-        as.integer(bin1)*bs/1e6, as.integer(bin2)*bs/1e6, fill = counts)
+        rotx, roty, colour = counts
+      )
     ) +
-    geom_raster() +
+    geom_point(
+      size = 0.4,
+      shape = 18
+    ) +
     scale_x_continuous(
       expand = expansion(c(0, 0)), 
       name = glue(&quot;{chr} (Mb)&quot;)
     ) +
     scale_y_continuous(
       expand = expansion(c(0, 0)), 
-      name = glue(&quot;{chr} (Mb)&quot;)
     ) +
-    scale_fill_viridis_c(
+    scale_colour_viridis_c(
       name = &quot;log2(counts + 1)&quot;,
-      na.value = &quot;#4B0055&quot;,
       limits = count_lim
+    ) +
+    theme(
+      axis.text.y = element_blank(),
+      axis.ticks.y = element_blank(),
+      axis.title.y = element_blank(),
+      legend.justification = c(1, 1),
+      legend.position = c(0.95, 0.95),
+      legend.title = element_text(size = 9),
+      panel.border = element_blank(),
+      panel.grid = element_blank(),
+      panel.background = element_blank()
     )
     ggsave(
       here::here(
         &quot;docs&quot;, &quot;assets&quot;, glue(&quot;hic_interactions_{bs}_{chr}.png&quot;)
       ),
-      width = 8, height = 6
+      width = 8, height = 5
     )
 }</code></pre>
 <div id="chr1" class="section level2">

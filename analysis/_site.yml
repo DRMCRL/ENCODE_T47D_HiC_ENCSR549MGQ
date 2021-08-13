@@ -1,7 +1,7 @@
-name: "T47-D: HiC Processing"
+name: "T-47D: HiC Processing"
 output_dir: ../docs
 navbar:
-  title: "HiC Data Preparation"
+  title: "T-47D: HiC Data Preparation"
   left:
   - text: Raw Data
     href: qc_raw.html
