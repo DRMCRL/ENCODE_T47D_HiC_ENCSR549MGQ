@@ -1,0 +1,16 @@
+## merge_statfiles.py
+## dir= hic_results/data//ENCLB758KFU/
+## pattern= *.RSstat
+## Merging 1 files
+## Use /mnt/d/ENCODE_T47D_HiC_ENCSR549MGQ/data/hic/hic_results/data/ENCLB758KFU/ENCLB758KFU_GRCh37.primary_assembly.genome.bwt2pairs.RSstat as template
+Valid_interaction_pairs	57371587
+Valid_interaction_pairs_FF	14340088
+Valid_interaction_pairs_RR	14343787
+Valid_interaction_pairs_RF	14295742
+Valid_interaction_pairs_FR	14391970
+Dangling_end_pairs	1957956
+Religation_pairs	427170
+Self_Cycle_pairs	280991
+Single-end_pairs	0
+Filtered_pairs	0
+Dumped_pairs	13169

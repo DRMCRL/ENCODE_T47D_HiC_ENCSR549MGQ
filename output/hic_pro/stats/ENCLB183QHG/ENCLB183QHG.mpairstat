@@ -1,0 +1,15 @@
+## merge_statfiles.py
+## dir= bowtie_results/bwt2/ENCLB183QHG/
+## pattern= *.pairstat
+## Merging 1 files
+## Use /mnt/d/ENCODE_T47D_HiC_ENCSR549MGQ/data/hic/bowtie_results/bwt2/ENCLB183QHG/ENCLB183QHG_GRCh37.primary_assembly.genome.bwt2pairs.pairstat as template
+Total_pairs_processed	103744790	100.0
+Unmapped_pairs	1420746	1.369
+Low_qual_pairs	0	0.0
+Unique_paired_alignments	65392173	63.032
+Multiple_pairs_alignments	27717397	26.717
+Pairs_with_singleton	9214474	8.882
+Low_qual_singleton	0	0.0
+Unique_singleton_alignments	0	0.0
+Multiple_singleton_alignments	0	0.0
+Reported_pairs	65392173	63.032

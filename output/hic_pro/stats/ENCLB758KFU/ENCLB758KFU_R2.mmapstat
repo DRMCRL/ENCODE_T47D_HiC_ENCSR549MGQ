@@ -1,0 +1,9 @@
+## merge_statfiles.py
+## dir= bowtie_results/bwt2/ENCLB758KFU/
+## pattern= *_R2*.mapstat
+## Merging 1 files
+## Use /mnt/d/ENCODE_T47D_HiC_ENCSR549MGQ/data/hic/bowtie_results/bwt2/ENCLB758KFU/ENCLB758KFU_R2_GRCh37.primary_assembly.genome.mapstat as template
+total_R2	96143099
+mapped_R2	89630733
+global_R2	70284534
+local_R2	19346199
