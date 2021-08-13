@@ -65,7 +65,7 @@ rule build_trimmed_qc_report:
             sample = list(df['path'])
         ),
         config_yml = "config/config.yml",
-        site_yml = "analysis/_site.yml",        
+        site_yml = "analysis/_site.yml", 
         rmd = "analysis/qc_trimmed.Rmd"
     output:
         html = "docs/qc_trimmed.html"
